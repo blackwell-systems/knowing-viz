@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>knowing-viz</title>
+  <link rel="stylesheet" href="/styles/graph.css" />
+</head>
+<body>
+  <div id="controls">
+    <h1>knowing</h1>
+    <div id="stats"></div>
+    <div id="view-toggles">
+      <button data-view="galaxy" class="active">Galaxy</button>
+      <button data-view="blast-radius">Blast Radius</button>
+      <button data-view="provenance">Provenance</button>
+    </div>
+    <div id="filters">
+      <label><input type="checkbox" id="cross-repo-only" /> Cross-repo edges only</label>
+      <label><input type="range" id="confidence-min" min="0" max="100" value="0" /> Min confidence: <span id="confidence-val">0%</span></label>
+    </div>
+    <div id="selected-info"></div>
+  </div>
+  <div id="graph-container"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
