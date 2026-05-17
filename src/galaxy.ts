@@ -157,7 +157,7 @@ export function renderSigma(
     defaultEdgeType: 'arrow',
     renderEdgeLabels: false,
     labelRenderedSizeThreshold: 8,
-    labelColor: { color: '#e6edf3' },
+    labelColor: { attribute: 'labelColor', color: '#c9d1d9' },
     labelFont: `${labelSize}px -apple-system, BlinkMacSystemFont, sans-serif`,
     labelWeight: 'bold',
     defaultNodeColor: '#58a6ff',
@@ -181,9 +181,15 @@ export function renderSigma(
     neighbors.add(node);
 
     graph.forEachNode((id, attrs) => {
-      if (neighbors.has(id)) {
+      if (id === node) {
+        // Hovered node: bright, large, white label.
+        graph.setNodeAttribute(id, 'color', '#ffffff');
+        graph.setNodeAttribute(id, 'size', (attrs.originalSize as number) * 1.6);
+        graph.setNodeAttribute(id, 'label', attrs.shortName || attrs.label || '');
+        graph.setNodeAttribute(id, 'labelColor', '#ffffff');
+      } else if (neighbors.has(id)) {
         graph.setNodeAttribute(id, 'color', attrs.originalColor);
-        graph.setNodeAttribute(id, 'size', (attrs.originalSize as number) * 1.3);
+        graph.setNodeAttribute(id, 'size', (attrs.originalSize as number) * 1.2);
         graph.setNodeAttribute(id, 'label', attrs.shortName || attrs.label || '');
       } else {
         graph.setNodeAttribute(id, 'color', 'rgba(48,54,61,0.15)');
