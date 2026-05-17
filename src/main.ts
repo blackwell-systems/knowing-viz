@@ -184,24 +184,24 @@ async function main() {
     if (sigmaInst) sigmaInst.resetHighlight();
   });
 
-  // Initial render (before sliders are wired, use defaults).
+  // Read slider values safely (elements may not exist yet on first call).
+  function sliderVal(id: string, fallback: number): number {
+    const el = document.getElementById(id) as HTMLInputElement | null;
+    const v = el?.valueAsNumber;
+    return (v !== undefined && !isNaN(v)) ? v : fallback;
+  }
+
   function renderSigmaView() {
     if (cleanup3D) { cleanup3D(); cleanup3D = null; }
     if (sigmaInst) sigmaInst.destroy();
 
-    const ns = nodeSizeSlider?.valueAsNumber;
-    const lc = labelCountSlider?.valueAsNumber;
-    const eo = edgeOpacitySlider?.valueAsNumber;
-    const ls = labelSizeSlider?.valueAsNumber;
-    const mn = maxNodesSlider?.valueAsNumber;
-
     sigmaInst = renderSigma(container, graph!, {
       onSelect,
-      maxNodes: (mn && !isNaN(mn)) ? mn : 600,
-      nodeScale: (ns && !isNaN(ns)) ? ns / 10 : 1.0,
-      topLabelCount: (lc && !isNaN(lc)) ? lc : 40,
-      edgeOpacity: (eo && !isNaN(eo)) ? eo / 100 : 1.0,
-      labelSize: (ls && !isNaN(ls)) ? ls : 11,
+      maxNodes: sliderVal('max-nodes', 600),
+      nodeScale: sliderVal('node-size', 10) / 10,
+      topLabelCount: sliderVal('label-count', 40),
+      edgeOpacity: sliderVal('edge-opacity', 100) / 100,
+      labelSize: sliderVal('label-size', 11),
     });
   }
   renderSigmaView();
