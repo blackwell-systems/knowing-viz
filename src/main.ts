@@ -2,6 +2,9 @@ import { loadGraph, graphStats, type GraphNode, type GraphEdge, type Community }
 import { renderGalaxy } from './galaxy';
 import { computeBlastRadius, applyBlastRadius } from './blast-radius';
 import { applyProvenanceView, PROVENANCE_COLORS } from './provenance';
+import { loadGraph as loadGraphRaw } from './graph-data';
+import { computeDiff, applyDiffView } from './timeline';
+import { renderGalaxy3D } from './galaxy3d';
 
 // @ts-ignore
 const GRAPH_URL = import.meta.env.BASE_URL + 'graph.json';
@@ -17,7 +20,7 @@ function communityColor(id: number): string {
   return COMMUNITY_COLORS[id % COMMUNITY_COLORS.length];
 }
 
-type ViewMode = 'communities' | 'blast-radius' | 'provenance' | 'timeline';
+type ViewMode = 'communities' | 'blast-radius' | 'provenance' | 'timeline' | 'galaxy3d';
 
 async function main() {
   const container = document.getElementById('graph-container')!;
@@ -205,6 +208,17 @@ async function main() {
 
   // Render graph.
   let cy = renderGalaxy(container, graph, { onSelect });
+  let cleanup3D: (() => void) | null = null;
+
+  function destroy3D() {
+    if (cleanup3D) {
+      cleanup3D();
+      cleanup3D = null;
+      // Restore Cytoscape.
+      container.innerHTML = '';
+      cy = renderGalaxy(container, graph!, { onSelect });
+    }
+  }
 
   // View switching.
   const viewButtons = document.querySelectorAll('#view-toggles button');
@@ -213,6 +227,11 @@ async function main() {
       viewButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentView = (btn as HTMLElement).dataset.view as ViewMode;
+
+      // Clean up 3D if switching away from it.
+      if (currentView !== 'galaxy3d') {
+        destroy3D();
+      }
 
       switch (currentView) {
         case 'communities':
@@ -243,10 +262,58 @@ async function main() {
           }
           break;
         case 'timeline':
-          if (selectedInfo) {
-            selectedInfo.innerHTML = '<em>Timeline view requires two snapshots. Export with <code>knowing export -snapshot &lt;hash&gt;</code> for each.</em>';
-            detailPanel?.classList.remove('hidden');
-            if (detailName) detailName.textContent = 'Timeline';
+          // Load before snapshot and diff against current graph.
+          (async () => {
+            try {
+              // @ts-ignore
+              const beforeUrl = import.meta.env.BASE_URL + 'graph-before.json';
+              const before = await loadGraphRaw(beforeUrl);
+              const diff = computeDiff(before, graph!);
+              applyDiffView(cy, diff);
+              if (selectedInfo && detailPanel && detailName) {
+                detailPanel.classList.remove('hidden');
+                detailName.textContent = 'Timeline Diff';
+                selectedInfo.innerHTML = `
+                  <div class="detail-label">Changes</div>
+                  <div class="detail-value">
+                    <span style="color:#3fb950">+${diff.stats.nodesAdded} nodes</span> /
+                    <span style="color:#f85149">-${diff.stats.nodesRemoved} nodes</span>
+                  </div>
+                  <div class="detail-value">
+                    <span style="color:#3fb950">+${diff.stats.edgesAdded} edges</span> /
+                    <span style="color:#f85149">-${diff.stats.edgesRemoved} edges</span>
+                  </div>
+                  <div class="detail-label" style="margin-top:12px">Legend</div>
+                  <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3fb950;margin-right:6px;vertical-align:middle;"></span>Added</div>
+                  <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#8b949e;margin-right:6px;vertical-align:middle;opacity:0.3"></span>Unchanged</div>
+                `;
+              }
+            } catch {
+              if (selectedInfo && detailPanel && detailName) {
+                detailPanel.classList.remove('hidden');
+                detailName.textContent = 'Timeline';
+                selectedInfo.innerHTML = '<em>No baseline snapshot found. Export a baseline with <code>knowing export > public/graph-before.json</code> before making changes.</em>';
+              }
+            }
+          })();
+          break;
+        case 'galaxy3d':
+          // Switch to Three.js 3D view.
+          cy.destroy();
+          cleanup3D = renderGalaxy3D(container, graph!);
+          if (selectedInfo && detailPanel && detailName) {
+            detailPanel.classList.remove('hidden');
+            detailName.textContent = 'Galaxy 3D';
+            selectedInfo.innerHTML = `
+              <div class="detail-label">Controls</div>
+              <div class="detail-value">Drag to orbit</div>
+              <div class="detail-value">Scroll to zoom</div>
+              <div class="detail-value">Auto-rotating</div>
+              <div class="detail-label" style="margin-top:12px">Legend</div>
+              <div class="detail-value">Each cluster = one community</div>
+              <div class="detail-value"><span style="color:#f85149">Red lines</span> = cross-community edges</div>
+              <div class="detail-value">Node color = community membership</div>
+            `;
           }
           break;
       }
