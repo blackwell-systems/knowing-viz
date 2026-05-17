@@ -3,25 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>knowing-viz</title>
+  <title>knowing - Graph Explorer</title>
   <link rel="stylesheet" href="/styles/graph.css" />
 </head>
 <body>
-  <div id="controls">
-    <h1>knowing</h1>
-    <div id="stats"></div>
+  <!-- Left Sidebar: Communities -->
+  <aside id="sidebar">
+    <div id="sidebar-header">
+      <h1>knowing</h1>
+      <span class="subtitle">Graph Explorer</span>
+    </div>
+    <div id="search-box">
+      <input type="text" id="search" placeholder="Search symbols, files, types..." />
+    </div>
     <div id="view-toggles">
-      <button data-view="galaxy" class="active">Galaxy</button>
+      <h3>Views</h3>
+      <button data-view="communities" class="active">Communities</button>
       <button data-view="blast-radius">Blast Radius</button>
       <button data-view="provenance">Provenance</button>
+      <button data-view="timeline">Timeline</button>
+    </div>
+    <div id="community-list">
+      <h3>Communities</h3>
+      <div id="communities"></div>
     </div>
     <div id="filters">
+      <h3>Filters</h3>
       <label><input type="checkbox" id="cross-community-only" /> Cross-community edges only</label>
-      <label><input type="range" id="confidence-min" min="0" max="100" value="0" /> Min confidence: <span id="confidence-val">0%</span></label>
+      <label>
+        Min confidence: <span id="confidence-val">0%</span>
+        <input type="range" id="confidence-min" min="0" max="100" value="0" />
+      </label>
     </div>
-    <div id="selected-info"></div>
-  </div>
-  <div id="graph-container"></div>
+  </aside>
+
+  <!-- Graph Canvas -->
+  <main id="main">
+    <div id="graph-container"></div>
+    <div id="status-bar">
+      <span id="node-count">Nodes: --</span>
+      <span id="edge-count">Edges: --</span>
+      <span id="community-count">Communities: --</span>
+      <span id="cross-count">Cross-community: --</span>
+    </div>
+  </main>
+
+  <!-- Right Panel: Symbol Detail -->
+  <aside id="detail-panel" class="hidden">
+    <div id="detail-header">
+      <h3 id="detail-name">Select a symbol</h3>
+      <button id="detail-close">&times;</button>
+    </div>
+    <div id="detail-body">
+      <div id="selected-info"><em>Click a node to see details</em></div>
+    </div>
+  </aside>
+
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

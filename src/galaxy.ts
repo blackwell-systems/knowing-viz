@@ -9,12 +9,12 @@ import type { KnowingGraph, GraphNode, GraphEdge } from './graph-data';
 
 cytoscape.use(coseBilkent);
 
-// Color palette for communities (matches knowing dot export).
+// Community colors (vibrant for dark backgrounds).
 const COMMUNITY_COLORS = [
-  '#E8F5E9', '#E3F2FD', '#FFF3E0', '#F3E5F5',
-  '#E0F7FA', '#FBE9E7', '#F1F8E9', '#EDE7F6',
-  '#E8EAF6', '#FFF8E1', '#E0F2F1', '#FCE4EC',
-  '#ECEFF1', '#F9FBE7', '#E1F5FE', '#FFF9C4',
+  '#3fb950', '#58a6ff', '#d29922', '#bc8cff',
+  '#39d2c0', '#f85149', '#7ee787', '#79c0ff',
+  '#a5d6ff', '#ffd33d', '#56d4dd', '#ff7b72',
+  '#8b949e', '#d2a8ff', '#2ea043', '#e3b341',
 ];
 
 // Node colors by kind.
@@ -81,12 +81,12 @@ export function renderGalaxy(
   // Community compound nodes.
   for (const commId of activeCommunities) {
     const label = communityLabels.get(commId) || `community_${commId}`;
-    const colorIdx = commId % COMMUNITY_COLORS.length;
+    const color = COMMUNITY_COLORS[commId % COMMUNITY_COLORS.length];
     elements.push({
       data: {
         id: `comm:${commId}`,
         label,
-        bgColor: COMMUNITY_COLORS[colorIdx],
+        communityColor: color,
       },
       classes: 'community',
     });
@@ -94,6 +94,7 @@ export function renderGalaxy(
 
   // Symbol nodes (grouped by community).
   for (const node of significantNodes) {
+    const color = COMMUNITY_COLORS[node.community % COMMUNITY_COLORS.length];
     elements.push({
       data: {
         id: node.id,
@@ -103,6 +104,7 @@ export function renderGalaxy(
         fullLabel: node.label,
         package: node.package,
         signature: node.signature,
+        nodeColor: color,
       },
       classes: `node-${node.kind}`,
     });
@@ -132,81 +134,86 @@ export function renderGalaxy(
     container,
     elements,
     style: [
-      // Community compound nodes.
+      // Community compound nodes (dark semi-transparent backgrounds).
       {
         selector: 'node.community',
         style: {
-          'background-color': 'data(bgColor)',
-          'border-color': '#475569',
-          'border-width': 1,
+          'background-color': '#161b22',
+          'background-opacity': 0.8,
+          'border-color': 'data(communityColor)',
+          'border-width': 2,
+          'border-opacity': 0.6,
           'label': 'data(label)',
-          'color': '#1e293b',
-          'font-size': '14px',
+          'color': '#8b949e',
+          'font-size': '12px',
           'font-weight': 'bold',
           'text-valign': 'top',
           'text-halign': 'center',
-          'padding': '15px',
+          'padding': '20px',
           'shape': 'roundrectangle',
         },
       },
-      // Symbol nodes.
+      // Symbol nodes (colored by community).
       {
         selector: 'node[kind]',
         style: {
-          'background-color': (ele: any) => kindColor(ele.data('kind')),
+          'background-color': 'data(nodeColor)',
           'label': 'data(label)',
-          'color': '#1e293b',
-          'font-size': '10px',
-          'width': 20,
-          'height': 20,
+          'color': '#c9d1d9',
+          'font-size': '9px',
+          'width': 16,
+          'height': 16,
           'text-valign': 'bottom',
           'text-halign': 'center',
-          'text-margin-y': 5,
+          'text-margin-y': 4,
+          'border-width': 0,
         },
       },
-      // Type nodes are ellipses.
+      // Type nodes.
       {
         selector: 'node.node-type',
-        style: { 'shape': 'ellipse' },
+        style: { 'shape': 'ellipse', 'width': 14, 'height': 14 },
       },
-      // Service nodes are hexagons.
+      // Service nodes.
       {
         selector: 'node.node-service',
-        style: { 'shape': 'hexagon', 'width': 18, 'height': 18 },
+        style: { 'shape': 'hexagon', 'width': 20, 'height': 20 },
       },
-      // Internal edges (within community).
+      // Internal edges (subtle).
       {
         selector: 'edge.internal',
         style: {
           'width': 0.5,
-          'line-color': '#94a3b8',
-          'target-arrow-color': '#94a3b8',
+          'line-color': '#30363d',
+          'target-arrow-color': '#30363d',
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier',
           'opacity': 0.3,
           'arrow-scale': 0.4,
         },
       },
-      // Cross-community edges (highlighted).
+      // Cross-community edges (visible).
       {
         selector: 'edge.cross-community',
         style: {
-          'width': 2,
-          'line-color': '#ef4444',
-          'target-arrow-color': '#ef4444',
+          'width': 1.5,
+          'line-color': '#f85149',
+          'target-arrow-color': '#f85149',
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier',
-          'opacity': 0.7,
-          'arrow-scale': 0.6,
+          'opacity': 0.5,
+          'arrow-scale': 0.5,
         },
       },
-      // Selected.
+      // Selected node.
       {
         selector: ':selected',
         style: {
-          'background-color': '#f59e0b',
-          'border-color': '#f59e0b',
+          'background-color': '#ffd33d',
+          'border-color': '#ffd33d',
           'border-width': 3,
+          'width': 24,
+          'height': 24,
         },
       },
     ],
