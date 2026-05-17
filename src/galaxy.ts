@@ -84,18 +84,54 @@ export function renderSigma(
   const topLabelIds = new Set(sortedByDegree.slice(0, topLabelCount).map(([id]) => id));
   const maxDegree = Math.max(sortedByDegree[0]?.[1] || 1, 1);
 
-  // Add nodes with degree-based sizing.
+  // Seed positions: communities with same package prefix start near each other.
+  // Group communities by base label (strip " #N" suffix).
+  const commLabel = new Map<number, string>();
+  for (const c of knowingGraph.communities) commLabel.set(c.id, c.label);
+
+  const baseLabel = (label: string) => label.replace(/ #\d+$/, '');
+  const packageGroups = new Map<string, number[]>();
+  for (const commId of topCommunities) {
+    const label = commLabel.get(commId) || '';
+    const base = baseLabel(label);
+    const group = packageGroups.get(base) || [];
+    group.push(commId);
+    packageGroups.set(base, group);
+  }
+
+  // Assign each package group a position on a circle, sub-clusters offset slightly.
+  const groupKeys = [...packageGroups.keys()];
+  const commPosition = new Map<number, { x: number; y: number }>();
+  groupKeys.forEach((pkg, gi) => {
+    const angle = (gi / groupKeys.length) * Math.PI * 2;
+    const r = 50;
+    const cx = 50 + Math.cos(angle) * r;
+    const cy = 50 + Math.sin(angle) * r;
+    const members = packageGroups.get(pkg)!;
+    members.forEach((commId, si) => {
+      // Sub-clusters offset slightly from the group center.
+      const subAngle = (si / Math.max(members.length, 1)) * Math.PI * 2;
+      const subR = members.length > 1 ? 6 : 0;
+      commPosition.set(commId, {
+        x: cx + Math.cos(subAngle) * subR,
+        y: cy + Math.sin(subAngle) * subR,
+      });
+    });
+  });
+
+  // Add nodes with degree-based sizing, seeded near their community position.
   for (const node of significantNodes) {
     const color = COMMUNITY_COLORS[node.community % COMMUNITY_COLORS.length];
     const deg = degree.get(node.id) || 0;
     const baseSize = node.kind === 'service' ? 6 : 3;
     const size = (baseSize + Math.log2(deg + 1) * 2) * nodeScale;
+    const pos = commPosition.get(node.community) || { x: 50, y: 50 };
     graph.addNode(node.id, {
       label: topLabelIds.has(node.id) ? node.shortName : '',
       color,
       size,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
+      x: pos.x + (Math.random() - 0.5) * 5,
+      y: pos.y + (Math.random() - 0.5) * 5,
       community: node.community,
       kind: node.kind,
       fullLabel: node.label,
