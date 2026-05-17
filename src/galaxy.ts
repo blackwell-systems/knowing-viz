@@ -84,19 +84,33 @@ export function renderSigma(
   const topLabelIds = new Set(sortedByDegree.slice(0, topLabelCount).map(([id]) => id));
   const maxDegree = Math.max(sortedByDegree[0]?.[1] || 1, 1);
 
-  // Add nodes with degree-based sizing.
+  // Pre-compute community center positions (circle layout).
+  // This seeds ForceAtlas2 so same-community nodes start near each other.
+  const uniqueComms = [...new Set(significantNodes.map(n => n.community))];
+  const commCenters = new Map<number, { x: number; y: number }>();
+  uniqueComms.forEach((commId, i) => {
+    const angle = (i / uniqueComms.length) * Math.PI * 2;
+    const radius = 50;
+    commCenters.set(commId, {
+      x: 50 + Math.cos(angle) * radius,
+      y: 50 + Math.sin(angle) * radius,
+    });
+  });
+
+  // Add nodes with degree-based sizing, seeded near their community center.
   for (const node of significantNodes) {
     const color = COMMUNITY_COLORS[node.community % COMMUNITY_COLORS.length];
     const deg = degree.get(node.id) || 0;
-    // Size: base + log2(degree+1) * scale. Service nodes get a bonus.
     const baseSize = node.kind === 'service' ? 6 : 3;
     const size = (baseSize + Math.log2(deg + 1) * 2) * nodeScale;
+    const center = commCenters.get(node.community) || { x: 50, y: 50 };
+    const jitter = 8;
     graph.addNode(node.id, {
       label: topLabelIds.has(node.id) ? node.shortName : '',
       color,
       size,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
+      x: center.x + (Math.random() - 0.5) * jitter,
+      y: center.y + (Math.random() - 0.5) * jitter,
       community: node.community,
       kind: node.kind,
       fullLabel: node.label,
@@ -117,13 +131,13 @@ export function renderSigma(
     const key = `${edge.source}-${edge.target}-${edge.type}`;
     if (graph.hasEdge(key)) continue;
 
-    const crossAlpha = (0.25 * edgeOpacity).toFixed(2);
-    const intAlpha = (0.12 * edgeOpacity).toFixed(2);
-    const color = edge.crossCommunity ? `rgba(248, 81, 73, ${crossAlpha})` : `rgba(48, 54, 61, ${intAlpha})`;
+    const crossAlpha = (0.4 * edgeOpacity).toFixed(2);
+    const intAlpha = (0.2 * edgeOpacity).toFixed(2);
+    const color = edge.crossCommunity ? `rgba(248, 81, 73, ${crossAlpha})` : `rgba(100, 116, 139, ${intAlpha})`;
     try {
       graph.addEdgeWithKey(key, edge.source, edge.target, {
         color,
-        size: edge.crossCommunity ? 1 : 0.3,
+        size: edge.crossCommunity ? 1.5 : 0.5,
         type: 'arrow',
         crossCommunity: edge.crossCommunity,
         edgeType: edge.type,
