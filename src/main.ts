@@ -206,6 +206,49 @@ async function main() {
   }
   renderSigmaView();
 
+  // Toolbar buttons.
+  document.getElementById('btn-screenshot')?.addEventListener('click', () => {
+    if (!sigmaInst) return;
+    // Sigma renders to a canvas inside the container.
+    const canvas = container.querySelector('canvas');
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = 'knowing-graph.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+
+  document.getElementById('btn-fit')?.addEventListener('click', () => {
+    if (sigmaInst) {
+      sigmaInst.sigma.getCamera().animatedReset();
+    }
+  });
+
+  document.getElementById('btn-reset')?.addEventListener('click', () => {
+    // Reset all sliders to defaults.
+    const defaults: Record<string, number> = {
+      'node-size': 10, 'label-count': 40, 'edge-opacity': 100,
+      'label-size': 11, 'max-nodes': 600, 'confidence-min': 0,
+    };
+    for (const [id, val] of Object.entries(defaults)) {
+      const el = document.getElementById(id) as HTMLInputElement;
+      if (el) el.value = String(val);
+    }
+    const cb = document.getElementById('cross-community-only') as HTMLInputElement;
+    if (cb) cb.checked = false;
+    // Clear community selection.
+    communitiesEl?.querySelectorAll('.community-item').forEach(el => el.classList.remove('active'));
+    activeCommunityIds.clear();
+    // Update value displays.
+    setText('node-size-val', '1.0x');
+    setText('label-count-val', '40');
+    setText('edge-opacity-val', '100%');
+    setText('label-size-val', '11px');
+    setText('max-nodes-val', '600');
+    setText('confidence-val', '0%');
+    rerender();
+  });
+
   // View switching.
   document.querySelectorAll('#view-toggles button').forEach(btn => {
     btn.addEventListener('click', () => {

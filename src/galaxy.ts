@@ -132,15 +132,18 @@ export function renderSigma(
     }
   }
 
-  // Run ForceAtlas2 layout.
+  // Run ForceAtlas2 layout (tuned for community clustering).
   forceAtlas2.assign(graph, {
-    iterations: 300,
+    iterations: 500,
     settings: {
-      gravity: 1,
-      scalingRatio: 10,
+      gravity: 2,
+      scalingRatio: 20,
       barnesHutOptimize: true,
+      barnesHutTheta: 0.5,
       strongGravityMode: true,
-      slowDown: 5,
+      slowDown: 8,
+      outboundAttractionDistribution: true,
+      linLogMode: true,
     },
   });
 
@@ -160,7 +163,14 @@ export function renderSigma(
     stagePadding: 40,
     labelBackgroundColor: 'transparent',
     hoverRenderer: () => {},
+    zIndex: true,
+    minCameraRatio: 0.08,
+    maxCameraRatio: 8,
   } as any);
+
+  // Cursor feedback.
+  sigma.on('enterNode', () => { container.style.cursor = 'pointer'; });
+  sigma.on('leaveNode', () => { container.style.cursor = 'default'; });
 
   // Hover: highlight neighbors, show label.
   sigma.on('enterNode', ({ node }) => {
