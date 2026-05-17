@@ -117,13 +117,13 @@ export function renderSigma(
     const key = `${edge.source}-${edge.target}-${edge.type}`;
     if (graph.hasEdge(key)) continue;
 
-    const crossAlpha = (0.25 * edgeOpacity).toFixed(2);
-    const intAlpha = (0.12 * edgeOpacity).toFixed(2);
+    const crossAlpha = (0.4 * edgeOpacity).toFixed(2);
+    const intAlpha = (0.2 * edgeOpacity).toFixed(2);
     const color = edge.crossCommunity ? `rgba(248, 81, 73, ${crossAlpha})` : `rgba(48, 54, 61, ${intAlpha})`;
     try {
       graph.addEdgeWithKey(key, edge.source, edge.target, {
         color,
-        size: edge.crossCommunity ? 1 : 0.3,
+        size: edge.crossCommunity ? 1.5 : 0.5,
         type: 'arrow',
         crossCommunity: edge.crossCommunity,
         edgeType: edge.type,
@@ -159,7 +159,7 @@ export function renderSigma(
   const sigma = new Sigma(graph, container, {
     defaultEdgeType: 'arrow',
     renderEdgeLabels: false,
-    labelRenderedSizeThreshold: 8,
+    labelRenderedSizeThreshold: 5,
     labelColor: { color: '#e6edf3' },
     labelFont: `${labelSize}px -apple-system, BlinkMacSystemFont, sans-serif`,
     labelWeight: 'bold',
