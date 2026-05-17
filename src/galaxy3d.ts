@@ -2,6 +2,9 @@
 
 // @ts-ignore
 import ForceGraph3D from '3d-force-graph';
+import * as THREE from 'three';
+// @ts-ignore
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import type { KnowingGraph } from './graph-data';
 
 const COMMUNITY_COLORS = [
@@ -63,11 +66,24 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
     .linkOpacity(0.8)
     .linkDirectionalArrowLength(3)
     .linkDirectionalArrowRelPos(1)
+    .linkDirectionalParticles((link: any) => link.color.includes('248,81,73') ? 4 : 1)
+    .linkDirectionalParticleWidth(1.5)
+    .linkDirectionalParticleSpeed(0.004)
+    .linkDirectionalParticleColor((link: any) => link.color.includes('248,81,73') ? '#f85149' : '#58a6ff')
     .enableNodeDrag(true)
     .enableNavigationControls(true)
     .showNavInfo(false)
     .width(container.clientWidth)
     .height(container.clientHeight);
+
+  // Add bloom post-processing for glow effect.
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(container.clientWidth, container.clientHeight),
+    1.5,   // strength
+    0.4,   // radius
+    0.85   // threshold
+  );
+  fg.postProcessingComposer().addPass(bloomPass);
 
   // Enable built-in orbit controls auto-rotate (doesn't fight with user interaction).
   const controls = fg.controls();
