@@ -261,6 +261,7 @@ export function renderSigma(
       graph.setNodeAttribute(id, 'color', attrs.originalColor);
       graph.setNodeAttribute(id, 'size', attrs.originalSize);
       graph.setNodeAttribute(id, 'label', attrs.label);
+      graph.removeNodeAttribute(id, 'labelColor');
     });
     graph.forEachEdge((id, attrs) => {
       graph.setEdgeAttribute(id, 'color', attrs.originalColor);
