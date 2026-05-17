@@ -56,7 +56,7 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
 
   const fg = ForceGraph3D()(container)
     .graphData({ nodes, links })
-    .backgroundColor('#0d1117')
+    .backgroundColor('#000000')
     .nodeColor((node: any) => node.color)
     .nodeVal((node: any) => node.val)
     .nodeLabel((node: any) => `${node.name} (${node.kind})`)
@@ -76,12 +76,12 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
     .width(container.clientWidth)
     .height(container.clientHeight);
 
-  // Add bloom post-processing for glow effect.
+  // Add subtle bloom for glow effect (minimal to avoid background wash-out).
   const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(container.clientWidth, container.clientHeight),
-    0.8,   // strength (lower = less wash-out)
-    0.3,   // radius
-    0.6    // threshold (higher = only bright nodes glow)
+    0.3,   // strength (very subtle)
+    0.2,   // radius (tight glow)
+    0.9    // threshold (only the brightest nodes glow)
   );
   fg.postProcessingComposer().addPass(bloomPass);
 
