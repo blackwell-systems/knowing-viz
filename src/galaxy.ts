@@ -151,24 +151,6 @@ export function renderSigma(
     },
   });
 
-  // Pull outlier nodes toward center of mass (prevents isolated nodes flying away).
-  let cx = 0, cy = 0, count = 0;
-  graph.forEachNode((_, attrs) => { cx += attrs.x as number; cy += attrs.y as number; count++; });
-  if (count > 0) {
-    cx /= count; cy /= count;
-    graph.forEachNode((id, attrs) => {
-      const x = attrs.x as number;
-      const y = attrs.y as number;
-      const dx = x - cx, dy = y - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const maxDist = spread * 8;
-      if (dist > maxDist) {
-        const scale = maxDist / dist;
-        graph.setNodeAttribute(id, 'x', cx + dx * scale);
-        graph.setNodeAttribute(id, 'y', cy + dy * scale);
-      }
-    });
-  }
 
   // Render with Sigma.
   container.innerHTML = '';
