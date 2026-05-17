@@ -69,16 +69,12 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
     .width(container.clientWidth)
     .height(container.clientHeight);
 
-  // Auto-rotate.
-  let angle = 0;
-  const rotateInterval = setInterval(() => {
-    angle += 0.002;
-    const dist = fg.cameraPosition().z || 400;
-    fg.cameraPosition({
-      x: dist * Math.sin(angle),
-      z: dist * Math.cos(angle),
-    });
-  }, 30);
+  // Enable built-in orbit controls auto-rotate (doesn't fight with user interaction).
+  const controls = fg.controls();
+  if (controls) {
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.5;
+  }
 
   // Resize handler.
   const resizeHandler = () => {
@@ -87,7 +83,6 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
   window.addEventListener('resize', resizeHandler);
 
   return () => {
-    clearInterval(rotateInterval);
     window.removeEventListener('resize', resizeHandler);
     fg._destructor?.();
     container.innerHTML = '';
