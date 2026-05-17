@@ -149,14 +149,8 @@ export function renderSigma(
     defaultNodeColor: '#58a6ff',
     defaultEdgeColor: '#30363d',
     stagePadding: 40,
-    nodeReducer: (node, data) => {
-      const res = { ...data };
-      // Show label on hover even for non-top-N nodes.
-      if (hoveredNode && hoveredNode !== node && !graph.neighbors(hoveredNode).includes(node)) {
-        res.label = '';
-      }
-      return res;
-    },
+    labelBackgroundColor: 'transparent',
+    hoverRenderer: () => {},
   } as any);
 
   // Hover: highlight neighbors, show label.
