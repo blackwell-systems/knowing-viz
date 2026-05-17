@@ -184,18 +184,24 @@ async function main() {
     if (sigmaInst) sigmaInst.resetHighlight();
   });
 
-  // Initial render.
+  // Initial render (before sliders are wired, use defaults).
   function renderSigmaView() {
     if (cleanup3D) { cleanup3D(); cleanup3D = null; }
     if (sigmaInst) sigmaInst.destroy();
-    const settings = getDisplaySettings();
+
+    const ns = nodeSizeSlider?.valueAsNumber;
+    const lc = labelCountSlider?.valueAsNumber;
+    const eo = edgeOpacitySlider?.valueAsNumber;
+    const ls = labelSizeSlider?.valueAsNumber;
+    const mn = maxNodesSlider?.valueAsNumber;
+
     sigmaInst = renderSigma(container, graph!, {
       onSelect,
-      maxNodes: settings.maxNodes,
-      nodeScale: settings.nodeScale,
-      topLabelCount: settings.topLabelCount,
-      edgeOpacity: settings.edgeOpacity,
-      labelSize: settings.labelSize,
+      maxNodes: (mn && !isNaN(mn)) ? mn : 600,
+      nodeScale: (ns && !isNaN(ns)) ? ns / 10 : 1.0,
+      topLabelCount: (lc && !isNaN(lc)) ? lc : 40,
+      edgeOpacity: (eo && !isNaN(eo)) ? eo / 100 : 1.0,
+      labelSize: (ls && !isNaN(ls)) ? ls : 11,
     });
   }
   renderSigmaView();
