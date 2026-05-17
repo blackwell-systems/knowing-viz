@@ -1,36 +1,85 @@
-// 3D Galaxy view: communities as glowing sphere clusters in 3D space.
-// Uses Three.js with orbit controls. For hero screenshots and presentations.
+// 3D Galaxy view using three-forcegraph.
+// Force-directed layout in 3D with community-colored nodes.
 
+import ForceGraph3D from 'three-forcegraph';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { KnowingGraph } from './graph-data';
 
 const COMMUNITY_COLORS = [
-  0x3fb950, 0x58a6ff, 0xd29922, 0xbc8cff,
-  0x39d2c0, 0xf85149, 0x7ee787, 0x79c0ff,
-  0xa5d6ff, 0xffd33d, 0x56d4dd, 0xff7b72,
-  0x8b949e, 0xd2a8ff, 0x2ea043, 0xe3b341,
+  '#3fb950', '#58a6ff', '#d29922', '#bc8cff',
+  '#39d2c0', '#f85149', '#7ee787', '#79c0ff',
+  '#a5d6ff', '#ffd33d', '#56d4dd', '#ff7b72',
+  '#8b949e', '#d2a8ff', '#2ea043', '#e3b341',
 ];
 
-interface NodePosition {
+interface FGNode {
   id: string;
-  x: number;
-  y: number;
-  z: number;
+  name: string;
   community: number;
-  size: number;
+  kind: string;
+  color: string;
+  val: number;
+  x?: number;
+  y?: number;
+  z?: number;
+}
+
+interface FGLink {
+  source: string;
+  target: string;
+  crossCommunity: boolean;
+  color: string;
 }
 
 export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () => void {
-  // Setup.
   const width = container.clientWidth;
   const height = container.clientHeight;
 
+  // Filter to top communities.
+  const topCommunities = [...graph.communities]
+    .sort((a, b) => b.size - a.size)
+    .slice(0, 15)
+    .map(c => c.id);
+  const topCommSet = new Set(topCommunities);
+
+  const significantNodes = graph.nodes
+    .filter(n => topCommSet.has(n.community))
+    .slice(0, 500);
+  const nodeIds = new Set(significantNodes.map(n => n.id));
+
+  // Build force-graph data.
+  const fgNodes: FGNode[] = significantNodes.map(n => ({
+    id: n.id,
+    name: n.shortName,
+    community: n.community,
+    kind: n.kind,
+    color: COMMUNITY_COLORS[n.community % COMMUNITY_COLORS.length],
+    val: n.kind === 'service' ? 6 : n.kind === 'type' ? 3 : 2,
+  }));
+
+  const fgLinks: FGLink[] = [];
+  const seenEdges = new Set<string>();
+  for (const edge of graph.edges) {
+    if (!nodeIds.has(edge.source) || !nodeIds.has(edge.target)) continue;
+    if (edge.source === edge.target) continue;
+    const key = `${edge.source}-${edge.target}`;
+    if (seenEdges.has(key)) continue;
+    seenEdges.add(key);
+    fgLinks.push({
+      source: edge.source,
+      target: edge.target,
+      crossCommunity: edge.crossCommunity,
+      color: edge.crossCommunity ? 'rgba(248,81,73,0.3)' : 'rgba(48,54,61,0.15)',
+    });
+  }
+
+  // Setup Three.js scene.
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0d1117);
 
-  const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
-  camera.position.set(0, 0, 300);
+  const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 5000);
+  camera.position.set(0, 0, 400);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(width, height);
@@ -40,154 +89,40 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
+  controls.dampingFactor = 0.1;
   controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.5;
+  controls.autoRotateSpeed = 0.3;
 
-  // Compute community positions (arrange in a circle, spread by size).
-  const topCommunities = [...graph.communities]
-    .sort((a, b) => b.size - a.size)
-    .slice(0, 20);
+  // Create force graph.
+  const fg = new ForceGraph3D(scene)
+    .graphData({ nodes: fgNodes, links: fgLinks })
+    .nodeColor((node: any) => node.color)
+    .nodeVal((node: any) => node.val)
+    .nodeLabel((node: any) => `${node.name} (${node.kind})`)
+    .nodeOpacity(0.9)
+    .linkColor((link: any) => link.color)
+    .linkWidth((link: any) => link.crossCommunity ? 1 : 0.3)
+    .linkOpacity(0.6)
+    .linkDirectionalArrowLength(3)
+    .linkDirectionalArrowRelPos(1)
+    .d3AlphaDecay(0.03)
+    .d3VelocityDecay(0.3);
 
-  const commPositions = new Map<number, THREE.Vector3>();
-  const radius = 120;
-  topCommunities.forEach((comm, i) => {
-    const angle = (i / topCommunities.length) * Math.PI * 2;
-    const r = radius + (comm.size > 30 ? 20 : 0);
-    commPositions.set(comm.id, new THREE.Vector3(
-      Math.cos(angle) * r,
-      (Math.random() - 0.5) * 60,
-      Math.sin(angle) * r,
-    ));
-  });
-
-  // Place nodes around their community center.
-  const nodePositions = new Map<string, NodePosition>();
-  const commNodes = new Map<number, typeof graph.nodes>();
-
-  for (const node of graph.nodes) {
-    if (!commPositions.has(node.community)) continue;
-    const list = commNodes.get(node.community) || [];
-    list.push(node);
-    commNodes.set(node.community, list);
-  }
-
-  for (const [commId, nodes] of commNodes) {
-    const center = commPositions.get(commId)!;
-    const spread = Math.sqrt(nodes.length) * 3;
-
-    nodes.forEach((node, i) => {
-      // Fibonacci sphere distribution.
-      const phi = Math.acos(1 - 2 * (i + 0.5) / nodes.length);
-      const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-
-      nodePositions.set(node.id, {
-        id: node.id,
-        x: center.x + spread * Math.sin(phi) * Math.cos(theta),
-        y: center.y + spread * Math.sin(phi) * Math.sin(theta),
-        z: center.z + spread * Math.cos(phi),
-        community: commId,
-        size: node.kind === 'service' ? 3 : node.kind === 'type' ? 2 : 1.5,
-      });
-    });
-  }
-
-  // Render nodes as points (instanced spheres are too expensive for 1500 nodes).
-  const nodeGeometry = new THREE.BufferGeometry();
-  const positions: number[] = [];
-  const colors: number[] = [];
-  const sizes: number[] = [];
-
-  for (const [, pos] of nodePositions) {
-    positions.push(pos.x, pos.y, pos.z);
-    const color = new THREE.Color(COMMUNITY_COLORS[pos.community % COMMUNITY_COLORS.length]);
-    colors.push(color.r, color.g, color.b);
-    sizes.push(pos.size);
-  }
-
-  nodeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  nodeGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-
-  const nodeMaterial = new THREE.PointsMaterial({
-    size: 2.5,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.9,
-    sizeAttenuation: true,
-  });
-
-  const nodePoints = new THREE.Points(nodeGeometry, nodeMaterial);
-  scene.add(nodePoints);
-
-  // Render community labels as sprites.
-  for (const comm of topCommunities) {
-    const pos = commPositions.get(comm.id);
-    if (!pos) continue;
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 64;
-    const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 24px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(comm.label, 128, 40);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0.6 });
-    const sprite = new THREE.Sprite(spriteMat);
-    sprite.position.copy(pos);
-    sprite.position.y += Math.sqrt(comm.size) * 3 + 8;
-    sprite.scale.set(30, 7.5, 1);
-    scene.add(sprite);
-  }
-
-  // Render cross-community edges as lines.
-  const edgeGeometry = new THREE.BufferGeometry();
-  const edgePositions: number[] = [];
-  const edgeColors: number[] = [];
-
-  for (const edge of graph.edges) {
-    if (!edge.crossCommunity) continue;
-    const src = nodePositions.get(edge.source);
-    const tgt = nodePositions.get(edge.target);
-    if (!src || !tgt) continue;
-
-    edgePositions.push(src.x, src.y, src.z, tgt.x, tgt.y, tgt.z);
-    // Red for cross-community.
-    edgeColors.push(0.97, 0.32, 0.29, 0.97, 0.32, 0.29);
-  }
-
-  edgeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(edgePositions, 3));
-  edgeGeometry.setAttribute('color', new THREE.Float32BufferAttribute(edgeColors, 3));
-
-  const edgeMaterial = new THREE.LineBasicMaterial({
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.15,
-    linewidth: 1,
-  });
-
-  const edgeLines = new THREE.LineSegments(edgeGeometry, edgeMaterial);
-  scene.add(edgeLines);
-
-  // Ambient glow (subtle fog).
-  scene.fog = new THREE.FogExp2(0x0d1117, 0.002);
-
-  // Ambient light.
-  scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+  // Warm up the simulation.
+  fg.tickFrame();
 
   // Animation loop.
   let animating = true;
   function animate() {
     if (!animating) return;
     requestAnimationFrame(animate);
+    fg.tickFrame();
     controls.update();
     renderer.render(scene, camera);
   }
   animate();
 
-  // Handle resize.
+  // Resize handler.
   const resizeHandler = () => {
     const w = container.clientWidth;
     const h = container.clientHeight;
@@ -197,7 +132,6 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
   };
   window.addEventListener('resize', resizeHandler);
 
-  // Return cleanup function.
   return () => {
     animating = false;
     window.removeEventListener('resize', resizeHandler);

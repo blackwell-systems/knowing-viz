@@ -1,9 +1,9 @@
 import { loadGraph, graphStats, type GraphNode, type GraphEdge, type Community } from './graph-data';
-import { renderGalaxy } from './galaxy';
-import { computeBlastRadius, applyBlastRadius } from './blast-radius';
-import { applyProvenanceView, PROVENANCE_COLORS } from './provenance';
-import { loadGraph as loadGraphRaw } from './graph-data';
-import { computeDiff, applyDiffView } from './timeline';
+import { renderSigma, type SigmaInstance } from './galaxy';
+import { computeBlastRadius } from './blast-radius';
+import { PROVENANCE_COLORS } from './provenance';
+import { loadGraph as loadGraphAlt } from './graph-data';
+import { computeDiff } from './timeline';
 import { renderGalaxy3D } from './galaxy3d';
 
 // @ts-ignore
@@ -34,7 +34,6 @@ async function main() {
   const confidenceSlider = document.getElementById('confidence-min') as HTMLInputElement;
   const confidenceVal = document.getElementById('confidence-val');
 
-  // Load graph data.
   let graph;
   try {
     graph = await loadGraph(GRAPH_URL);
@@ -46,9 +45,9 @@ async function main() {
     return;
   }
 
-  // State.
   let currentView: ViewMode = 'communities';
-  let blastTarget: string | null = null;
+  let sigmaInst: SigmaInstance | null = null;
+  let cleanup3D: (() => void) | null = null;
 
   // Stats bar.
   const stats = graphStats(graph);
@@ -61,37 +60,6 @@ async function main() {
   const nodeMap = new Map<string, GraphNode>();
   for (const n of graph.nodes) nodeMap.set(n.id, n);
 
-  // Populate community sidebar (multi-select: toggle each on/off).
-  const activeCommunityIds = new Set<number>();
-  const sortedCommunities = [...graph.communities].sort((a, b) => b.size - a.size);
-  if (communitiesEl) {
-    for (const comm of sortedCommunities) {
-      const item = document.createElement('div');
-      item.className = 'community-item';
-      item.dataset.communityId = String(comm.id);
-      item.innerHTML = `
-        <span class="community-dot" style="background:${communityColor(comm.id)}"></span>
-        <span class="community-label">${comm.label}</span>
-        <span class="community-count">${comm.size}</span>
-      `;
-      item.addEventListener('click', () => {
-        if (item.classList.contains('active')) {
-          item.classList.remove('active');
-          activeCommunityIds.delete(comm.id);
-        } else {
-          item.classList.add('active');
-          activeCommunityIds.add(comm.id);
-        }
-        if (activeCommunityIds.size === 0) {
-          resetView(cy);
-        } else {
-          highlightCommunities(cy, activeCommunityIds);
-        }
-      });
-      communitiesEl.appendChild(item);
-    }
-  }
-
   // Selection handler.
   function onSelect(node: GraphNode | null, edges: GraphEdge[]) {
     if (!selectedInfo || !detailPanel || !detailName) return;
@@ -100,12 +68,10 @@ async function main() {
       return;
     }
 
-    // In blast-radius mode, clicking a node shows its blast radius.
-    if (currentView === 'blast-radius') {
-      blastTarget = node.id;
+    if (currentView === 'blast-radius' && sigmaInst) {
       const result = computeBlastRadius(graph!, node.id, 4);
       if (result) {
-        applyBlastRadius(cy, result);
+        sigmaInst.applyBlast(result.affected);
         showBlastDetail(node, result);
         return;
       }
@@ -120,24 +86,7 @@ async function main() {
     if (!selectedInfo) return;
     const callers = edges.filter(e => e.target === node.id);
     const callees = edges.filter(e => e.source === node.id);
-    const crossComm = edges.filter(e => e.crossCommunity);
     const community = graph!.communities.find((c: Community) => c.id === node.community);
-
-    let callersHtml = '';
-    for (const e of callers.slice(0, 20)) {
-      const src = nodeMap.get(e.source);
-      const cls = e.crossCommunity ? 'edge-cross' : 'edge-type';
-      callersHtml += `<li><span class="${cls}">${e.type}</span> ${src?.shortName || e.source.slice(0, 8)}</li>`;
-    }
-    if (callers.length > 20) callersHtml += `<li class="more">+${callers.length - 20} more</li>`;
-
-    let calleesHtml = '';
-    for (const e of callees.slice(0, 20)) {
-      const tgt = nodeMap.get(e.target);
-      const cls = e.crossCommunity ? 'edge-cross' : 'edge-type';
-      calleesHtml += `<li><span class="${cls}">${e.type}</span> ${tgt?.shortName || e.target.slice(0, 8)}</li>`;
-    }
-    if (callees.length > 20) calleesHtml += `<li class="more">+${callees.length - 20} more</li>`;
 
     selectedInfo.innerHTML = `
       <div class="detail-label">Qualified Name</div>
@@ -155,13 +104,25 @@ async function main() {
       <div class="detail-code">${node.signature || 'n/a'}</div>
       <div class="detail-section">
         <div class="detail-label">Callers <span class="stat-highlight">${callers.length}</span></div>
-        <ul class="edge-list">${callersHtml || '<li>none</li>'}</ul>
+        <ul class="edge-list">${renderEdgeList(callers, 'source')}</ul>
       </div>
       <div class="detail-section">
         <div class="detail-label">Callees <span class="stat-highlight">${callees.length}</span></div>
-        <ul class="edge-list">${calleesHtml || '<li>none</li>'}</ul>
+        <ul class="edge-list">${renderEdgeList(callees, 'target')}</ul>
       </div>
     `;
+  }
+
+  function renderEdgeList(edges: GraphEdge[], peerField: 'source' | 'target'): string {
+    if (edges.length === 0) return '<li>none</li>';
+    let html = '';
+    for (const e of edges.slice(0, 20)) {
+      const peer = nodeMap.get(e[peerField]);
+      const cls = e.crossCommunity ? 'edge-cross' : 'edge-type';
+      html += `<li><span class="${cls}">${e.type}</span> ${peer?.shortName || e[peerField].slice(0, 8)}</li>`;
+    }
+    if (edges.length > 20) html += `<li class="more">+${edges.length - 20} more</li>`;
+    return html;
   }
 
   function showBlastDetail(node: GraphNode, result: any) {
@@ -173,8 +134,7 @@ async function main() {
     for (const [id, depth] of result.affected) {
       if (depth === 0) continue;
       const list = byDepth.get(depth) || [];
-      const n = nodeMap.get(id);
-      list.push(n?.shortName || id.slice(0, 8));
+      list.push(nodeMap.get(id)?.shortName || id.slice(0, 8));
       byDepth.set(depth, list);
     }
 
@@ -182,222 +142,148 @@ async function main() {
       <div class="detail-label">Center</div>
       <div class="detail-code">${node.label}</div>
       <div class="detail-label">Total Affected</div>
-      <div class="detail-value"><span class="stat-danger">${result.affected.size - 1}</span> symbols across ${result.edges.length} edges</div>
+      <div class="detail-value"><span class="stat-danger">${result.affected.size - 1}</span> symbols</div>
     `;
-
     for (const [depth, names] of [...byDepth.entries()].sort((a, b) => a[0] - b[0])) {
-      html += `
-        <div class="detail-section">
-          <div class="detail-label">Depth ${depth} <span class="stat-highlight">${names.length}</span></div>
-          <ul class="edge-list">${names.map(n => `<li>${n}</li>`).join('')}</ul>
-        </div>
-      `;
+      html += `<div class="detail-section"><div class="detail-label">Depth ${depth} <span class="stat-highlight">${names.length}</span></div><ul class="edge-list">${names.map(n => `<li>${n}</li>`).join('')}</ul></div>`;
     }
-
     selectedInfo.innerHTML = html;
   }
 
-  // Close detail panel.
-  detailClose?.addEventListener('click', () => {
-    detailPanel?.classList.add('hidden');
-    if (currentView === 'blast-radius') {
-      blastTarget = null;
-      resetView(cy);
-    }
-  });
-
-  // Render graph.
-  let cy = renderGalaxy(container, graph, { onSelect });
-  let cleanup3D: (() => void) | null = null;
-
-  function destroy3D() {
-    if (cleanup3D) {
-      cleanup3D();
-      cleanup3D = null;
-      // Restore Cytoscape.
-      container.innerHTML = '';
-      cy = renderGalaxy(container, graph!, { onSelect });
+  // Community sidebar (multi-select).
+  const activeCommunityIds = new Set<number>();
+  const sortedCommunities = [...graph.communities].sort((a, b) => b.size - a.size);
+  if (communitiesEl) {
+    for (const comm of sortedCommunities) {
+      const item = document.createElement('div');
+      item.className = 'community-item';
+      item.innerHTML = `
+        <span class="community-dot" style="background:${communityColor(comm.id)}"></span>
+        <span class="community-label">${comm.label}</span>
+        <span class="community-count">${comm.size}</span>
+      `;
+      item.addEventListener('click', () => {
+        if (item.classList.contains('active')) {
+          item.classList.remove('active');
+          activeCommunityIds.delete(comm.id);
+        } else {
+          item.classList.add('active');
+          activeCommunityIds.add(comm.id);
+        }
+        if (sigmaInst) {
+          if (activeCommunityIds.size === 0) sigmaInst.resetHighlight();
+          else sigmaInst.highlightCommunities(activeCommunityIds);
+        }
+      });
+      communitiesEl.appendChild(item);
     }
   }
 
+  detailClose?.addEventListener('click', () => {
+    detailPanel?.classList.add('hidden');
+    if (sigmaInst) sigmaInst.resetHighlight();
+  });
+
+  // Initial render.
+  function renderSigmaView() {
+    if (cleanup3D) { cleanup3D(); cleanup3D = null; }
+    if (sigmaInst) sigmaInst.destroy();
+    sigmaInst = renderSigma(container, graph!, { onSelect });
+  }
+  renderSigmaView();
+
   // View switching.
-  const viewButtons = document.querySelectorAll('#view-toggles button');
-  viewButtons.forEach(btn => {
+  document.querySelectorAll('#view-toggles button').forEach(btn => {
     btn.addEventListener('click', () => {
-      viewButtons.forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#view-toggles button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentView = (btn as HTMLElement).dataset.view as ViewMode;
 
-      // Clean up 3D if switching away from it.
-      if (currentView !== 'galaxy3d') {
-        destroy3D();
-      }
-
       switch (currentView) {
         case 'communities':
-          resetView(cy);
+          renderSigmaView();
           break;
+
         case 'blast-radius':
-          // Dim everything, wait for node click.
-          cy.nodes('[kind]').style('opacity', 0.6);
-          cy.edges().style('opacity', 0.15);
-          cy.nodes('.community').style('opacity', 0.4);
-          if (selectedInfo) {
-            selectedInfo.innerHTML = '<em>Click a node to see its blast radius</em>';
-            detailPanel?.classList.remove('hidden');
-            if (detailName) detailName.textContent = 'Blast Radius';
-          }
+          renderSigmaView();
+          showPanel('Blast Radius', '<em>Click a node to see its blast radius</em>');
           break;
+
         case 'provenance':
-          applyProvenanceView(cy);
-          if (selectedInfo) {
-            let legend = '<div class="detail-label">Provenance Legend</div>';
-            for (const [prov, color] of Object.entries(PROVENANCE_COLORS)) {
-              if (prov === 'default') continue;
-              legend += `<div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>${prov}</div>`;
-            }
-            selectedInfo.innerHTML = legend;
-            detailPanel?.classList.remove('hidden');
-            if (detailName) detailName.textContent = 'Provenance';
+          renderSigmaView();
+          if (sigmaInst) sigmaInst.applyProvenance();
+          let legend = '<div class="detail-label">Provenance Legend</div>';
+          for (const [prov, color] of Object.entries(PROVENANCE_COLORS)) {
+            if (prov === 'default') continue;
+            legend += `<div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>${prov}</div>`;
           }
+          showPanel('Provenance', legend);
           break;
+
         case 'timeline':
-          // Load before snapshot and diff against current graph.
+          renderSigmaView();
           (async () => {
             try {
               // @ts-ignore
-              const beforeUrl = import.meta.env.BASE_URL + 'graph-before.json';
-              const before = await loadGraphRaw(beforeUrl);
+              const before = await loadGraphAlt(import.meta.env.BASE_URL + 'graph-before.json');
               const diff = computeDiff(before, graph!);
-              applyDiffView(cy, diff);
-              if (selectedInfo && detailPanel && detailName) {
-                detailPanel.classList.remove('hidden');
-                detailName.textContent = 'Timeline Diff';
-                selectedInfo.innerHTML = `
-                  <div class="detail-label">Changes</div>
-                  <div class="detail-value">
-                    <span style="color:#3fb950">+${diff.stats.nodesAdded} nodes</span> /
-                    <span style="color:#f85149">-${diff.stats.nodesRemoved} nodes</span>
-                  </div>
-                  <div class="detail-value">
-                    <span style="color:#3fb950">+${diff.stats.edgesAdded} edges</span> /
-                    <span style="color:#f85149">-${diff.stats.edgesRemoved} edges</span>
-                  </div>
-                  <div class="detail-label" style="margin-top:12px">Legend</div>
-                  <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3fb950;margin-right:6px;vertical-align:middle;"></span>Added</div>
-                  <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#8b949e;margin-right:6px;vertical-align:middle;opacity:0.3"></span>Unchanged</div>
-                `;
-              }
+              if (sigmaInst) sigmaInst.applyDiff(diff.addedNodes, diff.addedEdges);
+              showPanel('Timeline Diff', `
+                <div class="detail-label">Changes</div>
+                <div class="detail-value"><span style="color:#3fb950">+${diff.stats.nodesAdded} nodes</span> / <span style="color:#f85149">-${diff.stats.nodesRemoved} nodes</span></div>
+                <div class="detail-value"><span style="color:#3fb950">+${diff.stats.edgesAdded} edges</span> / <span style="color:#f85149">-${diff.stats.edgesRemoved} edges</span></div>
+              `);
             } catch {
-              if (selectedInfo && detailPanel && detailName) {
-                detailPanel.classList.remove('hidden');
-                detailName.textContent = 'Timeline';
-                selectedInfo.innerHTML = '<em>No baseline snapshot found. Export a baseline with <code>knowing export > public/graph-before.json</code> before making changes.</em>';
-              }
+              showPanel('Timeline', '<em>No baseline found. Export with <code>knowing export > public/graph-before.json</code></em>');
             }
           })();
           break;
+
         case 'galaxy3d':
-          // Switch to Three.js 3D view.
-          cy.destroy();
+          if (sigmaInst) { sigmaInst.destroy(); sigmaInst = null; }
           cleanup3D = renderGalaxy3D(container, graph!);
-          if (selectedInfo && detailPanel && detailName) {
-            detailPanel.classList.remove('hidden');
-            detailName.textContent = 'Galaxy 3D';
-            selectedInfo.innerHTML = `
-              <div class="detail-label">Controls</div>
-              <div class="detail-value">Drag to orbit</div>
-              <div class="detail-value">Scroll to zoom</div>
-              <div class="detail-value">Auto-rotating</div>
-              <div class="detail-label" style="margin-top:12px">Legend</div>
-              <div class="detail-value">Each cluster = one community</div>
-              <div class="detail-value"><span style="color:#f85149">Red lines</span> = cross-community edges</div>
-              <div class="detail-value">Node color = community membership</div>
-            `;
-          }
+          showPanel('Galaxy 3D', `
+            <div class="detail-value">Drag to orbit, scroll to zoom</div>
+            <div class="detail-value">Auto-rotating</div>
+            <div class="detail-label" style="margin-top:8px">Legend</div>
+            <div class="detail-value">Each cluster = one community</div>
+            <div class="detail-value"><span style="color:#f85149">Red lines</span> = cross-community</div>
+          `);
           break;
       }
     });
   });
+
+  function showPanel(title: string, html: string) {
+    if (detailPanel && detailName && selectedInfo) {
+      detailPanel.classList.remove('hidden');
+      detailName.textContent = title;
+      selectedInfo.innerHTML = html;
+    }
+  }
 
   // Search.
   searchInput?.addEventListener('input', () => {
     const query = searchInput.value.toLowerCase().trim();
-    if (!query) {
-      resetView(cy);
-      return;
-    }
-    const matches = graph!.nodes
-      .filter(n => n.shortName.toLowerCase().includes(query) || n.label.toLowerCase().includes(query))
-      .map(n => n.id);
-    const matchSet = new Set(matches);
-
-    cy.nodes().forEach((ele: any) => {
-      if (ele.data('kind')) {
-        ele.style('opacity', matchSet.has(ele.id()) ? 1 : 0.08);
-      } else {
-        ele.style('opacity', 0.3);
-      }
-    });
-    cy.edges().forEach((ele: any) => {
-      const src = ele.data('source');
-      const tgt = ele.data('target');
-      ele.style('opacity', matchSet.has(src) || matchSet.has(tgt) ? 0.7 : 0.02);
-    });
+    if (!sigmaInst) return;
+    if (!query) { sigmaInst.resetHighlight(); return; }
+    const matches = new Set(
+      graph!.nodes
+        .filter(n => n.shortName.toLowerCase().includes(query) || n.label.toLowerCase().includes(query))
+        .map(n => n.id)
+    );
+    sigmaInst.highlightSearch(matches);
   });
 
-  // Filter controls.
+  // Filters.
   function rerender() {
-    cy.destroy();
-    cy = renderGalaxy(container, graph!, {
-      crossCommunityOnly: crossCommunityCheckbox?.checked || false,
-      minConfidence: (confidenceSlider?.valueAsNumber || 0) / 100,
-      onSelect,
-    });
+    if (currentView === 'galaxy3d') return;
+    renderSigmaView();
   }
-
   crossCommunityCheckbox?.addEventListener('change', rerender);
   confidenceSlider?.addEventListener('input', () => {
     if (confidenceVal) confidenceVal.textContent = `${confidenceSlider.value}%`;
     rerender();
-  });
-}
-
-function highlightCommunities(cy: any, communityIds: Set<number>) {
-  const parentIds = new Set([...communityIds].map(id => `comm:${id}`));
-  cy.nodes().forEach((ele: any) => {
-    const parent = ele.data('parent');
-    if (parentIds.has(parent) || parentIds.has(ele.id())) {
-      ele.style('opacity', 1);
-    } else if (ele.data('kind')) {
-      ele.style('opacity', 0.08);
-    } else {
-      ele.style('opacity', 0.15);
-    }
-  });
-  cy.edges().forEach((ele: any) => {
-    const src = cy.getElementById(ele.data('source'));
-    const tgt = cy.getElementById(ele.data('target'));
-    const srcIn = parentIds.has(src.data('parent'));
-    const tgtIn = parentIds.has(tgt.data('parent'));
-    if (srcIn && tgtIn) {
-      // Edge between two selected communities: bright.
-      ele.style('opacity', 0.9);
-    } else if (srcIn || tgtIn) {
-      // Edge from selected to non-selected: medium.
-      ele.style('opacity', 0.4);
-    } else {
-      ele.style('opacity', 0.02);
-    }
-  });
-}
-
-function resetView(cy: any) {
-  cy.nodes().style('opacity', 1);
-  cy.nodes('[kind]').removeStyle('background-color border-width border-color width height');
-  cy.edges().forEach((ele: any) => {
-    ele.removeStyle('line-color target-arrow-color width');
-    ele.style('opacity', ele.hasClass('cross-community') ? 0.5 : 0.3);
   });
 }
 
