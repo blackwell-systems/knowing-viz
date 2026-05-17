@@ -45,7 +45,7 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
     links.push({
       source: edge.source,
       target: edge.target,
-      color: edge.crossCommunity ? 'rgba(248,81,73,0.4)' : 'rgba(48,54,61,0.2)',
+      color: edge.crossCommunity ? 'rgba(248,81,73,0.6)' : 'rgba(100,116,139,0.35)',
     });
   }
 
@@ -59,8 +59,8 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
     .nodeLabel((node: any) => `${node.name} (${node.kind})`)
     .nodeOpacity(0.9)
     .linkColor((link: any) => link.color)
-    .linkWidth(0.5)
-    .linkOpacity(0.6)
+    .linkWidth(0.8)
+    .linkOpacity(0.8)
     .linkDirectionalArrowLength(3)
     .linkDirectionalArrowRelPos(1)
     .enableNodeDrag(true)
