@@ -58,12 +58,30 @@ export function renderSigma(
     .slice(0, maxNodes);
   const nodeIds = new Set(significantNodes.map(n => n.id));
 
-  // Add nodes with community-based coloring.
+  // Compute degree per node for sizing and label filtering.
+  const degree = new Map<string, number>();
+  for (const n of significantNodes) degree.set(n.id, 0);
+  for (const e of knowingGraph.edges) {
+    if (!nodeIds.has(e.source) || !nodeIds.has(e.target)) continue;
+    degree.set(e.source, (degree.get(e.source) || 0) + 1);
+    degree.set(e.target, (degree.get(e.target) || 0) + 1);
+  }
+
+  // Top-N by degree get visible labels (avoids label soup).
+  const sortedByDegree = [...degree.entries()].sort((a, b) => b[1] - a[1]);
+  const topLabelCount = 40;
+  const topLabelIds = new Set(sortedByDegree.slice(0, topLabelCount).map(([id]) => id));
+  const maxDegree = Math.max(sortedByDegree[0]?.[1] || 1, 1);
+
+  // Add nodes with degree-based sizing.
   for (const node of significantNodes) {
     const color = COMMUNITY_COLORS[node.community % COMMUNITY_COLORS.length];
-    const size = node.kind === 'service' ? 8 : node.kind === 'type' ? 5 : 4;
+    const deg = degree.get(node.id) || 0;
+    // Size: base + log2(degree+1) * scale. Service nodes get a bonus.
+    const baseSize = node.kind === 'service' ? 6 : 3;
+    const size = baseSize + Math.log2(deg + 1) * 2;
     graph.addNode(node.id, {
-      label: node.shortName,
+      label: topLabelIds.has(node.id) ? node.shortName : '',
       color,
       size,
       x: Math.random() * 100,
@@ -71,8 +89,10 @@ export function renderSigma(
       community: node.community,
       kind: node.kind,
       fullLabel: node.label,
+      shortName: node.shortName,
       originalColor: color,
       originalSize: size,
+      degree: deg,
     });
   }
 
@@ -117,15 +137,61 @@ export function renderSigma(
 
   // Render with Sigma.
   container.innerHTML = '';
+  let hoveredNode: string | null = null;
+
   const sigma = new Sigma(graph, container, {
     defaultEdgeType: 'arrow',
     renderEdgeLabels: false,
-    labelRenderedSizeThreshold: 6,
-    labelColor: { color: '#c9d1d9' },
-    labelFont: '-apple-system, BlinkMacSystemFont, sans-serif',
+    labelRenderedSizeThreshold: 5,
+    labelColor: { color: '#e6edf3' },
+    labelFont: '11px -apple-system, BlinkMacSystemFont, sans-serif',
+    labelWeight: 'bold',
     defaultNodeColor: '#58a6ff',
     defaultEdgeColor: '#30363d',
     stagePadding: 40,
+    nodeReducer: (node, data) => {
+      const res = { ...data };
+      // Show label on hover even for non-top-N nodes.
+      if (hoveredNode && hoveredNode !== node && !graph.neighbors(hoveredNode).includes(node)) {
+        res.label = '';
+      }
+      return res;
+    },
+  } as any);
+
+  // Hover: highlight neighbors, show label.
+  sigma.on('enterNode', ({ node }) => {
+    hoveredNode = node;
+    const neighbors = new Set(graph.neighbors(node));
+    neighbors.add(node);
+
+    graph.forEachNode((id, attrs) => {
+      if (neighbors.has(id)) {
+        graph.setNodeAttribute(id, 'color', attrs.originalColor);
+        graph.setNodeAttribute(id, 'size', (attrs.originalSize as number) * 1.3);
+        graph.setNodeAttribute(id, 'label', attrs.shortName || attrs.label || '');
+      } else {
+        graph.setNodeAttribute(id, 'color', 'rgba(48,54,61,0.15)');
+        graph.setNodeAttribute(id, 'size', 2);
+        graph.setNodeAttribute(id, 'label', '');
+      }
+    });
+    graph.forEachEdge((id) => {
+      const src = graph.source(id);
+      const tgt = graph.target(id);
+      if (neighbors.has(src) && neighbors.has(tgt)) {
+        graph.setEdgeAttribute(id, 'color', 'rgba(88,166,255,0.7)');
+        graph.setEdgeAttribute(id, 'size', 2);
+      } else {
+        graph.setEdgeAttribute(id, 'color', 'rgba(48,54,61,0.03)');
+        graph.setEdgeAttribute(id, 'size', 0.3);
+      }
+    });
+  });
+
+  sigma.on('leaveNode', () => {
+    hoveredNode = null;
+    resetHighlight();
   });
 
   // Click handler.
