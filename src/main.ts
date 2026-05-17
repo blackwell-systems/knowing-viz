@@ -231,7 +231,7 @@ async function main() {
     // Reset all sliders to defaults.
     const defaults: Record<string, number> = {
       'node-size': 10, 'label-count': 40, 'edge-opacity': 100,
-      'label-size': 11, 'gravity': 5, 'spread': 30,
+      'label-size': 11, 'gravity': 15, 'spread': 20,
       'max-nodes': 600, 'confidence-min': 0,
     };
     for (const [id, val] of Object.entries(defaults)) {
@@ -248,8 +248,8 @@ async function main() {
     setText('label-count-val', '40');
     setText('edge-opacity-val', '100%');
     setText('label-size-val', '11px');
-    setText('gravity-val', '0.5');
-    setText('spread-val', '30');
+    setText('gravity-val', '1.5');
+    setText('spread-val', '20');
     setText('max-nodes-val', '600');
     setText('confidence-val', '0%');
     rerender();

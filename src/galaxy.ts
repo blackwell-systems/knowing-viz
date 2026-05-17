@@ -136,18 +136,21 @@ export function renderSigma(
     }
   }
 
-  // Run ForceAtlas2 layout (params exposed via sliders).
+  // Run ForceAtlas2 layout.
+  // strongGravityMode pulls outliers toward center (prevents floating islands).
+  // linLogMode separates clusters more visibly.
+  // Higher gravity + lower scaling = tight clusters with visible gaps between them.
   forceAtlas2.assign(graph, {
-    iterations: 400,
+    iterations: 600,
     settings: {
-      gravity,
-      scalingRatio: spread,
+      gravity: gravity * 3,
+      scalingRatio: spread * 0.5,
       barnesHutOptimize: true,
       barnesHutTheta: 0.5,
-      strongGravityMode: false,
-      slowDown: 6,
+      strongGravityMode: true,
+      slowDown: 10,
       outboundAttractionDistribution: true,
-      linLogMode: false,
+      linLogMode: true,
     },
   });
 
