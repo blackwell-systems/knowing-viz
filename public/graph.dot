@@ -3,572 +3,567 @@ digraph knowing {
   node [shape=box, style=filled, fontsize=10];
   edge [fontsize=8];
 
-  subgraph cluster_108 {
-    label="k8sextractor";
-    style=filled;
-    color="#ECEFF1";
-    fontsize=12;
-
-    nd6874bcf [label="TestK8sExtractor_ExtractDeployment", shape=box];
-    n0394e864 [label="TestK8sExtractor_ExtractExposesEdge", shape=box];
-    n11f4983b [label="TestK8sExtractor_Name", shape=box];
-    nafe2f574 [label="TestK8sExtractor_ExtractConfiguresEdge", shape=box];
-    nfc0e4f5c [label="TestK8sExtractor_ExtractConfigMap", shape=box];
-    nf81e8603 [label="TestK8sExtractor_MultiDocument", shape=box];
-    n922c2556 [label="NewK8sExtractor", shape=box];
-    n361f82a3 [label="TestK8sExtractor_ExtractDeploysEdge", shape=box];
-    naff88678 [label="TestK8sExtractor_CanHandle", shape=box];
-    n20168432 [label="TestK8sExtractor_ExtractService", shape=box];
-    n2933ef4b [label="TestK8sExtractor_ExtractIngress", shape=box];
-  }
-
-  subgraph cluster_68 {
+  subgraph cluster_168 {
     label="context";
-    style=filled;
-    color="#E0F7FA";
-    fontsize=12;
-
-    n6805dda1 [label="TestRWR_EmptySeeds", shape=box];
-    n199a3827 [label="RandomWalkWithRestart", shape=box];
-    n17caaee0 [label="hashFor", shape=box];
-    nc5c2b85d [label="TestRWR_SingleSeedNoEdges", shape=box];
-    n5784617a [label="TestRWR_LinearChain", shape=box];
-    n9769c070 [label="TestRWR_StarTopology", shape=box];
-    na2e66245 [label="TestRWR_Convergence", shape=box];
-    n841e509c [label="abs", shape=box];
-    na3f0127b [label="buildAdjacencyMap", shape=box];
-    n4f1260f7 [label="TestRWR_AlphaEffect", shape=box];
-    n88fe27c6 [label="TestRWR_EdgeWeights", shape=box];
-  }
-
-  subgraph cluster_24 {
-    label="diff";
     style=filled;
     color="#E8EAF6";
     fontsize=12;
 
-    n95166dee [label="putEdge", shape=box];
-    nad66133d [label="TestIntegrationSemanticDiffPipeline", shape=box];
-    nb4f0ea35 [label="SemanticDiff", shape=box];
-    n14328b86 [label="TestPRImpact_AddedNodeWithCallees", shape=box];
-    n4a8c0ee0 [label="TestPRImpact_DeepCallChain", shape=box];
-    n093718f2 [label="newTestStore", shape=box];
-    nd65263dd [label="TestSemanticDiff_OnlyNodeRemovals", shape=box];
-    nbc469604 [label="putFile", shape=box];
-    n0d885968 [label="putNode", shape=box];
-    n7bb4c93a [label="enrichEdge", shape=box];
-    n97b190fd [label="TestSemanticDiff_EmptyDiff", shape=box];
-    nbf053e7f [label="TestPRImpact_EmptyDiff", shape=box];
-    nd9e325ff [label="TestSemanticDiff_OnlyEdgeAdditions", shape=box];
-    ne21f5edc [label="putRepo", shape=box];
-    n93f30ff0 [label="TestPRImpact_MultipleEdgeChanges", shape=box];
-    n543a5a03 [label="TestSemanticDiff_MultipleModifiedNodes", shape=box];
-    n0c877275 [label="TestSemanticDiff_ManyModifiedNodes", shape=box];
-    n7865d569 [label="TestPRImpact_EmptyDiffDetails", shape=box];
-    n30a2b8e6 [label="TestPRImpact_RemovedNodeShowsCallers", shape=box];
-    nb0ce8abe [label="TestSemanticDiff_LargeDiff", shape=box];
-    nac063557 [label="IndexFile", shape=box];
-    n58ea5efd [label="NewHash", shape=box];
-    n8bc8b9d7 [label="TestSemanticDiff_EdgeChanges", shape=box];
-    nbb322633 [label="TestSemanticDiff_EdgeRemoved", shape=box];
-    n1156a56e [label="PRImpact", shape=box];
-    n307396c4 [label="TestSemanticDiff_OnlyNodeAdditions", shape=box];
-    nfeca8a12 [label="recordEdgeEvent", shape=box];
-    ne9c84d55 [label="extractFile", shape=box];
-    n1fa923a5 [label="TestPRImpact_ModifiedNodeWithCallersAndCallees", shape=box];
-    n7b929a85 [label="TestPRImpact_LargeDiffEdgeChanges", shape=box];
-    n87c9e370 [label="TestIntegrationSemanticDiffWithCallerChain", shape=box];
-    ndf33be9c [label="IndexRepo", shape=box];
+    n841e509c [label="abs", shape=box];
+    n5784617a [label="TestRWR_LinearChain", shape=box];
+    n6805dda1 [label="TestRWR_EmptySeeds", shape=box];
+    n9769c070 [label="TestRWR_StarTopology", shape=box];
+    n88fe27c6 [label="TestRWR_EdgeWeights", shape=box];
+    n4f1260f7 [label="TestRWR_AlphaEffect", shape=box];
+    na3f0127b [label="buildAdjacencyMap", shape=box];
+    na2e66245 [label="TestRWR_Convergence", shape=box];
+    n17caaee0 [label="hashFor", shape=box];
+    n199a3827 [label="RandomWalkWithRestart", shape=box];
+    nc5c2b85d [label="TestRWR_SingleSeedNoEdges", shape=box];
   }
 
-  subgraph cluster_51 {
-    label="rustextractor";
+  subgraph cluster_39 {
+    label="context";
+    style=filled;
+    color="#EDE7F6";
+    fontsize=12;
+
+    n8dd6ea13 [label="FormatContextBlock", shape=box];
+    n53fa97a3 [label="TestFormatJSON_Basic", shape=box];
+    ndcaa7e94 [label="TestFormatXML_Basic", shape=box];
+    n6601541d [label="formatJSON", shape=box];
+    n11df7a70 [label="makeRankedSymbol", shape=box];
+    ne3808e67 [label="TestFormatJSON_RoundTrip", shape=box];
+    nddc72c51 [label="TestFormatXML_Grouping", shape=box];
+    n3ffa5ef7 [label="TestFormatUnknown", shape=box];
+    n4eff7731 [label="TestFormatXML_DefaultFormat", shape=box];
+    n33d72be3 [label="TestFormatEmpty", shape=box];
+    n84bef385 [label="TestFormatXML_EscapesSpecialChars", shape=box];
+    n67de4dec [label="TestFormatMarkdown_Basic", shape=box];
+  }
+
+  subgraph cluster_35 {
+    label="store";
     style=filled;
     color="#F3E5F5";
     fontsize=12;
 
-    n6ce6c663 [label="NewRustExtractor", shape=box];
-    n489bceac [label="TestRustExtractor_ActixRoutes", shape=box];
-    n65e6349e [label="filterEdges", shape=box];
-    n43453c5e [label="TestRustExtractor_ExtractUseStatements", shape=box];
-    n50ec4292 [label="TestRustExtractor_Name", shape=box];
-    n8a5e642f [label="TestRustExtractor_CanHandle", shape=box];
-    n35b8ad10 [label="TestRustExtractor_ExtractCallEdges", shape=box];
-    n7bbfa542 [label="TestRustExtractor_MacroInvocationCallEdges", shape=box];
-    n982ea6e1 [label="TestRustExtractor_EmptyFile", shape=box];
-    n1806f1b7 [label="TestRustExtractor_TargetDirExcluded", shape=box];
-    n0f8d6a36 [label="assertContainsStr", shape=box];
-    n5ea0bae6 [label="TestRustExtractor_AxumRoutes", shape=box];
-    n60484048 [label="makeOpts", shape=box];
-    nd0109038 [label="TestRustExtractor_ExtractTraits", shape=box];
-    n6d3ccf87 [label="TestRustExtractor_EdgeProvenanceAndConfidence", shape=box];
-    n82b71cac [label="TestRustExtractor_ExtractMacroInvocations", shape=box];
-  }
-
-  subgraph cluster_12 {
-    label="store";
-    style=filled;
-    color="#ECEFF1";
-    fontsize=12;
-
-    n34469498 [label="TestDeleteNodesByFile", shape=box];
-    n25ad209a [label="TestTransitiveCallers_DepthLimit", shape=box];
-    n6b100521 [label="TestPutEdge_GetEdge_RoundTrip", shape=box];
-    n931539fa [label="TestDeleteEdge", shape=box];
-    n7ff18ad8 [label="TestBatchPutNodes_EmptySlice", shape=box];
-    ned7113d3 [label="TestRuntimePutRouteSymbol_Upsert", shape=box];
+    n0c642d17 [label="TestRuntimeDecayConfidence_AlreadyDecayed", shape=box];
+    n5c30d064 [label="TestRuntimeEdgesByProvenance_MultipleMatches", shape=box];
+    nc2fc2845 [label="TestNodesByQualifiedName", shape=box];
+    n24bfcdb6 [label="TestPutNode_GetNode_RoundTrip", shape=box];
+    n396e6254 [label="TestRuntimeEdgesByProvenance", shape=box];
+    nd1e879f3 [label="TestAllRepos", shape=box];
     nf7601b16 [label="TestRuntimeUpdateObservation_NonexistentEdge", shape=box];
+    n94135764 [label="TestRuntimeEdgesByProvenance_Empty", shape=box];
+    n9d75b6c2 [label="TestFilesByRepo_And_FileByPath", shape=box];
+    n473513a0 [label="makeEdge", shape=box];
+    nda56e578 [label="TestCreateSnapshot_ChainLinks", shape=box];
+    n7ed88710 [label="makeFile", shape=box];
+    n2ed02562 [label="TestBatchPutNodes", shape=box];
+    nd8f45cc5 [label="TestRuntimeUpdateObservation", shape=box];
     n19ffeed4 [label="TestSnapshotDiff_DetectsChanges", shape=box];
-    n3e87d2ea [label="TestRuntimeDecayConfidence_NoMatch", shape=box];
+    nfbe6e5b9 [label="makeRepo", shape=box];
+    nba846d55 [label="TestRuntimeDecayConfidence", shape=box];
+    n9631b000 [label="TestRuntimeGetRouteSymbol_NotFound", shape=box];
+    n6b100521 [label="TestPutEdge_GetEdge_RoundTrip", shape=box];
+    nb86ad744 [label="TestGetNode_NotFound", shape=box];
+    n25ad209a [label="TestTransitiveCallers_DepthLimit", shape=box];
+    n931539fa [label="TestDeleteEdge", shape=box];
+    n27bf1455 [label="TestRuntimeEdgesByService", shape=box];
+    nb3559959 [label="TestBlastRadius_GroupsByRepo", shape=box];
+    naab97d04 [label="TestDeadRoutes", shape=box];
+    n0d6fb668 [label="TestDanglingEdges", shape=box];
+    nc542aec7 [label="tempDB", shape=box];
+    nff062320 [label="TestStaleEdges_FindsMismatches", shape=box];
+    n34469498 [label="TestDeleteNodesByFile", shape=box];
+    n9c75a87d [label="TestBatchPutEdges", shape=box];
+    nb71e334e [label="TestRuntimeEdgeStatsAggregate", shape=box];
+    n7ff18ad8 [label="TestBatchPutNodes_EmptySlice", shape=box];
+    n3ccd25fe [label="TestRuntimePutGetRouteSymbol_RoundTrip", shape=box];
+    ned7113d3 [label="TestRuntimePutRouteSymbol_Upsert", shape=box];
     n902fe65b [label="TestEdgesFrom_FiltersByType", shape=box];
     ndb0deaf1 [label="TestEdgesTo_FiltersByType", shape=box];
-    n287b4a50 [label="TestEdgesBySourceFile", shape=box];
-    n7ed88710 [label="makeFile", shape=box];
-    nfbe6e5b9 [label="makeRepo", shape=box];
-    n396e6254 [label="TestRuntimeEdgesByProvenance", shape=box];
-    n473513a0 [label="makeEdge", shape=box];
-    nd8f45cc5 [label="TestRuntimeUpdateObservation", shape=box];
-    n24bfcdb6 [label="TestPutNode_GetNode_RoundTrip", shape=box];
-    n5c30d064 [label="TestRuntimeEdgesByProvenance_MultipleMatches", shape=box];
-    n19a0674d [label="TestDeleteEdgesBySourceFile", shape=box];
-    n9d75b6c2 [label="TestFilesByRepo_And_FileByPath", shape=box];
-    n0c642d17 [label="TestRuntimeDecayConfidence_AlreadyDecayed", shape=box];
-    nb3559959 [label="TestBlastRadius_GroupsByRepo", shape=box];
+    n3e87d2ea [label="TestRuntimeDecayConfidence_NoMatch", shape=box];
     ne475aa76 [label="TestBatchPutFiles", shape=box];
-    nc2fc2845 [label="TestNodesByQualifiedName", shape=box];
-    nb71e334e [label="TestRuntimeEdgeStatsAggregate", shape=box];
+    n19a0674d [label="TestDeleteEdgesBySourceFile", shape=box];
+    n287b4a50 [label="TestEdgesBySourceFile", shape=box];
     n7d77aaec [label="makeNode", shape=box];
-    nff062320 [label="TestStaleEdges_FindsMismatches", shape=box];
-    n94135764 [label="TestRuntimeEdgesByProvenance_Empty", shape=box];
-    n0d6fb668 [label="TestDanglingEdges", shape=box];
-    n3ccd25fe [label="TestRuntimePutGetRouteSymbol_RoundTrip", shape=box];
-    n9c75a87d [label="TestBatchPutEdges", shape=box];
-    nb86ad744 [label="TestGetNode_NotFound", shape=box];
-    nc542aec7 [label="tempDB", shape=box];
-    n9631b000 [label="TestRuntimeGetRouteSymbol_NotFound", shape=box];
     nd82a76d1 [label="TestNodesByName_PrefixMatch", shape=box];
-    nd1e879f3 [label="TestAllRepos", shape=box];
-    naab97d04 [label="TestDeadRoutes", shape=box];
-    n27bf1455 [label="TestRuntimeEdgesByService", shape=box];
-    nda56e578 [label="TestCreateSnapshot_ChainLinks", shape=box];
-    n2ed02562 [label="TestBatchPutNodes", shape=box];
-    nba846d55 [label="TestRuntimeDecayConfidence", shape=box];
   }
 
-  subgraph cluster_116 {
-    label="sqlextractor";
-    style=filled;
-    color="#E0F7FA";
-    fontsize=12;
-
-    n933912c0 [label="nodeNames", shape=box];
-    ned86f564 [label="TestSQLExtractor_EmptyFile", shape=box];
-    n2d9fd262 [label="NewSQLExtractor", shape=box];
-    n8357ac70 [label="TestSQLExtractor_ExtractViewDependsOn", shape=box];
-    nb2ae114f [label="TestSQLExtractor_ExtractTables", shape=box];
-    n8cd464bd [label="assertContains", shape=box];
-    n2f83be4b [label="TestSQLExtractor_ExtractReferencesEdges", shape=box];
-    na7cdeae2 [label="TestSQLExtractor_ExtractViews", shape=box];
-    n2f5abcd7 [label="filterEdgesByType", shape=box];
-    nd071d8eb [label="containsName", shape=box];
-    nd46427f8 [label="TestSQLExtractor_ExtractCallsEdges", shape=box];
-    ncc101a25 [label="TestSQLExtractor_QualifiedNameFormat", shape=box];
-    n314cc40a [label="filterNodesByKind", shape=box];
-    na79099ec [label="TestSQLExtractor_ExtractProcedures", shape=box];
-    n152a4cd3 [label="TestSQLExtractor_CanHandle", shape=box];
-    n7658a96d [label="TestSQLExtractor_ExtractFunctions", shape=box];
-    nb7b8312f [label="TestSQLExtractor_Name", shape=box];
-    n92262699 [label="testOpts", shape=box];
-  }
-
-  subgraph cluster_106 {
-    label="daemon";
+  subgraph cluster_26 {
+    label="trace";
     style=filled;
     color="#E0F2F1";
     fontsize=12;
 
-    n03817b38 [label="TestDaemon_StartStop_IndexFuncError", shape=box];
-    n5d81e8b2 [label="TestDaemon_TraceConfigDisabled", shape=box];
-    n9feb4563 [label="TestDaemon_Stop_BeforeStart", shape=box];
-    n3e42f92e [label="TestDaemon_WatchRepo_NonExistentPath", shape=box];
-    n1bf4b23a [label="TestDaemon_MultipleWatchRepo", shape=box];
-    n4cdaed1c [label="TestDaemon_TraceConfigNil", shape=box];
-    nab436d24 [label="TestDaemon_UnwatchRepo_BeforeStart", shape=box];
-    n32379a58 [label="TestTraceIngestLoop_Disabled", shape=box];
-    n054bd905 [label="TestDaemon_ConcurrentReads", shape=box];
-    naedd05a7 [label="TestDaemon_IndexWorker_NilIndexFunc", shape=box];
-    n57c53ecc [label="TestDaemon_TraceConfigEnabled", shape=box];
-    n81479481 [label="TestDaemon_WatchRepo_BeforeStart", shape=box];
-    na74e8868 [label="TestDaemon_WatchRepo_SamePathTwice", shape=box];
-    nead31fd3 [label="TestNewDaemon_DefaultState", shape=box];
-    n2b9353da [label="TestDaemon_EnrichFunc_Error", shape=box];
-    n3ceb065e [label="NewDaemon", shape=box];
-    n7fa8b4a4 [label="TestDaemon_EnrichFunc", shape=box];
-    n76a2ba34 [label="TestDaemon_StartStop", shape=box];
-    n2f449678 [label="TestDaemon_WriteBlocksReads", shape=box];
+    nb1764dac [label="TestIntegrationFullPipeline", shape=box];
+    naf684e91 [label="TestOTLPReceiver_Addr", shape=box];
+    n4217149f [label="TestDecayConfidence_NoMatch", shape=box];
+    n6e5f0a50 [label="TestBatchAccumulation", shape=box];
+    n4218f02b [label="TestRuntimeEdgeStats_GCEligible", shape=box];
+    nc0387e2a [label="TestIntegrationRouteExtraction", shape=box];
+    nded30c19 [label="TestDecayConfidence", shape=box];
+    nbdac1554 [label="TestOTLPReceiver_Export_EmptyRequest", shape=box];
+    nd829862f [label="TestOTLPReceiver_ExportSpans_NotConnected", shape=box];
+    n9d4d6255 [label="TestIngestSpans_HTTPRoute", shape=box];
+    n84363e57 [label="TestOTLPReceiver_StopWithoutStart", shape=box];
+    na06bf366 [label="TestOTLPReceiver_DoubleStartError", shape=box];
+    n3336bf12 [label="TestRuntimeEdgeStats_Empty", shape=box];
+    n7b0e4c17 [label="NewOTLPReceiver", shape=box];
+    ne9dd2551 [label="putRouteSymbol", shape=box];
+    n26b07448 [label="TestIngestHTTPLogs_MultipleEntries", shape=box];
+    nf08186c1 [label="TestIngestor_AutoFlush", shape=box];
+    n893cd154 [label="NewSymbolResolver", shape=box];
+    n5d5f3fc8 [label="TestOTLPReceiver_NewOTLPReceiver", shape=box];
+    nc55ea252 [label="TestOTLPReceiver_ExportSpans_EmptyBatch", shape=box];
+    ne6802b9b [label="insertNode", shape=box];
+    nd5e70bb6 [label="TestOTLPReceiver_ExportSpansAfterStop", shape=box];
+    nef999168 [label="TestIngestHTTPLogs", shape=box];
+    n46ab080b [label="TestOTLPReceiver_Export_NotConnected", shape=box];
+    nf057c5d9 [label="TestOTLPReceiver_StartStop", shape=box];
+    ncc36107f [label="traceIngestLoop", shape=box];
+    nef76aa04 [label="TestIngestSpans_ExistingEdge", shape=box];
+    nac6c130f [label="TestOTLPReceiver_DoubleStop", shape=box];
+    nb2623bfd [label="TestOTLPReceiver_ExportSpans_Connected", shape=box];
+    n8f061e0e [label="TestIngestor_FlushBatch_Empty", shape=box];
+    n19666bb8 [label="TestRuntimeEdgeStats", shape=box];
+    n8998b02e [label="NewIngestor", shape=box];
+    nf6f03452 [label="TestIngestSpans_NewEdge", shape=box];
+    ndeca96ba [label="TestOTLPReceiver_ListenAddr", shape=box];
+    n3ee1938c [label="setupIntegrationDB", shape=box];
+    n74fcd8d5 [label="TestIngestHTTPLogs_Empty", shape=box];
+    n16c039b6 [label="setupIngestDB", shape=box];
+    n4c3bbe92 [label="TestIngestSpans_GRPCMethod", shape=box];
+    n2d149a09 [label="TestOTLPReceiver_Export_gRPC", shape=box];
   }
 
-  subgraph cluster_21 {
-    label="mcp";
+  subgraph cluster_0 {
+    label="context";
     style=filled;
-    color="#FBE9E7";
+    color="#E8F5E9";
     fontsize=12;
 
-    neb9bbc47 [label="registerTools", shape=box];
-    n41acb478 [label="contextForTaskTool", shape=box];
-    n05bfc547 [label="traceStatsTool", shape=box];
-    n2972c107 [label="snapshotDiffTool", shape=box];
-    n873590ac [label="contextForFilesTool", shape=box];
-    n8aaed93b [label="prImpactTool", shape=box];
-    ndfd851fa [label="runtimeTrafficTool", shape=box];
-    n89b72383 [label="indexRepoTool", shape=box];
-    n149cb4a1 [label="deadRoutesTool", shape=box];
-    n830b8971 [label="traceDataflowTool", shape=box];
+    n5d40ee52 [label="TestRankSymbols_Ordering", shape=box];
+    naa7f527c [label="TestRankSymbols_DistanceWeight", shape=box];
+    n2837b152 [label="TestRankSymbols_SingleSymbol", shape=box];
+    n9904f14a [label="RankSymbols", shape=box];
+    n939748e2 [label="recencyFromTimestamp", shape=box];
+    n60de3e98 [label="TestRankSymbols_Empty", shape=box];
+    na0a2673e [label="TestRankSymbols_RecencyWeight", shape=box];
+    n1ac3c651 [label="TestRankSymbols_BlastRadiusWeight", shape=box];
+    n9a701ed6 [label="TestRankSymbols_ComponentBreakdown", shape=box];
+    ndf28e095 [label="TestRankSymbols_ConfidenceWeight", shape=box];
+    ne0be7b80 [label="TestRankSymbols_MaxBlastRadius", shape=box];
+  }
+
+  subgraph cluster_55 {
+    label="gotsextractor";
+    style=filled;
+    color="#EDE7F6";
+    fontsize=12;
+
+    n2ac5ab82 [label="TestGoTreeSitterExtractor_ExtractTypes", shape=box];
+    nc971f4f0 [label="TestExtractRouteSymbols_NoRoutes", shape=box];
+    n1462b26d [label="TestGoTreeSitterExtractor_SubdirectoryPackagePath", shape=box];
+    nd8aafb54 [label="TestGoTreeSitterExtractor_ExtractImportEdges", shape=box];
+    n7895f82a [label="NewGoTreeSitterExtractor", shape=box];
+    nd00de2e4 [label="TestGoTreeSitterExtractor_ExtractCallEdges", shape=box];
+    nf5ec71e8 [label="TestGoTreeSitterExtractor_Name", shape=box];
+    n47657986 [label="TestExtractRouteSymbols_HttpHandleFunc", shape=box];
+    n37985ea2 [label="TestGoTreeSitterExtractor_EdgeProvenanceAndConfidence", shape=box];
+    n80595512 [label="TestGoTreeSitterExtractor_FileWithOnlyImports", shape=box];
+    ned598968 [label="TestGoTreeSitterExtractor_MethodExtractionDetails", shape=box];
+    nc7fe707e [label="TestGoTreeSitterExtractor_CanHandle", shape=box];
+  }
+
+  subgraph cluster_27 {
+    label="daemon";
+    style=filled;
+    color="#FCE4EC";
+    fontsize=12;
+
+    n76a2ba34 [label="TestDaemon_StartStop", shape=box];
+    n03817b38 [label="TestDaemon_StartStop_IndexFuncError", shape=box];
+    nead31fd3 [label="TestNewDaemon_DefaultState", shape=box];
+    n9feb4563 [label="TestDaemon_Stop_BeforeStart", shape=box];
+    n5d81e8b2 [label="TestDaemon_TraceConfigDisabled", shape=box];
+    n2b9353da [label="TestDaemon_EnrichFunc_Error", shape=box];
+    n57c53ecc [label="TestDaemon_TraceConfigEnabled", shape=box];
+    na74e8868 [label="TestDaemon_WatchRepo_SamePathTwice", shape=box];
+    n81479481 [label="TestDaemon_WatchRepo_BeforeStart", shape=box];
+    n054bd905 [label="TestDaemon_ConcurrentReads", shape=box];
+    n1bf4b23a [label="TestDaemon_MultipleWatchRepo", shape=box];
+    n4cdaed1c [label="TestDaemon_TraceConfigNil", shape=box];
+    n32379a58 [label="TestTraceIngestLoop_Disabled", shape=box];
+    naedd05a7 [label="TestDaemon_IndexWorker_NilIndexFunc", shape=box];
+    n3ceb065e [label="NewDaemon", shape=box];
+    n2f449678 [label="TestDaemon_WriteBlocksReads", shape=box];
+    n7fa8b4a4 [label="TestDaemon_EnrichFunc", shape=box];
+    nab436d24 [label="TestDaemon_UnwatchRepo_BeforeStart", shape=box];
+    n3e42f92e [label="TestDaemon_WatchRepo_NonExistentPath", shape=box];
   }
 
   subgraph cluster_61 {
-    label="context";
+    label="gotsextractor";
     style=filled;
     color="#F9FBE7";
     fontsize=12;
 
-    n4eff7731 [label="TestFormatXML_DefaultFormat", shape=box];
-    n8dd6ea13 [label="FormatContextBlock", shape=box];
-    n67de4dec [label="TestFormatMarkdown_Basic", shape=box];
-    n84bef385 [label="TestFormatXML_EscapesSpecialChars", shape=box];
-    ne3808e67 [label="TestFormatJSON_RoundTrip", shape=box];
-    nddc72c51 [label="TestFormatXML_Grouping", shape=box];
-    ndcaa7e94 [label="TestFormatXML_Basic", shape=box];
-    n53fa97a3 [label="TestFormatJSON_Basic", shape=box];
-    n11df7a70 [label="makeRankedSymbol", shape=box];
-    n33d72be3 [label="TestFormatEmpty", shape=box];
-    n3ffa5ef7 [label="TestFormatUnknown", shape=box];
-    n6601541d [label="formatJSON", shape=box];
+    naed4cd10 [label="TestGoTreeSitterExtractor_ExtractFunctions", shape=box];
+    n79c6185f [label="TestExtractRouteSymbols_GinRouter", shape=box];
+    n61636714 [label="TestExtractRouteSymbols_ChiRouter", shape=box];
+    nc8d41496 [label="TestGoTreeSitterExtractor_ExtractConstsAndVars", shape=box];
+    nbd0b94c2 [label="TestExtractRouteSymbols_MultipleRoutesInOneFunction", shape=box];
+    ndb6483b1 [label="TestBuildImportMap", shape=box];
+    n6779d84a [label="TestGoTreeSitterExtractor_CallEdgeCrossPackage", shape=box];
+    nd74f72b1 [label="TestGoTreeSitterExtractor_ImportAliasResolution", shape=box];
+    nc894a5d7 [label="setupTestModule", shape=box];
+    n77e30b54 [label="TestGoTreeSitterExtractor_ExtractMethods", shape=box];
+    n5d7be1c9 [label="TestGoTreeSitterExtractor_NoRouteRegistrations", shape=box];
+    na90af618 [label="TestGoTreeSitterExtractor_EmptyFile", shape=box];
   }
 
-  subgraph cluster_49 {
-    label="context";
+  subgraph cluster_41 {
+    label="csharpextractor.CSharpExtractor";
     style=filled;
-    color="#E3F2FD";
+    color="#FFF8E1";
     fontsize=12;
 
-    neff1d3ae [label="TestForFiles_ValidFiles", shape=box];
-    nbc593267 [label="TestForTask_MatchingKeywords", shape=box];
-    n8ca6a53f [label="TestHookBenchmark", shape=box];
-    nce70dcb8 [label="TestForTask_EmptyDescription", shape=box];
-    n9338d54c [label="TestForTask_DefaultBudget", shape=box];
-    n7baae001 [label="TestForTask_TokenBudgetRespected", shape=box];
-    nc1ee1171 [label="NewContextEngine", shape=box];
-    ndc5ecdaa [label="TestForFiles_EmptyDB", shape=box];
-    nde9827e7 [label="TestForFiles_NoMatchingFiles", shape=box];
-    nc22fb236 [label="TestForTask_WithRWR", shape=box];
+    n30ba6de4 [label="extractConstructorDecl", shape=box];
+    nc27fab82 [label="extractResource", shape=box];
+    nc59bbc91 [label="extractClassRouteAttribute", shape=box];
+    n099566ab [label="genDeclNodes", shape=box];
+    nc640d947 [label="extractData", shape=box];
+    nb31c3251 [label="extractStructDecl", shape=box];
+    n262d1694 [label="makeNode", shape=box];
+    naad2662a [label="extractInterfaceDecl", shape=box];
+    n0354f3a5 [label="extractOutput", shape=box];
+    nd7b77032 [label="extractClassDecl", shape=box];
+    ncb18b7ea [label="ComputeNodeHash", shape=box];
+    nf6cab99b [label="ResolveSpan", shape=box];
+    n5999f231 [label="extractVariable", shape=box];
+    n037c8ce4 [label="Resolve", shape=box];
+    n41ad8c29 [label="extractMethodDecl", shape=box];
+    n4b7e3297 [label="extractEnumDecl", shape=box];
   }
 
-  subgraph cluster_89 {
+  subgraph cluster_77 {
+    label="csharpextractor.CSharpExtractor";
+    style=filled;
+    color="#F9FBE7";
+    fontsize=12;
+
+    n508fd63b [label="extractUsingDirective", shape=box];
+    naba9a8fa [label="extractObjectCreationEdge", shape=box];
+    n56954f36 [label="extractCall", shape=box];
+    nc0f078e1 [label="extractModule", shape=box];
+    n9aacfe09 [label="tryExtractDjangoPath", shape=box];
+    nb81122af [label="ComputeEdgeHash", shape=box];
+    n747a1af8 [label="insertEdgesFromLocations", shape=box];
+    nf8e705a5 [label="extractImplementsEdges", shape=box];
+    n07b5ab69 [label="extractMethodRouteAttributes", shape=box];
+    n7e303f23 [label="extractInterpolationEdges", shape=box];
+    nf4784d6a [label="extractInvocationEdge", shape=box];
+  }
+
+  subgraph cluster_62 {
+    label="javaextractor";
+    style=filled;
+    color="#E1F5FE";
+    fontsize=12;
+
+    nb2579e43 [label="TestJavaExtractor_ExtractEnums", shape=box];
+    nd2692dab [label="containsName", shape=box];
+    n11b7b70d [label="TestJavaExtractor_ExtractConstructors", shape=box];
+    n9057a010 [label="makeOpts", shape=box];
+    n2f3921e4 [label="TestJavaExtractor_EdgeProvenanceAndConfidence", shape=box];
+    nb1f9a9f5 [label="filterNodesByKind", shape=box];
+    n4947796a [label="TestJavaExtractor_CanHandle", shape=box];
+    n1d0173a6 [label="TestJavaExtractor_NoRoutes", shape=box];
+    n942bbf33 [label="TestJavaExtractor_ExtractMethods", shape=box];
+    n8f488bfa [label="TestJavaExtractor_ExtractMethodInvocations", shape=box];
+    n27f0ef9a [label="filterEdgesByType", shape=box];
+    ne4115b59 [label="NewJavaExtractor", shape=box];
+    n6eb692f8 [label="TestJavaExtractor_Name", shape=box];
+    nd1999d69 [label="TestJavaExtractor_SpringRoutes", shape=box];
+    n26e75175 [label="nodeNames", shape=box];
+    n1ccc59c8 [label="TestJavaExtractor_ExtractImports", shape=box];
+    nec3f5907 [label="TestJavaExtractor_ExtractInterfaces", shape=box];
+    n783731c9 [label="TestJavaExtractor_ExtractClasses", shape=box];
+    n24834770 [label="TestJavaExtractor_EmptyFile", shape=box];
+  }
+
+  subgraph cluster_109 {
+    label="treesitter";
+    style=filled;
+    color="#F9FBE7";
+    fontsize=12;
+
+    n39d825c0 [label="mustExtractor", shape=box];
+    n6b7da3e3 [label="TestTreeSitterExtractor_Name", shape=box];
+    nde430e53 [label="makeOpts", shape=box];
+    n8a01befb [label="TestTreeSitterExtractor_Extract_PythonImport", shape=box];
+    n16d6cedd [label="TestTreeSitterExtractor_Extract_Deterministic", shape=box];
+    n8daf3ee8 [label="TestTreeSitterExtractor_QualifiedName_Format", shape=box];
+    nc68cd0f1 [label="TestTreeSitterExtractor_Extract_CallEdges", shape=box];
+    ne207e277 [label="TestTreeSitterExtractor_Extract_PythonFunction", shape=box];
+    na332a99a [label="TestTreeSitterExtractor_CanHandle_PythonFiles", shape=box];
+    n57191cd0 [label="TestTreeSitterExtractor_Extract_PythonClass", shape=box];
+    na6b14be6 [label="TestTreeSitterExtractor_NoRoutesInPlainPython", shape=box];
+  }
+
+  subgraph cluster_100 {
+    label="rustextractor";
+    style=filled;
+    color="#E0F7FA";
+    fontsize=12;
+
+    nd0109038 [label="TestRustExtractor_ExtractTraits", shape=box];
+    n1806f1b7 [label="TestRustExtractor_TargetDirExcluded", shape=box];
+    n7bbfa542 [label="TestRustExtractor_MacroInvocationCallEdges", shape=box];
+    n82b71cac [label="TestRustExtractor_ExtractMacroInvocations", shape=box];
+    n65e6349e [label="filterEdges", shape=box];
+    n50ec4292 [label="TestRustExtractor_Name", shape=box];
+    n60484048 [label="makeOpts", shape=box];
+    n8a5e642f [label="TestRustExtractor_CanHandle", shape=box];
+    n982ea6e1 [label="TestRustExtractor_EmptyFile", shape=box];
+    n43453c5e [label="TestRustExtractor_ExtractUseStatements", shape=box];
+    n6ce6c663 [label="NewRustExtractor", shape=box];
+    n35b8ad10 [label="TestRustExtractor_ExtractCallEdges", shape=box];
+    n6d3ccf87 [label="TestRustExtractor_EdgeProvenanceAndConfidence", shape=box];
+    n0f8d6a36 [label="assertContainsStr", shape=box];
+    n5ea0bae6 [label="TestRustExtractor_AxumRoutes", shape=box];
+    n489bceac [label="TestRustExtractor_ActixRoutes", shape=box];
+  }
+
+  subgraph cluster_73 {
     label="daemon";
     style=filled;
     color="#FFF8E1";
     fontsize=12;
 
-    n2143b665 [label="initGitRepo", shape=box];
+    nbcf6c341 [label="TestGitWatcher_DetectsCommit", shape=box];
+    na472fe6d [label="TestGitDiffFiles_NotGitRepo", shape=box];
+    n7e24c459 [label="TestGitWatcher_MultipleRepos", shape=box];
     ne7b30ace [label="TestGitDiffFiles_ModifyAddDelete", shape=box];
     n69e521fa [label="TestGitDiffFiles_SameCommit", shape=box];
-    n7e24c459 [label="TestGitWatcher_MultipleRepos", shape=box];
-    nf47461e3 [label="TestGitDiffFiles_InvalidCommitHash", shape=box];
-    n3ee86b43 [label="TestGitDiffFiles_Rename", shape=box];
-    nbcf6c341 [label="TestGitWatcher_DetectsCommit", shape=box];
-    n1e42f15d [label="TestGitWatcher_StartStop_Lifecycle", shape=box];
-    n6270125b [label="GitDiffFiles", shape=box];
-    na472fe6d [label="TestGitDiffFiles_NotGitRepo", shape=box];
-    n8aec53a0 [label="TestGitDiffFiles_MultipleFileTypes", shape=box];
     n45062005 [label="TestGitDiffFiles_EmptyOldCommit", shape=box];
+    n8aec53a0 [label="TestGitDiffFiles_MultipleFileTypes", shape=box];
+    n2143b665 [label="initGitRepo", shape=box];
     n2dc4a3d9 [label="gitCommit", shape=box];
+    n3ee86b43 [label="TestGitDiffFiles_Rename", shape=box];
+    n1e42f15d [label="TestGitWatcher_StartStop_Lifecycle", shape=box];
+    nf47461e3 [label="TestGitDiffFiles_InvalidCommitHash", shape=box];
+    n6270125b [label="GitDiffFiles", shape=box];
   }
 
-  subgraph cluster_3 {
-    label="javaextractor";
+  subgraph cluster_33 {
+    label="k8sextractor";
     style=filled;
-    color="#F3E5F5";
+    color="#E3F2FD";
     fontsize=12;
 
-    n942bbf33 [label="TestJavaExtractor_ExtractMethods", shape=box];
-    nd1999d69 [label="TestJavaExtractor_SpringRoutes", shape=box];
-    n4947796a [label="TestJavaExtractor_CanHandle", shape=box];
-    n8f488bfa [label="TestJavaExtractor_ExtractMethodInvocations", shape=box];
-    n783731c9 [label="TestJavaExtractor_ExtractClasses", shape=box];
-    nec3f5907 [label="TestJavaExtractor_ExtractInterfaces", shape=box];
-    ne4115b59 [label="NewJavaExtractor", shape=box];
-    n1ccc59c8 [label="TestJavaExtractor_ExtractImports", shape=box];
-    nb1f9a9f5 [label="filterNodesByKind", shape=box];
-    n24834770 [label="TestJavaExtractor_EmptyFile", shape=box];
-    nb2579e43 [label="TestJavaExtractor_ExtractEnums", shape=box];
-    nd2692dab [label="containsName", shape=box];
-    n11b7b70d [label="TestJavaExtractor_ExtractConstructors", shape=box];
-    n2f3921e4 [label="TestJavaExtractor_EdgeProvenanceAndConfidence", shape=box];
-    n6eb692f8 [label="TestJavaExtractor_Name", shape=box];
-    n9057a010 [label="makeOpts", shape=box];
-    n26e75175 [label="nodeNames", shape=box];
-    n27f0ef9a [label="filterEdgesByType", shape=box];
-    n1d0173a6 [label="TestJavaExtractor_NoRoutes", shape=box];
+    naff88678 [label="TestK8sExtractor_CanHandle", shape=box];
+    nafe2f574 [label="TestK8sExtractor_ExtractConfiguresEdge", shape=box];
+    n11f4983b [label="TestK8sExtractor_Name", shape=box];
+    n361f82a3 [label="TestK8sExtractor_ExtractDeploysEdge", shape=box];
+    nd6874bcf [label="TestK8sExtractor_ExtractDeployment", shape=box];
+    nf81e8603 [label="TestK8sExtractor_MultiDocument", shape=box];
+    n0394e864 [label="TestK8sExtractor_ExtractExposesEdge", shape=box];
+    n20168432 [label="TestK8sExtractor_ExtractService", shape=box];
+    n2933ef4b [label="TestK8sExtractor_ExtractIngress", shape=box];
+    nfc0e4f5c [label="TestK8sExtractor_ExtractConfigMap", shape=box];
+    n922c2556 [label="NewK8sExtractor", shape=box];
   }
 
-  subgraph cluster_0 {
-    label="trace";
+  subgraph cluster_145 {
+    label="goextractor";
+    style=filled;
+    color="#E3F2FD";
+    fontsize=12;
+
+    n35e7529d [label="TestGoExtractor_CanHandle_AcceptsTestFiles", shape=box];
+    n91abd7fd [label="TestGoExtractor_Extract_Deterministic", shape=box];
+    n75b1322d [label="TestGoExtractor_Extract_ReferencesEdges", shape=box];
+    n3c5c06dc [label="TestGoExtractor_ExtractWithPackage_MatchesExtract", shape=box];
+    n72e1bd7f [label="TestGoExtractor_Extract_CrossFunctionCallEdges", shape=box];
+    nb15d8f4c [label="TestGoExtractor_Extract_ProducesCallEdges", shape=box];
+    n3b622fb1 [label="TestGoExtractor_ExtractWithPackage_NilSafety", shape=box];
+    ne95f00e0 [label="TestGoExtractor_Extract_ProducesNodes", shape=box];
+    n86b27f6d [label="TestGoExtractor_CanHandle_GoFiles", shape=box];
+    nd8c19bde [label="NewGoExtractor", shape=box];
+    n45d439fd [label="setupTestModule", shape=box];
+    n83f24ec4 [label="TestGoExtractor_Extract_ImplementsEdges", shape=box];
+    ne209f47b [label="TestCrossRepoCallEdgeHash", shape=box];
+    na197dbaa [label="TestGoExtractor_Extract_QualifiedName", shape=box];
+  }
+
+  subgraph cluster_48 {
+    label="sqlextractor";
     style=filled;
     color="#E8F5E9";
     fontsize=12;
 
-    nded30c19 [label="TestDecayConfidence", shape=box];
-    n46ab080b [label="TestOTLPReceiver_Export_NotConnected", shape=box];
-    n4217149f [label="TestDecayConfidence_NoMatch", shape=box];
-    nf6f03452 [label="TestIngestSpans_NewEdge", shape=box];
-    n4c3bbe92 [label="TestIngestSpans_GRPCMethod", shape=box];
-    n26b07448 [label="TestIngestHTTPLogs_MultipleEntries", shape=box];
-    n5d5f3fc8 [label="TestOTLPReceiver_NewOTLPReceiver", shape=box];
-    nd829862f [label="TestOTLPReceiver_ExportSpans_NotConnected", shape=box];
-    nef76aa04 [label="TestIngestSpans_ExistingEdge", shape=box];
-    n2d149a09 [label="TestOTLPReceiver_Export_gRPC", shape=box];
-    nd5e70bb6 [label="TestOTLPReceiver_ExportSpansAfterStop", shape=box];
-    ndeca96ba [label="TestOTLPReceiver_ListenAddr", shape=box];
-    n16c039b6 [label="setupIngestDB", shape=box];
-    n4218f02b [label="TestRuntimeEdgeStats_GCEligible", shape=box];
-    n74fcd8d5 [label="TestIngestHTTPLogs_Empty", shape=box];
-    ncc36107f [label="traceIngestLoop", shape=box];
-    n893cd154 [label="NewSymbolResolver", shape=box];
-    nac6c130f [label="TestOTLPReceiver_DoubleStop", shape=box];
-    nf057c5d9 [label="TestOTLPReceiver_StartStop", shape=box];
-    n9d4d6255 [label="TestIngestSpans_HTTPRoute", shape=box];
-    n3336bf12 [label="TestRuntimeEdgeStats_Empty", shape=box];
-    n84363e57 [label="TestOTLPReceiver_StopWithoutStart", shape=box];
-    n8998b02e [label="NewIngestor", shape=box];
-    n8f061e0e [label="TestIngestor_FlushBatch_Empty", shape=box];
-    nf08186c1 [label="TestIngestor_AutoFlush", shape=box];
-    naf684e91 [label="TestOTLPReceiver_Addr", shape=box];
-    nb2623bfd [label="TestOTLPReceiver_ExportSpans_Connected", shape=box];
-    n6e5f0a50 [label="TestBatchAccumulation", shape=box];
-    nef999168 [label="TestIngestHTTPLogs", shape=box];
-    nc55ea252 [label="TestOTLPReceiver_ExportSpans_EmptyBatch", shape=box];
-    nbdac1554 [label="TestOTLPReceiver_Export_EmptyRequest", shape=box];
-    na06bf366 [label="TestOTLPReceiver_DoubleStartError", shape=box];
-    n19666bb8 [label="TestRuntimeEdgeStats", shape=box];
-    n7b0e4c17 [label="NewOTLPReceiver", shape=box];
+    n4be91ed2 [label="findFunctionCalls", shape=box];
+    n5a87eba8 [label="extractCreateFunction", shape=box];
+    n69ae5ae0 [label="extractCreateProcedure", shape=box];
+    na0fcc592 [label="findTableReferences", shape=box];
+    n1400ce4d [label="extractCreateView", shape=box];
+    n14f65191 [label="extractNameFromCreateStatement", shape=box];
+    nf67dcf65 [label="deduplicateStrings", shape=box];
+    n9502c926 [label="extractCreateFunctionFromError", shape=box];
+    n08978338 [label="findObjectName", shape=box];
+    n36813054 [label="extractCreateProcedureFromError", shape=box];
   }
 
-  subgraph cluster_83 {
-    label="csharpextractor.CSharpExtractor";
-    style=filled;
-    color="#F3E5F5";
-    fontsize=12;
-
-    nb31c3251 [label="extractStructDecl", shape=box];
-    nc640d947 [label="extractData", shape=box];
-    n037c8ce4 [label="Resolve", shape=box];
-    n30ba6de4 [label="extractConstructorDecl", shape=box];
-    nd7b77032 [label="extractClassDecl", shape=box];
-    ncb18b7ea [label="ComputeNodeHash", shape=box];
-    n41ad8c29 [label="extractMethodDecl", shape=box];
-    naad2662a [label="extractInterfaceDecl", shape=box];
-    nc27fab82 [label="extractResource", shape=box];
-    n0354f3a5 [label="extractOutput", shape=box];
-    n099566ab [label="genDeclNodes", shape=box];
-    n4b7e3297 [label="extractEnumDecl", shape=box];
-    nc59bbc91 [label="extractClassRouteAttribute", shape=box];
-    nf6cab99b [label="ResolveSpan", shape=box];
-    n262d1694 [label="makeNode", shape=box];
-    n5999f231 [label="extractVariable", shape=box];
-  }
-
-  subgraph cluster_36 {
+  subgraph cluster_42 {
     label="mcp";
     style=filled;
-    color="#E0F7FA";
+    color="#E0F2F1";
     fontsize=12;
 
-    n7203724e [label="TestHandleRuntimeTraffic_EmptyResults", shape=box];
-    nefbb8dc5 [label="TestHandleTraceStats_EmptyStore", shape=box];
-    n057bd5dd [label="TestHandleBlastRadius_ReturnsGroupedResults", shape=box];
-    n43a1a797 [label="TestHandleTraceStats", shape=box];
-    nae5237ac [label="TestHandleTraceDataflow_MissingSourceHash", shape=box];
-    n419a8218 [label="TestHandleOwnership_EmptyRepo", shape=box];
-    naad3c4dc [label="testHash", shape=box];
-    nb9168102 [label="TestHandlePRImpact_Integration", shape=box];
-    nf5c8c801 [label="TestOptionalHash_Present", shape=box];
-    n03e6440e [label="TestHandleCrossRepoCallers_InvalidHash", shape=box];
-    n4d82b749 [label="TestHandleSnapshotDiff_ReturnsChanges", shape=box];
-    n38467c5c [label="TestHandleRepoGraph_MissingRepoHash", shape=box];
-    nf3051fb3 [label="TestHandleDeadRoutes_DefaultStaleDays", shape=box];
-    n768badea [label="TestHandleTraceDataflow_ReturnsCallees", shape=box];
-    nffcd6bef [label="TestHandleTraceDataflow_EmptyResult", shape=box];
-    n7e6ef661 [label="TestHandleSnapshotDiff_MissingOldSnapshot", shape=box];
-    n211ea218 [label="TestHandleIndexRepo_NoIndexFunc", shape=box];
-    nd9e4ced0 [label="TestHandleBlastRadius_MissingTargetHash", shape=box];
-    n3e7ab2d7 [label="SetIndexFunc", shape=box];
-    nb8600d68 [label="TestHandleStaleEdges_EmptyResult", shape=box];
-    n347362a2 [label="TestRequireHash_Valid", shape=box];
-    n16ce749b [label="TestHandleCrossRepoCallers_ReturnsCallers", shape=box];
-    nb32adb5a [label="TestHandleSemanticDiff_EmptyDiff", shape=box];
-    n8999a330 [label="TestHandleStaleEdges_FindsStale", shape=box];
-    n3afb6f24 [label="TestRuntimeToolsUnavailable", shape=box];
-    n7193c099 [label="TestHandlePRImpact_MissingSnapshots", shape=box];
-    nc5dd98de [label="TestHandleSemanticDiff_InvalidHash", shape=box];
-    n938fa069 [label="TestHandleOwnership_MissingRepoHash", shape=box];
-    naee08b49 [label="TestContextToolRegistration", shape=box];
-    n559f9e76 [label="TestHandleSemanticDiff_ReturnsEnrichedResult", shape=box];
-    nf8a44ea2 [label="TestHandleContextForTask_MissingArg", shape=box];
-    n8d742500 [label="TestHandleIndexRepo_IndexFuncError", shape=box];
-    n20c8afc5 [label="TestHandleStaleEdges_MissingSnapshotHash", shape=box];
-    neee9d9cf [label="TestHandleRuntimeTraffic_MissingServiceName", shape=box];
-    n33581c19 [label="TestHandleRepoGraph_Integration", shape=box];
-    na1467508 [label="TestHandleRuntimeTraffic_WithRoutePattern", shape=box];
-    n63e9d7c2 [label="hashHex", shape=box];
-    ne5976613 [label="TestHandleContextForFiles_Valid", shape=box];
-    n0926608e [label="TestHandleTraceStats_WithPopulatedRuntimeEdges", shape=box];
-    n8298ada7 [label="TestHandleContextForTask_Valid", shape=box];
-    naaf32014 [label="TestHandleRuntimeTraffic_WithRoutePatternFilter", shape=box];
-    nc6241717 [label="TestHandleCrossRepoCallers_MissingTargetHash", shape=box];
-    n8d6ea874 [label="newMockGraphStore", shape=box];
-    nbef9634e [label="TestNewServer_RegistersAllTools", shape=box];
-    nadc63e34 [label="makeCallToolRequest", shape=box];
-    ndd7f6f7d [label="TestHandleGraphQuery_MissingPrefix", shape=box];
-    nef758603 [label="TestHandleGraphQuery_NodesByPrefix", shape=box];
-    n6610ccb7 [label="TestHandleContextForFiles_MissingArg", shape=box];
-    n567a9586 [label="TestHandleRepoGraph_EmptyRepo", shape=box];
-    nc91ab5d8 [label="TestHandlePRImpact_ReturnsImpactAnalysis", shape=box];
-    n1a0edff1 [label="TestHandleGraphQuery_LargeResultSet", shape=box];
-    n071b1b70 [label="newTestSQLiteServer", shape=box];
-    n4928248d [label="TestParseHash_Valid", shape=box];
-    n349710a4 [label="TestHandleIndexRepo_MissingRequiredArgs", shape=box];
-    na5afb63a [label="TestHandleRuntimeTraffic", shape=box];
-    ncd01acb0 [label="TestHandleCrossRepoCallers_ShortHash", shape=box];
-    n089e70af [label="TestHandleRuntimeTraffic_WithLimit", shape=box];
-    n0d4e20b9 [label="TestHandleOwnership_RepoNotFound", shape=box];
-    nf303d56c [label="TestHandleSemanticDiff_MissingOldSnapshot", shape=box];
-    n1daa2e42 [label="TestHandleRepoGraph_ReturnsFiles", shape=box];
-    ncc665665 [label="TestHandleOwnership_WithData", shape=box];
     n30fdd1c1 [label="TestHandleSemanticDiff_Integration", shape=box];
-    n3fbe0d17 [label="TestHandleContextForTask_WithSQLiteStore_MultipleNodes", shape=box];
-    nf41b4da0 [label="TestHandleBlastRadius_InvalidSnapshotHash", shape=box];
-    nb3263fdf [label="TestHandleContextForFiles_WithSQLiteStore_MultipleFiles", shape=box];
-    nd73b7767 [label="NewServer", shape=box];
-    ncf1d1543 [label="TestHandleOwnership_Integration", shape=box];
-    nd5710a1f [label="TestHandleDeadRoutes_MixActiveAndDead", shape=box];
-    n4dfc10cb [label="TestHandleGraphQuery_EmptyResults", shape=box];
-    n28cc9022 [label="TestHandleCrossRepoCallers_LargeResultSet", shape=box];
-    n18a7ac9c [label="TestHandlePRImpact_EmptyDiff", shape=box];
-    nedf3ef7b [label="TestHandleDeadRoutes", shape=box];
+    n7193c099 [label="TestHandlePRImpact_MissingSnapshots", shape=box];
+    nf3051fb3 [label="TestHandleDeadRoutes_DefaultStaleDays", shape=box];
+    n3e7ab2d7 [label="SetIndexFunc", shape=box];
+    n057bd5dd [label="TestHandleBlastRadius_ReturnsGroupedResults", shape=box];
+    nb9168102 [label="TestHandlePRImpact_Integration", shape=box];
+    nf8a44ea2 [label="TestHandleContextForTask_MissingArg", shape=box];
+    nffcd6bef [label="TestHandleTraceDataflow_EmptyResult", shape=box];
+    nc5dd98de [label="TestHandleSemanticDiff_InvalidHash", shape=box];
     nc9127d0b [label="TestHandleIndexRepo_WithIndexFunc", shape=box];
+    n0d4e20b9 [label="TestHandleOwnership_RepoNotFound", shape=box];
+    nc91ab5d8 [label="TestHandlePRImpact_ReturnsImpactAnalysis", shape=box];
+    nef758603 [label="TestHandleGraphQuery_NodesByPrefix", shape=box];
+    n7e6ef661 [label="TestHandleSnapshotDiff_MissingOldSnapshot", shape=box];
+    nd73b7767 [label="NewServer", shape=box];
+    nefbb8dc5 [label="TestHandleTraceStats_EmptyStore", shape=box];
     na50f85a4 [label="TestHandleSnapshotDiff_MissingNewSnapshot", shape=box];
+    n4928248d [label="TestParseHash_Valid", shape=box];
+    n43a1a797 [label="TestHandleTraceStats", shape=box];
+    ne5976613 [label="TestHandleContextForFiles_Valid", shape=box];
+    na1467508 [label="TestHandleRuntimeTraffic_WithRoutePattern", shape=box];
+    naaf32014 [label="TestHandleRuntimeTraffic_WithRoutePatternFilter", shape=box];
+    ncd01acb0 [label="TestHandleCrossRepoCallers_ShortHash", shape=box];
+    neee9d9cf [label="TestHandleRuntimeTraffic_MissingServiceName", shape=box];
+    n768badea [label="TestHandleTraceDataflow_ReturnsCallees", shape=box];
+    nb3263fdf [label="TestHandleContextForFiles_WithSQLiteStore_MultipleFiles", shape=box];
+    n559f9e76 [label="TestHandleSemanticDiff_ReturnsEnrichedResult", shape=box];
+    nd9e4ced0 [label="TestHandleBlastRadius_MissingTargetHash", shape=box];
+    n8298ada7 [label="TestHandleContextForTask_Valid", shape=box];
+    naee08b49 [label="TestContextToolRegistration", shape=box];
+    nadc63e34 [label="makeCallToolRequest", shape=box];
+    n4dfc10cb [label="TestHandleGraphQuery_EmptyResults", shape=box];
+    n8d742500 [label="TestHandleIndexRepo_IndexFuncError", shape=box];
+    n938fa069 [label="TestHandleOwnership_MissingRepoHash", shape=box];
+    nb8600d68 [label="TestHandleStaleEdges_EmptyResult", shape=box];
+    n0926608e [label="TestHandleTraceStats_WithPopulatedRuntimeEdges", shape=box];
+    n16ce749b [label="TestHandleCrossRepoCallers_ReturnsCallers", shape=box];
+    n7203724e [label="TestHandleRuntimeTraffic_EmptyResults", shape=box];
+    n8999a330 [label="TestHandleStaleEdges_FindsStale", shape=box];
+    n419a8218 [label="TestHandleOwnership_EmptyRepo", shape=box];
+    n211ea218 [label="TestHandleIndexRepo_NoIndexFunc", shape=box];
+    nf5c8c801 [label="TestOptionalHash_Present", shape=box];
+    n18a7ac9c [label="TestHandlePRImpact_EmptyDiff", shape=box];
+    n33581c19 [label="TestHandleRepoGraph_Integration", shape=box];
+    n4d82b749 [label="TestHandleSnapshotDiff_ReturnsChanges", shape=box];
+    nbef9634e [label="TestNewServer_RegistersAllTools", shape=box];
+    n3afb6f24 [label="TestRuntimeToolsUnavailable", shape=box];
+    n3fbe0d17 [label="TestHandleContextForTask_WithSQLiteStore_MultipleNodes", shape=box];
+    nf303d56c [label="TestHandleSemanticDiff_MissingOldSnapshot", shape=box];
+    nae5237ac [label="TestHandleTraceDataflow_MissingSourceHash", shape=box];
+    n03e6440e [label="TestHandleCrossRepoCallers_InvalidHash", shape=box];
+    n349710a4 [label="TestHandleIndexRepo_MissingRequiredArgs", shape=box];
+    ncf1d1543 [label="TestHandleOwnership_Integration", shape=box];
+    n071b1b70 [label="newTestSQLiteServer", shape=box];
+    n347362a2 [label="TestRequireHash_Valid", shape=box];
+    nf41b4da0 [label="TestHandleBlastRadius_InvalidSnapshotHash", shape=box];
+    nedf3ef7b [label="TestHandleDeadRoutes", shape=box];
+    ncc665665 [label="TestHandleOwnership_WithData", shape=box];
+    n1a0edff1 [label="TestHandleGraphQuery_LargeResultSet", shape=box];
+    n567a9586 [label="TestHandleRepoGraph_EmptyRepo", shape=box];
+    na5afb63a [label="TestHandleRuntimeTraffic", shape=box];
+    ndd7f6f7d [label="TestHandleGraphQuery_MissingPrefix", shape=box];
+    nc6241717 [label="TestHandleCrossRepoCallers_MissingTargetHash", shape=box];
+    n20c8afc5 [label="TestHandleStaleEdges_MissingSnapshotHash", shape=box];
+    n6610ccb7 [label="TestHandleContextForFiles_MissingArg", shape=box];
+    n63e9d7c2 [label="hashHex", shape=box];
+    n38467c5c [label="TestHandleRepoGraph_MissingRepoHash", shape=box];
+    nb32adb5a [label="TestHandleSemanticDiff_EmptyDiff", shape=box];
+    n089e70af [label="TestHandleRuntimeTraffic_WithLimit", shape=box];
+    n8d6ea874 [label="newMockGraphStore", shape=box];
+    n1daa2e42 [label="TestHandleRepoGraph_ReturnsFiles", shape=box];
+    nd5710a1f [label="TestHandleDeadRoutes_MixActiveAndDead", shape=box];
+    naad3c4dc [label="testHash", shape=box];
+    n28cc9022 [label="TestHandleCrossRepoCallers_LargeResultSet", shape=box];
   }
 
-  subgraph cluster_153 {
-    label="context";
-    style=filled;
-    color="#FFF8E1";
-    fontsize=12;
-
-    n2837b152 [label="TestRankSymbols_SingleSymbol", shape=box];
-    n60de3e98 [label="TestRankSymbols_Empty", shape=box];
-    na0a2673e [label="TestRankSymbols_RecencyWeight", shape=box];
-    ndf28e095 [label="TestRankSymbols_ConfidenceWeight", shape=box];
-    naa7f527c [label="TestRankSymbols_DistanceWeight", shape=box];
-    n1ac3c651 [label="TestRankSymbols_BlastRadiusWeight", shape=box];
-    n9904f14a [label="RankSymbols", shape=box];
-    n9a701ed6 [label="TestRankSymbols_ComponentBreakdown", shape=box];
-    ne0be7b80 [label="TestRankSymbols_MaxBlastRadius", shape=box];
-    n939748e2 [label="recencyFromTimestamp", shape=box];
-    n5d40ee52 [label="TestRankSymbols_Ordering", shape=box];
-  }
-
-  subgraph cluster_70 {
-    label="gotsextractor";
-    style=filled;
-    color="#F1F8E9";
-    fontsize=12;
-
-    nc894a5d7 [label="setupTestModule", shape=box];
-    nd8aafb54 [label="TestGoTreeSitterExtractor_ExtractImportEdges", shape=box];
-    nc971f4f0 [label="TestExtractRouteSymbols_NoRoutes", shape=box];
-    nc8d41496 [label="TestGoTreeSitterExtractor_ExtractConstsAndVars", shape=box];
-    nbd0b94c2 [label="TestExtractRouteSymbols_MultipleRoutesInOneFunction", shape=box];
-    n47657986 [label="TestExtractRouteSymbols_HttpHandleFunc", shape=box];
-    nc7fe707e [label="TestGoTreeSitterExtractor_CanHandle", shape=box];
-    n1462b26d [label="TestGoTreeSitterExtractor_SubdirectoryPackagePath", shape=box];
-    ndb6483b1 [label="TestBuildImportMap", shape=box];
-    n77e30b54 [label="TestGoTreeSitterExtractor_ExtractMethods", shape=box];
-    n37985ea2 [label="TestGoTreeSitterExtractor_EdgeProvenanceAndConfidence", shape=box];
-    n61636714 [label="TestExtractRouteSymbols_ChiRouter", shape=box];
-    ned598968 [label="TestGoTreeSitterExtractor_MethodExtractionDetails", shape=box];
-    n5d7be1c9 [label="TestGoTreeSitterExtractor_NoRouteRegistrations", shape=box];
-    na90af618 [label="TestGoTreeSitterExtractor_EmptyFile", shape=box];
-    nd00de2e4 [label="TestGoTreeSitterExtractor_ExtractCallEdges", shape=box];
-    nf5ec71e8 [label="TestGoTreeSitterExtractor_Name", shape=box];
-    n80595512 [label="TestGoTreeSitterExtractor_FileWithOnlyImports", shape=box];
-    nd74f72b1 [label="TestGoTreeSitterExtractor_ImportAliasResolution", shape=box];
-    n7895f82a [label="NewGoTreeSitterExtractor", shape=box];
-    n2ac5ab82 [label="TestGoTreeSitterExtractor_ExtractTypes", shape=box];
-    n6779d84a [label="TestGoTreeSitterExtractor_CallEdgeCrossPackage", shape=box];
-    naed4cd10 [label="TestGoTreeSitterExtractor_ExtractFunctions", shape=box];
-    n79c6185f [label="TestExtractRouteSymbols_GinRouter", shape=box];
-  }
-
-  subgraph cluster_200 {
-    label="treesitter";
-    style=filled;
-    color="#E8EAF6";
-    fontsize=12;
-
-    n39d825c0 [label="mustExtractor", shape=box];
-    na6b14be6 [label="TestTreeSitterExtractor_NoRoutesInPlainPython", shape=box];
-    n6b7da3e3 [label="TestTreeSitterExtractor_Name", shape=box];
-    na332a99a [label="TestTreeSitterExtractor_CanHandle_PythonFiles", shape=box];
-    nc68cd0f1 [label="TestTreeSitterExtractor_Extract_CallEdges", shape=box];
-    n57191cd0 [label="TestTreeSitterExtractor_Extract_PythonClass", shape=box];
-    n8a01befb [label="TestTreeSitterExtractor_Extract_PythonImport", shape=box];
-    ne207e277 [label="TestTreeSitterExtractor_Extract_PythonFunction", shape=box];
-    n16d6cedd [label="TestTreeSitterExtractor_Extract_Deterministic", shape=box];
-    nde430e53 [label="makeOpts", shape=box];
-    n8daf3ee8 [label="TestTreeSitterExtractor_QualifiedName_Format", shape=box];
-  }
-
-  subgraph cluster_16 {
-    label="csharpextractor.CSharpExtractor";
-    style=filled;
-    color="#E8F5E9";
-    fontsize=12;
-
-    n747a1af8 [label="insertEdgesFromLocations", shape=box];
-    n56954f36 [label="extractCall", shape=box];
-    n07b5ab69 [label="extractMethodRouteAttributes", shape=box];
-    nb81122af [label="ComputeEdgeHash", shape=box];
-    n508fd63b [label="extractUsingDirective", shape=box];
-    nf4784d6a [label="extractInvocationEdge", shape=box];
-    nf8e705a5 [label="extractImplementsEdges", shape=box];
-    n9aacfe09 [label="tryExtractDjangoPath", shape=box];
-    naba9a8fa [label="extractObjectCreationEdge", shape=box];
-    nc0f078e1 [label="extractModule", shape=box];
-    n7e303f23 [label="extractInterpolationEdges", shape=box];
-  }
-
-  subgraph cluster_27 {
-    label="goextractor";
+  subgraph cluster_59 {
+    label="diff";
     style=filled;
     color="#FCE4EC";
     fontsize=12;
 
-    n3c5c06dc [label="TestGoExtractor_ExtractWithPackage_MatchesExtract", shape=box];
-    nd8c19bde [label="NewGoExtractor", shape=box];
-    n3b622fb1 [label="TestGoExtractor_ExtractWithPackage_NilSafety", shape=box];
-    n91abd7fd [label="TestGoExtractor_Extract_Deterministic", shape=box];
-    n35e7529d [label="TestGoExtractor_CanHandle_AcceptsTestFiles", shape=box];
-    n83f24ec4 [label="TestGoExtractor_Extract_ImplementsEdges", shape=box];
-    n75b1322d [label="TestGoExtractor_Extract_ReferencesEdges", shape=box];
-    n45d439fd [label="setupTestModule", shape=box];
-    nb15d8f4c [label="TestGoExtractor_Extract_ProducesCallEdges", shape=box];
-    n72e1bd7f [label="TestGoExtractor_Extract_CrossFunctionCallEdges", shape=box];
-    na197dbaa [label="TestGoExtractor_Extract_QualifiedName", shape=box];
-    ne209f47b [label="TestCrossRepoCallEdgeHash", shape=box];
-    n86b27f6d [label="TestGoExtractor_CanHandle_GoFiles", shape=box];
-    ne95f00e0 [label="TestGoExtractor_Extract_ProducesNodes", shape=box];
+    n93f30ff0 [label="TestPRImpact_MultipleEdgeChanges", shape=box];
+    n1156a56e [label="PRImpact", shape=box];
+    n307396c4 [label="TestSemanticDiff_OnlyNodeAdditions", shape=box];
+    nd65263dd [label="TestSemanticDiff_OnlyNodeRemovals", shape=box];
+    n0c877275 [label="TestSemanticDiff_ManyModifiedNodes", shape=box];
+    n093718f2 [label="newTestStore", shape=box];
+    n4a8c0ee0 [label="TestPRImpact_DeepCallChain", shape=box];
+    n97b190fd [label="TestSemanticDiff_EmptyDiff", shape=box];
+    nd9e325ff [label="TestSemanticDiff_OnlyEdgeAdditions", shape=box];
+    ne9c84d55 [label="extractFile", shape=box];
+    n1fa923a5 [label="TestPRImpact_ModifiedNodeWithCallersAndCallees", shape=box];
+    n0d885968 [label="putNode", shape=box];
+    n543a5a03 [label="TestSemanticDiff_MultipleModifiedNodes", shape=box];
+    nbb322633 [label="TestSemanticDiff_EdgeRemoved", shape=box];
+    nad66133d [label="TestIntegrationSemanticDiffPipeline", shape=box];
+    nfeca8a12 [label="recordEdgeEvent", shape=box];
+    n7bb4c93a [label="enrichEdge", shape=box];
+    nbc469604 [label="putFile", shape=box];
+    n30a2b8e6 [label="TestPRImpact_RemovedNodeShowsCallers", shape=box];
+    n7865d569 [label="TestPRImpact_EmptyDiffDetails", shape=box];
+    nb4f0ea35 [label="SemanticDiff", shape=box];
+    n8bc8b9d7 [label="TestSemanticDiff_EdgeChanges", shape=box];
+    n14328b86 [label="TestPRImpact_AddedNodeWithCallees", shape=box];
+    n95166dee [label="putEdge", shape=box];
+    n58ea5efd [label="NewHash", shape=box];
+    nbf053e7f [label="TestPRImpact_EmptyDiff", shape=box];
+    ne21f5edc [label="putRepo", shape=box];
+    nac063557 [label="IndexFile", shape=box];
+    nb0ce8abe [label="TestSemanticDiff_LargeDiff", shape=box];
+    n7b929a85 [label="TestPRImpact_LargeDiffEdgeChanges", shape=box];
+    ndf33be9c [label="IndexRepo", shape=box];
+    n87c9e370 [label="TestIntegrationSemanticDiffWithCallerChain", shape=box];
+  }
+
+  subgraph cluster_209 {
+    label="sqlextractor";
+    style=filled;
+    color="#E3F2FD";
+    fontsize=12;
+
+    n2d9fd262 [label="NewSQLExtractor", shape=box];
+    nb2ae114f [label="TestSQLExtractor_ExtractTables", shape=box];
+    n8cd464bd [label="assertContains", shape=box];
+    nd071d8eb [label="containsName", shape=box];
+    ncc101a25 [label="TestSQLExtractor_QualifiedNameFormat", shape=box];
+    n7658a96d [label="TestSQLExtractor_ExtractFunctions", shape=box];
+    n92262699 [label="testOpts", shape=box];
+    ned86f564 [label="TestSQLExtractor_EmptyFile", shape=box];
+    n933912c0 [label="nodeNames", shape=box];
+    n8357ac70 [label="TestSQLExtractor_ExtractViewDependsOn", shape=box];
+    n314cc40a [label="filterNodesByKind", shape=box];
+    n2f83be4b [label="TestSQLExtractor_ExtractReferencesEdges", shape=box];
+    n152a4cd3 [label="TestSQLExtractor_CanHandle", shape=box];
+    nb7b8312f [label="TestSQLExtractor_Name", shape=box];
+    na79099ec [label="TestSQLExtractor_ExtractProcedures", shape=box];
+    nd46427f8 [label="TestSQLExtractor_ExtractCallsEdges", shape=box];
+    n2f5abcd7 [label="filterEdgesByType", shape=box];
+    na7cdeae2 [label="TestSQLExtractor_ExtractViews", shape=box];
   }
 
   n28be8b13 -> n4e71b45c;
@@ -594,13 +589,13 @@ digraph knowing {
   ncc7b460b -> n192defd7;
   ncc7b460b -> n84a08bf0;
   n762e34ea -> n0ea0b922 [color=red, style=bold];
-  n762e34ea -> n116ffd15 [color=red, style=bold];
+  n762e34ea -> n116ffd15;
   n762e34ea -> n84e83198;
-  n762e34ea -> nc92803d5 [color=red, style=bold];
+  n762e34ea -> nc92803d5;
   n3d96a7c6 -> n116ffd15;
   n3d96a7c6 -> n20fecd55;
-  n3d96a7c6 -> n84e83198 [color=red, style=bold];
-  n3d96a7c6 -> nc92803d5 [color=red, style=bold];
+  n3d96a7c6 -> n84e83198;
+  n3d96a7c6 -> nc92803d5;
   n3d96a7c6 -> nef1aea36 [color=red, style=bold];
   n12107d8d -> n0ea0b922 [color=red, style=bold];
   n12107d8d -> nb095dd8f [color=red, style=bold];
@@ -1127,10 +1122,10 @@ digraph knowing {
   n3136ba93 -> n6b50d908 [color=red, style=bold];
   n1aa855af -> n432084fd [color=red, style=bold];
   n1aa855af -> n6b50d908;
-  nbd8a678d -> n432084fd;
-  nbd8a678d -> n6b50d908 [color=red, style=bold];
-  na0124d85 -> n432084fd [color=red, style=bold];
-  na0124d85 -> n6b50d908;
+  nbd8a678d -> n432084fd [color=red, style=bold];
+  nbd8a678d -> n6b50d908;
+  na0124d85 -> n432084fd;
+  na0124d85 -> n6b50d908 [color=red, style=bold];
   n2c635b5c -> n432084fd;
   n2c635b5c -> n6b50d908 [color=red, style=bold];
   nb1496a79 -> n432084fd [color=red, style=bold];
@@ -1139,10 +1134,10 @@ digraph knowing {
   n8e81f9a4 -> n6b50d908 [color=red, style=bold];
   na2494b67 -> n432084fd [color=red, style=bold];
   na2494b67 -> n6b50d908;
-  nf7e458f6 -> n432084fd;
-  nf7e458f6 -> n6b50d908 [color=red, style=bold];
-  n4a973be8 -> n432084fd [color=red, style=bold];
-  n4a973be8 -> n6b50d908;
+  nf7e458f6 -> n432084fd [color=red, style=bold];
+  nf7e458f6 -> n6b50d908;
+  n4a973be8 -> n432084fd;
+  n4a973be8 -> n6b50d908 [color=red, style=bold];
   n498eafc8 -> n6b50d908;
   n4d851152 -> n432084fd;
   n4d851152 -> n6b50d908 [color=red, style=bold];
@@ -1214,12 +1209,12 @@ digraph knowing {
   n02d93486 -> n62cdfa47 [color=red, style=bold];
   n02d93486 -> n65967003;
   n02d93486 -> n8ab48742 [color=red, style=bold];
-  n56dc914a -> n62cdfa47;
+  n56dc914a -> n62cdfa47 [color=red, style=bold];
   n56dc914a -> n65967003 [color=red, style=bold];
-  n56dc914a -> n8ab48742 [color=red, style=bold];
-  n6143edec -> n62cdfa47 [color=red, style=bold];
+  n56dc914a -> n8ab48742;
+  n6143edec -> n62cdfa47;
   n6143edec -> n65967003 [color=red, style=bold];
-  n6143edec -> n8ab48742;
+  n6143edec -> n8ab48742 [color=red, style=bold];
   ne209f47b -> n58ea5efd [color=red, style=bold];
   ne209f47b -> ncb18b7ea [color=red, style=bold];
   ne209f47b -> nd8c19bde;
@@ -1258,47 +1253,47 @@ digraph knowing {
   n6603caae -> ndbdafc3e [color=red, style=bold];
   n6603caae -> ne3f84624 [color=red, style=bold];
   n6603caae -> nf147ebe5 [color=red, style=bold];
-  ndb6483b1 -> n7895f82a;
+  ndb6483b1 -> n7895f82a [color=red, style=bold];
   ndb6483b1 -> nc894a5d7;
-  n61636714 -> n7895f82a;
+  n61636714 -> n7895f82a [color=red, style=bold];
   n61636714 -> nc894a5d7;
-  n79c6185f -> n7895f82a;
+  n79c6185f -> n7895f82a [color=red, style=bold];
   n79c6185f -> nc894a5d7;
   n47657986 -> n7895f82a;
-  n47657986 -> nc894a5d7;
-  nbd0b94c2 -> n7895f82a;
+  n47657986 -> nc894a5d7 [color=red, style=bold];
+  nbd0b94c2 -> n7895f82a [color=red, style=bold];
   nbd0b94c2 -> nc894a5d7;
   nc971f4f0 -> n7895f82a;
-  nc971f4f0 -> nc894a5d7;
-  n6779d84a -> n7895f82a;
+  nc971f4f0 -> nc894a5d7 [color=red, style=bold];
+  n6779d84a -> n7895f82a [color=red, style=bold];
   n6779d84a -> nc894a5d7;
   n6779d84a -> ncb18b7ea [color=red, style=bold];
   nc7fe707e -> n7895f82a;
   n37985ea2 -> n7895f82a;
-  n37985ea2 -> nc894a5d7;
-  na90af618 -> n7895f82a;
+  n37985ea2 -> nc894a5d7 [color=red, style=bold];
+  na90af618 -> n7895f82a [color=red, style=bold];
   na90af618 -> nc894a5d7;
   nd00de2e4 -> n7895f82a;
-  nd00de2e4 -> nc894a5d7;
-  nc8d41496 -> n7895f82a;
+  nd00de2e4 -> nc894a5d7 [color=red, style=bold];
+  nc8d41496 -> n7895f82a [color=red, style=bold];
   nc8d41496 -> nc894a5d7;
-  naed4cd10 -> n7895f82a;
+  naed4cd10 -> n7895f82a [color=red, style=bold];
   naed4cd10 -> nc894a5d7;
   nd8aafb54 -> n7895f82a;
-  nd8aafb54 -> nc894a5d7;
-  n77e30b54 -> n7895f82a;
+  nd8aafb54 -> nc894a5d7 [color=red, style=bold];
+  n77e30b54 -> n7895f82a [color=red, style=bold];
   n77e30b54 -> nc894a5d7;
   n2ac5ab82 -> n7895f82a;
-  n2ac5ab82 -> nc894a5d7;
+  n2ac5ab82 -> nc894a5d7 [color=red, style=bold];
   n80595512 -> n7895f82a;
-  n80595512 -> nc894a5d7;
-  nd74f72b1 -> n7895f82a;
+  n80595512 -> nc894a5d7 [color=red, style=bold];
+  nd74f72b1 -> n7895f82a [color=red, style=bold];
   nd74f72b1 -> nc894a5d7;
   nd74f72b1 -> ncb18b7ea [color=red, style=bold];
   ned598968 -> n7895f82a;
-  ned598968 -> nc894a5d7;
+  ned598968 -> nc894a5d7 [color=red, style=bold];
   nf5ec71e8 -> n7895f82a;
-  n5d7be1c9 -> n7895f82a;
+  n5d7be1c9 -> n7895f82a [color=red, style=bold];
   n5d7be1c9 -> nc894a5d7;
   n1462b26d -> n58ea5efd [color=red, style=bold];
   n1462b26d -> n7895f82a;
@@ -1390,7 +1385,7 @@ digraph knowing {
   n76e39c0a -> na539bdad;
   nd2692dab -> n76e39c0a [color=red, style=bold];
   nbcad555b -> n3d7330b2;
-  nbcad555b -> nf74bbc34;
+  nbcad555b -> nf74bbc34 [color=red, style=bold];
   n3d7330b2 -> nef1f1d5f [color=red, style=bold];
   nfe5f7063 -> n94e0ee4d [color=red, style=bold];
   ndc3ffbd6 -> nbcad555b [color=red, style=bold];
@@ -1413,7 +1408,7 @@ digraph knowing {
   nedf5fb98 -> ncb18b7ea [color=red, style=bold];
   n80c6be96 -> nb81122af [color=red, style=bold];
   n80c6be96 -> ncb18b7ea [color=red, style=bold];
-  na669594c -> n3d7330b2;
+  na669594c -> n3d7330b2 [color=red, style=bold];
   na669594c -> nf74bbc34;
   nef1f1d5f -> nef1f1d5f;
   n9057a010 -> n58ea5efd [color=red, style=bold];
@@ -1843,14 +1838,14 @@ digraph knowing {
   nc76432cc -> na380f453;
   nc76432cc -> nb37d94dc;
   nc76432cc -> ndde70846;
-  neb9bbc47 -> n41acb478;
-  neb9bbc47 -> n44e0f19d [color=red, style=bold];
-  neb9bbc47 -> n873590ac;
+  neb9bbc47 -> n41acb478 [color=red, style=bold];
+  neb9bbc47 -> n44e0f19d;
+  neb9bbc47 -> n873590ac [color=red, style=bold];
   neb9bbc47 -> n05bfc547;
   neb9bbc47 -> n149cb4a1;
   neb9bbc47 -> n2972c107;
   neb9bbc47 -> n4047e8c4 [color=red, style=bold];
-  neb9bbc47 -> n4091ffaf [color=red, style=bold];
+  neb9bbc47 -> n4091ffaf;
   neb9bbc47 -> n830b8971;
   neb9bbc47 -> n89b72383;
   neb9bbc47 -> n8aaed93b;
@@ -2147,10 +2142,10 @@ digraph knowing {
   n3afb6f24 -> nadc63e34;
   n3afb6f24 -> nd73b7767;
   naf635935 -> n8927757d;
-  n873590ac -> n8927757d [color=red, style=bold];
-  n44e0f19d -> n8927757d;
-  n41acb478 -> n8927757d [color=red, style=bold];
-  n4091ffaf -> n8927757d;
+  n873590ac -> n8927757d;
+  n44e0f19d -> n8927757d [color=red, style=bold];
+  n41acb478 -> n8927757d;
+  n4091ffaf -> n8927757d [color=red, style=bold];
   nf092468a -> n0ea0b922 [color=red, style=bold];
   nf092468a -> n67b1821d [color=red, style=bold];
   nf092468a -> n8dd6ea13 [color=red, style=bold];
@@ -2495,15 +2490,15 @@ digraph knowing {
   n8f061e0e -> n8998b02e;
   nb1764dac -> n3ee1938c;
   nb1764dac -> n58ea5efd [color=red, style=bold];
-  nb1764dac -> n893cd154 [color=red, style=bold];
-  nb1764dac -> n8998b02e [color=red, style=bold];
+  nb1764dac -> n893cd154;
+  nb1764dac -> n8998b02e;
   nb1764dac -> ncb18b7ea [color=red, style=bold];
   nb1764dac -> ne6802b9b;
   nb1764dac -> ne9dd2551;
   nc0387e2a -> n3ee1938c;
   nc0387e2a -> n58ea5efd [color=red, style=bold];
-  nc0387e2a -> n893cd154 [color=red, style=bold];
-  nc0387e2a -> n8998b02e [color=red, style=bold];
+  nc0387e2a -> n893cd154;
+  nc0387e2a -> n8998b02e;
   nc0387e2a -> ncb18b7ea [color=red, style=bold];
   nc0387e2a -> ne6802b9b;
   nc0387e2a -> ne9dd2551;
@@ -2626,8 +2621,8 @@ digraph knowing {
   na77123f6 -> nef1aea36;
   na77123f6 -> nf62591f3 [color=red, style=bold];
   na53321a8 -> n760a0b5b;
-  n84ef9425 -> n760a0b5b;
-  n84ef9425 -> n95826284 [color=red, style=bold];
+  n84ef9425 -> n760a0b5b [color=red, style=bold];
+  n84ef9425 -> n95826284;
   n72f4772b -> n95826284;
   n72f4772b -> nef1aea36 [color=red, style=bold];
   n87599fc7 -> n760a0b5b;
