@@ -203,8 +203,8 @@ async function main() {
       topLabelCount: sliderVal('label-count', 40),
       edgeOpacity: sliderVal('edge-opacity', 100) / 100,
       labelSize: sliderVal('label-size', 11),
-      gravity: sliderVal('gravity', 5) / 10,
-      spread: sliderVal('spread', 30),
+      gravity: sliderVal('gravity', 10) / 10,
+      spread: sliderVal('spread', 10),
     });
   }
   renderSigmaView();
@@ -231,7 +231,7 @@ async function main() {
     // Reset all sliders to defaults.
     const defaults: Record<string, number> = {
       'node-size': 10, 'label-count': 40, 'edge-opacity': 100,
-      'label-size': 11, 'gravity': 15, 'spread': 20,
+      'label-size': 11, 'gravity': 10, 'spread': 10,
       'max-nodes': 600, 'confidence-min': 0,
     };
     for (const [id, val] of Object.entries(defaults)) {
@@ -248,8 +248,8 @@ async function main() {
     setText('label-count-val', '40');
     setText('edge-opacity-val', '100%');
     setText('label-size-val', '11px');
-    setText('gravity-val', '1.5');
-    setText('spread-val', '20');
+    setText('gravity-val', '1');
+    setText('spread-val', '10');
     setText('max-nodes-val', '600');
     setText('confidence-val', '0%');
     rerender();

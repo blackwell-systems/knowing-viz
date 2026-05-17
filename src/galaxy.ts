@@ -84,33 +84,18 @@ export function renderSigma(
   const topLabelIds = new Set(sortedByDegree.slice(0, topLabelCount).map(([id]) => id));
   const maxDegree = Math.max(sortedByDegree[0]?.[1] || 1, 1);
 
-  // Pre-compute community center positions (circle layout).
-  // This seeds ForceAtlas2 so same-community nodes start near each other.
-  const uniqueComms = [...new Set(significantNodes.map(n => n.community))];
-  const commCenters = new Map<number, { x: number; y: number }>();
-  uniqueComms.forEach((commId, i) => {
-    const angle = (i / uniqueComms.length) * Math.PI * 2;
-    const radius = 50;
-    commCenters.set(commId, {
-      x: 50 + Math.cos(angle) * radius,
-      y: 50 + Math.sin(angle) * radius,
-    });
-  });
-
-  // Add nodes with degree-based sizing, seeded near their community center.
+  // Add nodes with degree-based sizing.
   for (const node of significantNodes) {
     const color = COMMUNITY_COLORS[node.community % COMMUNITY_COLORS.length];
     const deg = degree.get(node.id) || 0;
     const baseSize = node.kind === 'service' ? 6 : 3;
     const size = (baseSize + Math.log2(deg + 1) * 2) * nodeScale;
-    const center = commCenters.get(node.community) || { x: 50, y: 50 };
-    const jitter = 8;
     graph.addNode(node.id, {
       label: topLabelIds.has(node.id) ? node.shortName : '',
       color,
       size,
-      x: center.x + (Math.random() - 0.5) * jitter,
-      y: center.y + (Math.random() - 0.5) * jitter,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
       community: node.community,
       kind: node.kind,
       fullLabel: node.label,
@@ -151,20 +136,15 @@ export function renderSigma(
   }
 
   // Run ForceAtlas2 layout.
-  // strongGravityMode pulls outliers toward center (prevents floating islands).
-  // linLogMode separates clusters more visibly.
-  // Higher gravity + lower scaling = tight clusters with visible gaps between them.
+  // These defaults produced the best cluster separation (original working version).
   forceAtlas2.assign(graph, {
-    iterations: 600,
+    iterations: 300,
     settings: {
-      gravity: gravity * 3,
-      scalingRatio: spread * 0.5,
+      gravity: gravity,
+      scalingRatio: spread,
       barnesHutOptimize: true,
-      barnesHutTheta: 0.5,
       strongGravityMode: true,
-      slowDown: 10,
-      outboundAttractionDistribution: true,
-      linLogMode: true,
+      slowDown: 5,
     },
   });
 
