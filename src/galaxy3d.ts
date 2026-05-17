@@ -1,9 +1,7 @@
-// 3D Galaxy view using three-forcegraph.
-// Force-directed layout in 3D with community-colored nodes.
+// 3D Galaxy view using 3d-force-graph (standalone, includes its own Three.js renderer).
 
-import ForceGraph3D from 'three-forcegraph';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+// @ts-ignore
+import ForceGraph3D from '3d-force-graph';
 import type { KnowingGraph } from './graph-data';
 
 const COMMUNITY_COLORS = [
@@ -13,29 +11,7 @@ const COMMUNITY_COLORS = [
   '#8b949e', '#d2a8ff', '#2ea043', '#e3b341',
 ];
 
-interface FGNode {
-  id: string;
-  name: string;
-  community: number;
-  kind: string;
-  color: string;
-  val: number;
-  x?: number;
-  y?: number;
-  z?: number;
-}
-
-interface FGLink {
-  source: string;
-  target: string;
-  crossCommunity: boolean;
-  color: string;
-}
-
 export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () => void {
-  const width = container.clientWidth;
-  const height = container.clientHeight;
-
   // Filter to top communities.
   const topCommunities = [...graph.communities]
     .sort((a, b) => b.size - a.size)
@@ -48,8 +24,8 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
     .slice(0, 500);
   const nodeIds = new Set(significantNodes.map(n => n.id));
 
-  // Build force-graph data.
-  const fgNodes: FGNode[] = significantNodes.map(n => ({
+  // Build data.
+  const nodes = significantNodes.map(n => ({
     id: n.id,
     name: n.shortName,
     community: n.community,
@@ -58,7 +34,7 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
     val: n.kind === 'service' ? 6 : n.kind === 'type' ? 3 : 2,
   }));
 
-  const fgLinks: FGLink[] = [];
+  const links: { source: string; target: string; color: string }[] = [];
   const seenEdges = new Set<string>();
   for (const edge of graph.edges) {
     if (!nodeIds.has(edge.source) || !nodeIds.has(edge.target)) continue;
@@ -66,76 +42,54 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
     const key = `${edge.source}-${edge.target}`;
     if (seenEdges.has(key)) continue;
     seenEdges.add(key);
-    fgLinks.push({
+    links.push({
       source: edge.source,
       target: edge.target,
-      crossCommunity: edge.crossCommunity,
-      color: edge.crossCommunity ? 'rgba(248,81,73,0.3)' : 'rgba(48,54,61,0.15)',
+      color: edge.crossCommunity ? 'rgba(248,81,73,0.4)' : 'rgba(48,54,61,0.2)',
     });
   }
 
-  // Setup Three.js scene.
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0d1117);
-
-  const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 5000);
-  camera.position.set(0, 0, 400);
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(width, height);
-  renderer.setPixelRatio(window.devicePixelRatio);
   container.innerHTML = '';
-  container.appendChild(renderer.domElement);
 
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.1;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.3;
-
-  // Create force graph.
-  const fg = new ForceGraph3D(scene)
-    .graphData({ nodes: fgNodes, links: fgLinks })
+  const fg = ForceGraph3D()(container)
+    .graphData({ nodes, links })
+    .backgroundColor('#0d1117')
     .nodeColor((node: any) => node.color)
     .nodeVal((node: any) => node.val)
     .nodeLabel((node: any) => `${node.name} (${node.kind})`)
     .nodeOpacity(0.9)
     .linkColor((link: any) => link.color)
-    .linkWidth((link: any) => link.crossCommunity ? 1 : 0.3)
+    .linkWidth(0.5)
     .linkOpacity(0.6)
     .linkDirectionalArrowLength(3)
     .linkDirectionalArrowRelPos(1)
-    .d3AlphaDecay(0.03)
-    .d3VelocityDecay(0.3);
+    .enableNodeDrag(true)
+    .enableNavigationControls(true)
+    .showNavInfo(false)
+    .width(container.clientWidth)
+    .height(container.clientHeight);
 
-  // Warm up the simulation.
-  fg.tickFrame();
-
-  // Animation loop.
-  let animating = true;
-  function animate() {
-    if (!animating) return;
-    requestAnimationFrame(animate);
-    fg.tickFrame();
-    controls.update();
-    renderer.render(scene, camera);
-  }
-  animate();
+  // Auto-rotate.
+  let angle = 0;
+  const rotateInterval = setInterval(() => {
+    angle += 0.002;
+    const dist = fg.cameraPosition().z || 400;
+    fg.cameraPosition({
+      x: dist * Math.sin(angle),
+      z: dist * Math.cos(angle),
+    });
+  }, 30);
 
   // Resize handler.
   const resizeHandler = () => {
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
+    fg.width(container.clientWidth).height(container.clientHeight);
   };
   window.addEventListener('resize', resizeHandler);
 
   return () => {
-    animating = false;
+    clearInterval(rotateInterval);
     window.removeEventListener('resize', resizeHandler);
-    renderer.dispose();
-    controls.dispose();
+    fg._destructor?.();
+    container.innerHTML = '';
   };
 }
