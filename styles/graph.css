@@ -263,9 +263,17 @@ body {
   position: relative;
 }
 
-#graph-container {
+#graph-wrapper {
   flex: 1;
   position: relative;
+}
+
+#graph-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: var(--bg-primary);
 }
 
