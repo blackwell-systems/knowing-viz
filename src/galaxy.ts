@@ -3,7 +3,11 @@
 // Cross-community edges highlighted in red.
 
 import cytoscape from 'cytoscape';
+// @ts-ignore
+import coseBilkent from 'cytoscape-cose-bilkent';
 import type { KnowingGraph, GraphNode, GraphEdge } from './graph-data';
+
+cytoscape.use(coseBilkent);
 
 // Color palette for communities (matches knowing dot export).
 const COMMUNITY_COLORS = [
@@ -48,10 +52,16 @@ export function renderGalaxy(
 
   const elements: cytoscape.ElementDefinition[] = [];
 
-  // Only render nodes in significant communities (community >= 0).
-  // Cap at maxNodes for performance.
+  // Only render nodes in the top communities by size.
+  // Sort communities by size, take top 15 for readability.
+  const topCommunities = [...graph.communities]
+    .sort((a, b) => b.size - a.size)
+    .slice(0, 15)
+    .map(c => c.id);
+  const topCommSet = new Set(topCommunities);
+
   const significantNodes = graph.nodes
-    .filter(n => n.community >= 0)
+    .filter(n => topCommSet.has(n.community))
     .slice(0, maxNodes);
 
   const nodeIds = new Set(significantNodes.map(n => n.id));
@@ -145,13 +155,13 @@ export function renderGalaxy(
         style: {
           'background-color': (ele: any) => kindColor(ele.data('kind')),
           'label': 'data(label)',
-          'color': '#334155',
-          'font-size': '8px',
-          'width': 14,
-          'height': 14,
+          'color': '#1e293b',
+          'font-size': '10px',
+          'width': 20,
+          'height': 20,
           'text-valign': 'bottom',
           'text-halign': 'center',
-          'text-margin-y': 4,
+          'text-margin-y': 5,
         },
       },
       // Type nodes are ellipses.
@@ -201,12 +211,19 @@ export function renderGalaxy(
       },
     ],
     layout: {
-      name: 'cose',
+      name: 'cose-bilkent',
       animate: false,
-      nodeRepulsion: () => 12000,
-      idealEdgeLength: () => 80,
-      nodeOverlap: 30,
-      numIter: 200,
+      quality: 'proof',
+      nodeRepulsion: 8000,
+      idealEdgeLength: 120,
+      edgeElasticity: 0.1,
+      nestingFactor: 0.2,
+      gravity: 0.3,
+      gravityRange: 1.5,
+      numIter: 2500,
+      tile: true,
+      tilingPaddingVertical: 20,
+      tilingPaddingHorizontal: 20,
     } as any,
   });
 

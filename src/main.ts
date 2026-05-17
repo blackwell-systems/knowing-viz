@@ -1,7 +1,7 @@
 import { loadGraph, graphStats, type GraphNode, type GraphEdge } from './graph-data';
 import { renderGalaxy } from './galaxy';
 
-const GRAPH_URL = '/graph.json';
+const GRAPH_URL = import.meta.env.BASE_URL + 'graph.json';
 
 async function main() {
   const container = document.getElementById('graph-container');
