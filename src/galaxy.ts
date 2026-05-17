@@ -182,11 +182,11 @@ export function renderSigma(
 
     graph.forEachNode((id, attrs) => {
       if (id === node) {
-        // Hovered node: bright, large, white label.
-        graph.setNodeAttribute(id, 'color', '#ffffff');
+        // Hovered node: highlighted, dark label text for contrast.
+        graph.setNodeAttribute(id, 'color', attrs.originalColor);
         graph.setNodeAttribute(id, 'size', (attrs.originalSize as number) * 1.6);
         graph.setNodeAttribute(id, 'label', attrs.shortName || attrs.label || '');
-        graph.setNodeAttribute(id, 'labelColor', '#ffffff');
+        graph.setNodeAttribute(id, 'labelColor', '#000000');
       } else if (neighbors.has(id)) {
         graph.setNodeAttribute(id, 'color', attrs.originalColor);
         graph.setNodeAttribute(id, 'size', (attrs.originalSize as number) * 1.2);
