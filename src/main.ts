@@ -150,11 +150,12 @@ async function main() {
     selectedInfo.innerHTML = html;
   }
 
-  // Community sidebar (multi-select).
+  // Community sidebar (multi-select, top 15 only).
   const activeCommunityIds = new Set<number>();
   const sortedCommunities = [...graph.communities].sort((a, b) => b.size - a.size);
+  const sidebarCommunities = sortedCommunities.slice(0, 15);
   if (communitiesEl) {
-    for (const comm of sortedCommunities) {
+    for (const comm of sidebarCommunities) {
       const item = document.createElement('div');
       item.className = 'community-item';
       item.innerHTML = `
