@@ -202,6 +202,8 @@ async function main() {
       topLabelCount: sliderVal('label-count', 40),
       edgeOpacity: sliderVal('edge-opacity', 100) / 100,
       labelSize: sliderVal('label-size', 11),
+      gravity: sliderVal('gravity', 5) / 10,
+      spread: sliderVal('spread', 30),
     });
   }
   renderSigmaView();
@@ -228,7 +230,8 @@ async function main() {
     // Reset all sliders to defaults.
     const defaults: Record<string, number> = {
       'node-size': 10, 'label-count': 40, 'edge-opacity': 100,
-      'label-size': 11, 'max-nodes': 600, 'confidence-min': 0,
+      'label-size': 11, 'gravity': 5, 'spread': 30,
+      'max-nodes': 600, 'confidence-min': 0,
     };
     for (const [id, val] of Object.entries(defaults)) {
       const el = document.getElementById(id) as HTMLInputElement;
@@ -244,6 +247,8 @@ async function main() {
     setText('label-count-val', '40');
     setText('edge-opacity-val', '100%');
     setText('label-size-val', '11px');
+    setText('gravity-val', '0.5');
+    setText('spread-val', '30');
     setText('max-nodes-val', '600');
     setText('confidence-val', '0%');
     rerender();
@@ -389,6 +394,13 @@ async function main() {
   addSliderListener(edgeOpacitySlider, edgeOpacityVal, v => `${v}%`);
   addSliderListener(labelSizeSlider, labelSizeVal, v => `${v}px`);
   addSliderListener(maxNodesSlider, maxNodesVal, v => `${v}`);
+
+  const gravitySlider = document.getElementById('gravity') as HTMLInputElement;
+  const gravityValEl = document.getElementById('gravity-val');
+  const spreadSlider = document.getElementById('spread') as HTMLInputElement;
+  const spreadValEl = document.getElementById('spread-val');
+  addSliderListener(gravitySlider, gravityValEl, v => `${(v / 10).toFixed(1)}`);
+  addSliderListener(spreadSlider, spreadValEl, v => `${v}`);
 }
 
 function setText(id: string, text: string) {

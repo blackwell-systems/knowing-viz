@@ -21,6 +21,8 @@ export interface RenderOptions {
   topLabelCount?: number;   // how many top-degree nodes show labels (default 40)
   edgeOpacity?: number;     // 0-1 multiplier for edge opacity (default 1.0)
   labelSize?: number;       // font size in px (default 11)
+  gravity?: number;         // ForceAtlas2 gravity (default 0.5, higher = tighter)
+  spread?: number;          // ForceAtlas2 scaling ratio (default 30, higher = more spread)
   onSelect?: (node: GraphNode | null, edges: GraphEdge[]) => void;
 }
 
@@ -49,6 +51,8 @@ export function renderSigma(
     topLabelCount = 40,
     edgeOpacity = 1.0,
     labelSize = 11,
+    gravity = 0.5,
+    spread = 30,
   } = options;
 
   // Build graphology graph.
@@ -132,18 +136,18 @@ export function renderSigma(
     }
   }
 
-  // Run ForceAtlas2 layout (tuned for community clustering).
+  // Run ForceAtlas2 layout (params exposed via sliders).
   forceAtlas2.assign(graph, {
-    iterations: 500,
+    iterations: 400,
     settings: {
-      gravity: 2,
-      scalingRatio: 20,
+      gravity,
+      scalingRatio: spread,
       barnesHutOptimize: true,
       barnesHutTheta: 0.5,
-      strongGravityMode: true,
-      slowDown: 8,
+      strongGravityMode: false,
+      slowDown: 6,
       outboundAttractionDistribution: true,
-      linLogMode: true,
+      linLogMode: false,
     },
   });
 
