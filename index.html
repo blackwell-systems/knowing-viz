@@ -28,44 +28,52 @@
       <h3>Communities</h3>
       <div id="communities"></div>
     </div>
-    <div id="filters">
-      <h3>Filters</h3>
-      <label><input type="checkbox" id="cross-community-only" /> Cross-community edges only</label>
-      <label>
-        Min confidence: <span id="confidence-val">0%</span>
+    <div id="settings-panel">
+      <h3>Settings</h3>
+      <label class="toggle-row">
+        <input type="checkbox" id="cross-community-only" />
+        <span>Cross-community only</span>
+      </label>
+      <div class="slider-row">
+        <span class="slider-label">Confidence</span>
         <input type="range" id="confidence-min" min="0" max="100" value="0" />
-      </label>
-    </div>
-    <div id="display-settings">
-      <h3>Display</h3>
-      <label>
-        Node size: <span id="node-size-val">1.0x</span>
+        <span class="slider-value" id="confidence-val">0%</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Node size</span>
         <input type="range" id="node-size" min="5" max="30" value="10" />
-      </label>
-      <label>
-        Label count: <span id="label-count-val">40</span>
+        <span class="slider-value" id="node-size-val">1.0x</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Labels</span>
         <input type="range" id="label-count" min="0" max="100" value="40" />
-      </label>
-      <label>
-        Edge opacity: <span id="edge-opacity-val">100%</span>
-        <input type="range" id="edge-opacity" min="0" max="100" value="100" />
-      </label>
-      <label>
-        Label size: <span id="label-size-val">11px</span>
+        <span class="slider-value" id="label-count-val">40</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Label size</span>
         <input type="range" id="label-size" min="6" max="20" value="11" />
-      </label>
-      <label>
-        Gravity: <span id="gravity-val">0.5</span>
+        <span class="slider-value" id="label-size-val">11px</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Edges</span>
+        <input type="range" id="edge-opacity" min="0" max="100" value="100" />
+        <span class="slider-value" id="edge-opacity-val">100%</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Gravity</span>
         <input type="range" id="gravity" min="1" max="50" value="5" />
-      </label>
-      <label>
-        Spread: <span id="spread-val">30</span>
+        <span class="slider-value" id="gravity-val">0.5</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Spread</span>
         <input type="range" id="spread" min="5" max="100" value="30" />
-      </label>
-      <label>
-        Max nodes: <span id="max-nodes-val">600</span>
+        <span class="slider-value" id="spread-val">30</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Max nodes</span>
         <input type="range" id="max-nodes" min="50" max="1500" value="600" step="50" />
-      </label>
+        <span class="slider-value" id="max-nodes-val">600</span>
+      </div>
     </div>
   </aside>
 
