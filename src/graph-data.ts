@@ -1,44 +1,97 @@
-// Graph data model matching knowing's export format.
+// Graph data model matching knowing's export format (with community annotations).
 
-export interface Repo {
-  id: string;
-  url: string;
-  nodeCount: number;
-  edgeCount: number;
+export interface Community {
+  id: number;
+  label: string;
+  size: number;
 }
 
 export interface GraphNode {
-  id: string;
-  label: string;
-  kind: string; // function, type, method, interface, const, var
+  id: string;        // node_hash
+  label: string;     // qualified_name
+  kind: string;      // function, type, method, service
+  line: number;
+  signature: string;
+  community: number; // -1 = ungrouped
+  // Derived fields (populated by loadGraph):
   repo: string;
   package: string;
-  line: number;
+  shortName: string;
 }
 
 export interface GraphEdge {
-  source: string;
-  target: string;
-  type: string; // calls, imports, implements, references
-  provenance: string; // ast_inferred, lsp_resolved, ast_resolved, runtime_calls
-  confidence: number; // 0.0 to 1.0
-  crossRepo: boolean;
-  callSite?: { file: string; line: number; col: number };
+  id: string;          // edge_hash
+  source: string;      // source_hash
+  target: string;      // target_hash
+  type: string;        // calls, imports, implements, references
+  provenance: string;
+  confidence: number;
+  crossCommunity: boolean;
 }
 
-export interface Snapshot {
-  hash: string;
-  commit: string;
-  timestamp: number;
-  nodeCount: number;
-  edgeCount: number;
+export interface GraphMetadata {
+  repo: string;
+  snapshot: string;
+  exported_at: string;
+  node_count: number;
+  edge_count: number;
+  community_count: number;
 }
 
 export interface KnowingGraph {
-  repos: Repo[];
   nodes: GraphNode[];
   edges: GraphEdge[];
-  snapshots: Snapshot[];
+  communities: Community[];
+  metadata: GraphMetadata;
+}
+
+// Raw JSON shape from knowing export.
+interface RawNode {
+  node_hash: string;
+  qualified_name: string;
+  kind: string;
+  line: number;
+  signature: string;
+  community: number;
+}
+
+interface RawEdge {
+  edge_hash: string;
+  source_hash: string;
+  target_hash: string;
+  edge_type: string;
+  confidence: number;
+  provenance: string;
+  cross_community: boolean;
+}
+
+interface RawGraph {
+  nodes: RawNode[];
+  edges: RawEdge[];
+  communities: Community[];
+  metadata: GraphMetadata;
+}
+
+function extractPackage(qualifiedName: string): string {
+  const sep = qualifiedName.indexOf('://');
+  if (sep < 0) return '';
+  const rest = qualifiedName.slice(sep + 3);
+  const lastDot = rest.lastIndexOf('.');
+  if (lastDot < 0) return rest;
+  const pkg = rest.slice(0, lastDot);
+  const lastSlash = pkg.lastIndexOf('/');
+  return lastSlash >= 0 ? pkg.slice(lastSlash + 1) : pkg;
+}
+
+function extractRepo(qualifiedName: string): string {
+  const sep = qualifiedName.indexOf('://');
+  if (sep < 0) return '';
+  return qualifiedName.slice(0, sep);
+}
+
+function extractShortName(qualifiedName: string): string {
+  const lastDot = qualifiedName.lastIndexOf('.');
+  return lastDot >= 0 ? qualifiedName.slice(lastDot + 1) : qualifiedName;
 }
 
 export async function loadGraph(url: string): Promise<KnowingGraph> {
@@ -46,12 +99,43 @@ export async function loadGraph(url: string): Promise<KnowingGraph> {
   if (!response.ok) {
     throw new Error(`Failed to load graph: ${response.statusText}`);
   }
-  return response.json();
+  const raw: RawGraph = await response.json();
+
+  // Transform raw nodes to the internal model.
+  const nodes: GraphNode[] = raw.nodes.map(n => ({
+    id: n.node_hash,
+    label: n.qualified_name,
+    kind: n.kind,
+    line: n.line,
+    signature: n.signature,
+    community: n.community,
+    repo: extractRepo(n.qualified_name),
+    package: extractPackage(n.qualified_name),
+    shortName: extractShortName(n.qualified_name),
+  }));
+
+  // Transform raw edges.
+  const edges: GraphEdge[] = raw.edges.map(e => ({
+    id: e.edge_hash,
+    source: e.source_hash,
+    target: e.target_hash,
+    type: e.edge_type,
+    provenance: e.provenance,
+    confidence: e.confidence,
+    crossCommunity: e.cross_community,
+  }));
+
+  return {
+    nodes,
+    edges,
+    communities: raw.communities || [],
+    metadata: raw.metadata,
+  };
 }
 
 // Compute stats for display.
 export function graphStats(graph: KnowingGraph) {
-  const crossRepoEdges = graph.edges.filter(e => e.crossRepo).length;
+  const crossCommunityEdges = graph.edges.filter(e => e.crossCommunity).length;
   const provenanceCounts: Record<string, number> = {};
   for (const e of graph.edges) {
     provenanceCounts[e.provenance] = (provenanceCounts[e.provenance] || 0) + 1;
@@ -61,10 +145,10 @@ export function graphStats(graph: KnowingGraph) {
     kindCounts[n.kind] = (kindCounts[n.kind] || 0) + 1;
   }
   return {
-    repos: graph.repos.length,
     nodes: graph.nodes.length,
     edges: graph.edges.length,
-    crossRepoEdges,
+    communities: graph.communities.length,
+    crossCommunityEdges,
     provenanceCounts,
     kindCounts,
   };

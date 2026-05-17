@@ -1,13 +1,13 @@
 import { loadGraph, graphStats, type GraphNode, type GraphEdge } from './graph-data';
 import { renderGalaxy } from './galaxy';
 
-const GRAPH_URL = '/demo-graph.json';
+const GRAPH_URL = '/graph.json';
 
 async function main() {
   const container = document.getElementById('graph-container');
   const statsEl = document.getElementById('stats');
   const selectedInfo = document.getElementById('selected-info');
-  const crossRepoCheckbox = document.getElementById('cross-repo-only') as HTMLInputElement;
+  const crossCommunityCheckbox = document.getElementById('cross-community-only') as HTMLInputElement;
   const confidenceSlider = document.getElementById('confidence-min') as HTMLInputElement;
   const confidenceVal = document.getElementById('confidence-val');
 
@@ -20,7 +20,7 @@ async function main() {
   } catch (err) {
     container.innerHTML = `<div style="color:#f87171;padding:40px;text-align:center;">
       <h2>No graph data found</h2>
-      <p>Run <code>knowing export > public/demo-graph.json</code> to generate data.</p>
+      <p>Run <code>knowing export -format json > public/graph.json</code> to generate data.</p>
     </div>`;
     return;
   }
@@ -29,12 +29,14 @@ async function main() {
   const stats = graphStats(graph);
   if (statsEl) {
     statsEl.innerHTML = `
-      Repos: ${stats.repos}<br>
       Nodes: ${stats.nodes.toLocaleString()}<br>
       Edges: ${stats.edges.toLocaleString()}<br>
-      Cross-repo: ${stats.crossRepoEdges}<br>
+      Communities: ${stats.communities}<br>
+      Cross-community: ${stats.crossCommunityEdges.toLocaleString()}<br>
       <br>
-      ${Object.entries(stats.provenanceCounts)
+      <strong>By kind:</strong><br>
+      ${Object.entries(stats.kindCounts)
+        .sort(([, a], [, b]) => b - a)
         .map(([k, v]) => `${k}: ${v}`)
         .join('<br>')}
     `;
@@ -49,18 +51,20 @@ async function main() {
     }
     const callers = edges.filter(e => e.target === node.id);
     const callees = edges.filter(e => e.source === node.id);
-    const crossRepoCallers = callers.filter(e => e.crossRepo);
+    const crossComm = edges.filter(e => e.crossCommunity);
+    const community = graph!.communities.find(c => c.id === node.community);
 
     selectedInfo.innerHTML = `
-      <div class="symbol-name">${node.label}</div>
+      <div class="symbol-name">${node.shortName}</div>
+      <div class="symbol-qname">${node.label}</div>
       Kind: ${node.kind}<br>
       Package: ${node.package}<br>
-      Repo: ${node.repo}<br>
-      Line: ${node.line}<br>
+      Community: ${community ? community.label : 'ungrouped'}<br>
+      Signature: <code>${node.signature}</code><br>
       <br>
       <span class="callers">Callers: ${callers.length}</span><br>
       Callees: ${callees.length}<br>
-      <span class="cross-repo">Cross-repo callers: ${crossRepoCallers.length}</span>
+      <span class="cross-community">Cross-community edges: ${crossComm.length}</span>
     `;
   }
 
@@ -71,28 +75,18 @@ async function main() {
   function rerender() {
     cy.destroy();
     cy = renderGalaxy(container, graph!, {
-      crossRepoOnly: crossRepoCheckbox?.checked || false,
+      crossCommunityOnly: crossCommunityCheckbox?.checked || false,
       minConfidence: (confidenceSlider?.valueAsNumber || 0) / 100,
       onSelect,
     });
   }
 
-  crossRepoCheckbox?.addEventListener('change', rerender);
+  crossCommunityCheckbox?.addEventListener('change', rerender);
   confidenceSlider?.addEventListener('input', () => {
     if (confidenceVal) {
       confidenceVal.textContent = `${confidenceSlider.value}%`;
     }
     rerender();
-  });
-
-  // View toggle buttons.
-  const viewButtons = document.querySelectorAll('#view-toggles button');
-  viewButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      viewButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      // Future: switch between galaxy, blast-radius, provenance views
-    });
   });
 }
 
