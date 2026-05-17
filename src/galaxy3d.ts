@@ -79,9 +79,9 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
   // Add bloom post-processing for glow effect.
   const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(container.clientWidth, container.clientHeight),
-    1.5,   // strength
-    0.4,   // radius
-    0.85   // threshold
+    0.8,   // strength (lower = less wash-out)
+    0.3,   // radius
+    0.6    // threshold (higher = only bright nodes glow)
   );
   fg.postProcessingComposer().addPass(bloomPass);
 
