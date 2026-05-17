@@ -188,7 +188,15 @@ async function main() {
   function renderSigmaView() {
     if (cleanup3D) { cleanup3D(); cleanup3D = null; }
     if (sigmaInst) sigmaInst.destroy();
-    sigmaInst = renderSigma(container, graph!, { onSelect });
+    const settings = getDisplaySettings();
+    sigmaInst = renderSigma(container, graph!, {
+      onSelect,
+      maxNodes: settings.maxNodes,
+      nodeScale: settings.nodeScale,
+      topLabelCount: settings.topLabelCount,
+      edgeOpacity: settings.edgeOpacity,
+      labelSize: settings.labelSize,
+    });
   }
   renderSigmaView();
 
@@ -275,16 +283,63 @@ async function main() {
     sigmaInst.highlightSearch(matches);
   });
 
-  // Filters.
+  // Display settings.
+  const nodeSizeSlider = document.getElementById('node-size') as HTMLInputElement;
+  const nodeSizeVal = document.getElementById('node-size-val');
+  const labelCountSlider = document.getElementById('label-count') as HTMLInputElement;
+  const labelCountVal = document.getElementById('label-count-val');
+  const edgeOpacitySlider = document.getElementById('edge-opacity') as HTMLInputElement;
+  const edgeOpacityVal = document.getElementById('edge-opacity-val');
+  const labelSizeSlider = document.getElementById('label-size') as HTMLInputElement;
+  const labelSizeVal = document.getElementById('label-size-val');
+  const maxNodesSlider = document.getElementById('max-nodes') as HTMLInputElement;
+  const maxNodesVal = document.getElementById('max-nodes-val');
+
+  function getDisplaySettings() {
+    return {
+      nodeScale: (nodeSizeSlider?.valueAsNumber || 10) / 10,
+      topLabelCount: labelCountSlider?.valueAsNumber || 40,
+      edgeOpacity: (edgeOpacitySlider?.valueAsNumber || 100) / 100,
+      labelSize: labelSizeSlider?.valueAsNumber || 11,
+      maxNodes: maxNodesSlider?.valueAsNumber || 600,
+    };
+  }
+
+  // Filters + display settings trigger rerender.
   function rerender() {
     if (currentView === 'galaxy3d') return;
-    renderSigmaView();
+    const settings = getDisplaySettings();
+    if (sigmaInst) sigmaInst.destroy();
+    sigmaInst = renderSigma(container, graph!, {
+      crossCommunityOnly: crossCommunityCheckbox?.checked || false,
+      minConfidence: (confidenceSlider?.valueAsNumber || 0) / 100,
+      maxNodes: settings.maxNodes,
+      nodeScale: settings.nodeScale,
+      topLabelCount: settings.topLabelCount,
+      edgeOpacity: settings.edgeOpacity,
+      labelSize: settings.labelSize,
+      onSelect,
+    });
   }
+
   crossCommunityCheckbox?.addEventListener('change', rerender);
   confidenceSlider?.addEventListener('input', () => {
     if (confidenceVal) confidenceVal.textContent = `${confidenceSlider.value}%`;
     rerender();
   });
+
+  // Display setting listeners.
+  function addSliderListener(slider: HTMLInputElement | null, valEl: HTMLElement | null, fmt: (v: number) => string) {
+    slider?.addEventListener('input', () => {
+      if (valEl) valEl.textContent = fmt(slider.valueAsNumber);
+      rerender();
+    });
+  }
+  addSliderListener(nodeSizeSlider, nodeSizeVal, v => `${(v / 10).toFixed(1)}x`);
+  addSliderListener(labelCountSlider, labelCountVal, v => `${v}`);
+  addSliderListener(edgeOpacitySlider, edgeOpacityVal, v => `${v}%`);
+  addSliderListener(labelSizeSlider, labelSizeVal, v => `${v}px`);
+  addSliderListener(maxNodesSlider, maxNodesVal, v => `${v}`);
 }
 
 function setText(id: string, text: string) {

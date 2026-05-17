@@ -17,6 +17,10 @@ export interface RenderOptions {
   crossCommunityOnly?: boolean;
   minConfidence?: number;
   maxNodes?: number;
+  nodeScale?: number;       // multiplier for node sizes (default 1.0)
+  topLabelCount?: number;   // how many top-degree nodes show labels (default 40)
+  edgeOpacity?: number;     // 0-1 multiplier for edge opacity (default 1.0)
+  labelSize?: number;       // font size in px (default 11)
   onSelect?: (node: GraphNode | null, edges: GraphEdge[]) => void;
 }
 
@@ -41,6 +45,10 @@ export function renderSigma(
     crossCommunityOnly = false,
     minConfidence = 0,
     maxNodes = 600,
+    nodeScale = 1.0,
+    topLabelCount = 40,
+    edgeOpacity = 1.0,
+    labelSize = 11,
   } = options;
 
   // Build graphology graph.
@@ -69,7 +77,6 @@ export function renderSigma(
 
   // Top-N by degree get visible labels (avoids label soup).
   const sortedByDegree = [...degree.entries()].sort((a, b) => b[1] - a[1]);
-  const topLabelCount = 40;
   const topLabelIds = new Set(sortedByDegree.slice(0, topLabelCount).map(([id]) => id));
   const maxDegree = Math.max(sortedByDegree[0]?.[1] || 1, 1);
 
@@ -79,7 +86,7 @@ export function renderSigma(
     const deg = degree.get(node.id) || 0;
     // Size: base + log2(degree+1) * scale. Service nodes get a bonus.
     const baseSize = node.kind === 'service' ? 6 : 3;
-    const size = baseSize + Math.log2(deg + 1) * 2;
+    const size = (baseSize + Math.log2(deg + 1) * 2) * nodeScale;
     graph.addNode(node.id, {
       label: topLabelIds.has(node.id) ? node.shortName : '',
       color,
@@ -106,7 +113,9 @@ export function renderSigma(
     const key = `${edge.source}-${edge.target}-${edge.type}`;
     if (graph.hasEdge(key)) continue;
 
-    const color = edge.crossCommunity ? 'rgba(248, 81, 73, 0.4)' : 'rgba(48, 54, 61, 0.2)';
+    const crossAlpha = (0.4 * edgeOpacity).toFixed(2);
+    const intAlpha = (0.2 * edgeOpacity).toFixed(2);
+    const color = edge.crossCommunity ? `rgba(248, 81, 73, ${crossAlpha})` : `rgba(48, 54, 61, ${intAlpha})`;
     try {
       graph.addEdgeWithKey(key, edge.source, edge.target, {
         color,
@@ -144,7 +153,7 @@ export function renderSigma(
     renderEdgeLabels: false,
     labelRenderedSizeThreshold: 5,
     labelColor: { color: '#e6edf3' },
-    labelFont: '11px -apple-system, BlinkMacSystemFont, sans-serif',
+    labelFont: `${labelSize}px -apple-system, BlinkMacSystemFont, sans-serif`,
     labelWeight: 'bold',
     defaultNodeColor: '#58a6ff',
     defaultEdgeColor: '#30363d',

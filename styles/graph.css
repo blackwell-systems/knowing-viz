@@ -176,11 +176,22 @@ body {
   border-radius: 10px;
 }
 
-/* Filters */
-#filters {
+/* Filters & Display Settings */
+#filters,
+#display-settings {
   padding: 12px 16px;
   border-top: 1px solid var(--border);
 }
+
+#display-settings h3 {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* Filters */
 
 #filters label {
   display: block;
