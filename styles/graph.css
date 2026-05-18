@@ -400,6 +400,21 @@ body {
   line-height: 1.7;
 }
 
+.groupby-btn {
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.groupby-btn.active {
+  background: var(--accent-dim);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
 #node-list-container {
   margin-top: 8px;
   border-top: 1px solid var(--border);

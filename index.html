@@ -31,8 +31,16 @@
       <button data-view="timeline">Timeline</button>
       <button data-view="galaxy3d">Galaxy 3D</button>
     </div>
+    <div id="groupby-toggles">
+      <h3>Group by</h3>
+      <div style="display:flex;gap:4px;padding:0 16px 8px;">
+        <button class="groupby-btn active" data-groupby="package">Package</button>
+        <button class="groupby-btn" data-groupby="community">Louvain</button>
+        <button class="groupby-btn" data-groupby="author">Author</button>
+      </div>
+    </div>
     <div id="community-list">
-      <h3>Communities</h3>
+      <h3 id="groups-heading">Groups</h3>
       <div id="communities"></div>
     </div>
     <div id="settings-panel">

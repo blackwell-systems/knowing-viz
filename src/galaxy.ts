@@ -13,6 +13,8 @@ const COMMUNITY_COLORS = [
   '#8b949e', '#d2a8ff', '#2ea043', '#e3b341',
 ];
 
+export type GroupBy = 'community' | 'package' | 'author';
+
 export interface RenderOptions {
   crossCommunityOnly?: boolean;
   minConfidence?: number;
@@ -23,6 +25,7 @@ export interface RenderOptions {
   labelSize?: number;       // font size in px (default 11)
   gravity?: number;         // ForceAtlas2 gravity (default 0.5, higher = tighter)
   spread?: number;          // ForceAtlas2 scaling ratio (default 30, higher = more spread)
+  groupBy?: GroupBy;        // how to group nodes: 'community' (Louvain), 'package', 'author'
   onSelect?: (node: GraphNode | null, edges: GraphEdge[]) => void;
 }
 
@@ -39,6 +42,7 @@ export interface SigmaInstance {
   applyBlame: () => Map<string, string>;
   highlightAuthor: (author: string) => void;
   applyCoverage: () => void;
+  getGroupLabels: () => { id: number; label: string; size: number }[];
 }
 
 export function renderSigma(
@@ -58,18 +62,45 @@ export function renderSigma(
     spread = 30,
   } = options;
 
+  const groupBy = options.groupBy || 'community';
+
   // Build graphology graph.
   const graph = new Graph();
 
-  // Filter to top communities.
-  const topCommunities = [...knowingGraph.communities]
-    .sort((a, b) => b.size - a.size)
+  // Compute group assignment for each node based on groupBy mode.
+  const nodeGroup = new Map<string, string>(); // node id -> group label
+  for (const n of knowingGraph.nodes) {
+    switch (groupBy) {
+      case 'package':
+        nodeGroup.set(n.id, n.package || 'unknown');
+        break;
+      case 'author':
+        nodeGroup.set(n.id, n.lastAuthor || 'unknown');
+        break;
+      case 'community':
+      default:
+        nodeGroup.set(n.id, String(n.community));
+        break;
+    }
+  }
+
+  // Count group sizes and pick top 20.
+  const groupSizes = new Map<string, number>();
+  for (const g of nodeGroup.values()) {
+    groupSizes.set(g, (groupSizes.get(g) || 0) + 1);
+  }
+  const topGroups = [...groupSizes.entries()]
+    .sort((a, b) => b[1] - a[1])
     .slice(0, 20)
-    .map(c => c.id);
-  const topCommSet = new Set(topCommunities);
+    .map(([g]) => g);
+  const topGroupSet = new Set(topGroups);
+
+  // Map group labels to numeric IDs for coloring.
+  const groupToId = new Map<string, number>();
+  topGroups.forEach((g, i) => groupToId.set(g, i));
 
   const significantNodes = knowingGraph.nodes
-    .filter(n => topCommSet.has(n.community))
+    .filter(n => topGroupSet.has(nodeGroup.get(n.id) || ''))
     .slice(0, maxNodes);
   const nodeIds = new Set(significantNodes.map(n => n.id));
 
@@ -87,55 +118,34 @@ export function renderSigma(
   const topLabelIds = new Set(sortedByDegree.slice(0, topLabelCount).map(([id]) => id));
   const maxDegree = Math.max(sortedByDegree[0]?.[1] || 1, 1);
 
-  // Seed positions: communities with same package prefix start near each other.
-  // Group communities by base label (strip " #N" suffix).
-  const commLabel = new Map<number, string>();
-  for (const c of knowingGraph.communities) commLabel.set(c.id, c.label);
-
-  const baseLabel = (label: string) => label.replace(/ #\d+$/, '');
-  const packageGroups = new Map<string, number[]>();
-  for (const commId of topCommunities) {
-    const label = commLabel.get(commId) || '';
-    const base = baseLabel(label);
-    const group = packageGroups.get(base) || [];
-    group.push(commId);
-    packageGroups.set(base, group);
-  }
-
-  // Assign each package group a position on a circle, sub-clusters offset slightly.
-  const groupKeys = [...packageGroups.keys()];
-  const commPosition = new Map<number, { x: number; y: number }>();
-  groupKeys.forEach((pkg, gi) => {
-    const angle = (gi / groupKeys.length) * Math.PI * 2;
+  // Seed positions: groups placed on a circle.
+  const groupPosition = new Map<string, { x: number; y: number }>();
+  topGroups.forEach((g, i) => {
+    const angle = (i / topGroups.length) * Math.PI * 2;
     const r = 50;
-    const cx = 50 + Math.cos(angle) * r;
-    const cy = 50 + Math.sin(angle) * r;
-    const members = packageGroups.get(pkg)!;
-    members.forEach((commId, si) => {
-      // Sub-clusters offset slightly from the group center.
-      const subAngle = (si / Math.max(members.length, 1)) * Math.PI * 2;
-      const subR = members.length > 1 ? 6 : 0;
-      commPosition.set(commId, {
-        x: cx + Math.cos(subAngle) * subR,
-        y: cy + Math.sin(subAngle) * subR,
-      });
+    groupPosition.set(g, {
+      x: 50 + Math.cos(angle) * r,
+      y: 50 + Math.sin(angle) * r,
     });
   });
 
-  // Add nodes with degree-based sizing, seeded near their community position.
+  // Add nodes with degree-based sizing, seeded near their group position.
   for (const node of significantNodes) {
-    const color = COMMUNITY_COLORS[node.community % COMMUNITY_COLORS.length];
+    const group = nodeGroup.get(node.id) || '0';
+    const gid = groupToId.get(group) || 0;
+    const color = COMMUNITY_COLORS[gid % COMMUNITY_COLORS.length];
     const deg = degree.get(node.id) || 0;
     const baseSize = node.kind === 'service' ? 6 : 3;
     const size = (baseSize + Math.log2(deg + 1) * 2) * nodeScale;
-    const pos = commPosition.get(node.community) || { x: 50, y: 50 };
+    const pos = groupPosition.get(group) || { x: 50, y: 50 };
     graph.addNode(node.id, {
       label: topLabelIds.has(node.id) ? node.shortName : '',
       color,
       size,
       x: pos.x + (Math.random() - 0.5) * 5,
       y: pos.y + (Math.random() - 0.5) * 5,
-      community: node.community,
+      community: gid,
+      groupLabel: group,
       kind: node.kind,
       fullLabel: node.label,
       shortName: node.shortName,
@@ -543,5 +553,12 @@ export function renderSigma(
     applyBlame,
     highlightAuthor,
     applyCoverage,
+    getGroupLabels: () => {
+      return topGroups.map((g, i) => ({
+        id: i,
+        label: g,
+        size: groupSizes.get(g) || 0,
+      }));
+    },
   };
 }

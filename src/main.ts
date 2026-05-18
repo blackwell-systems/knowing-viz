@@ -46,6 +46,7 @@ async function main() {
   }
 
   let currentView: ViewMode = 'communities';
+  let currentGroupBy: 'community' | 'package' | 'author' = 'package';
   let sigmaInst: SigmaInstance | null = null;
   let cleanup3D: (() => void) | null = null;
 
@@ -60,7 +61,6 @@ async function main() {
         graph = await loadGraphFromFile(file);
         if (graphNameEl) graphNameEl.textContent = file.name;
         updateStats();
-        buildCommunitySidebar();
         buildNodeList();
         currentView = 'communities';
         document.querySelectorAll('#view-toggles button').forEach(b => b.classList.remove('active'));
@@ -187,38 +187,7 @@ async function main() {
   // Community sidebar (multi-select, top 15 only).
   const activeCommunityIds = new Set<number>();
 
-  function buildCommunitySidebar() {
-    if (!communitiesEl) return;
-    communitiesEl.innerHTML = '';
-    activeCommunityIds.clear();
-    const sorted = [...graph!.communities].sort((a, b) => b.size - a.size);
-    const top = sorted.slice(0, 15);
-    for (const comm of top) {
-      const item = document.createElement('div');
-      item.className = 'community-item';
-      item.innerHTML = `
-        <span class="community-dot" style="background:${communityColor(comm.id)}"></span>
-        <span class="community-label">${comm.label}</span>
-        <span class="community-count">${comm.size}</span>
-      `;
-      item.addEventListener('click', () => {
-        if (item.classList.contains('active')) {
-          item.classList.remove('active');
-          activeCommunityIds.delete(comm.id);
-        } else {
-          item.classList.add('active');
-          activeCommunityIds.add(comm.id);
-        }
-        if (sigmaInst) {
-          if (activeCommunityIds.size === 0) sigmaInst.resetHighlight();
-          else sigmaInst.highlightCommunities(activeCommunityIds);
-        }
-      });
-      communitiesEl.appendChild(item);
-    }
-  }
 
-  buildCommunitySidebar();
 
   // Node list panel.
   const nodeListEl = document.getElementById('node-list');
@@ -260,6 +229,21 @@ async function main() {
   }
 
   buildNodeList();
+
+  // Group-by toggle buttons.
+  document.querySelectorAll('.groupby-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.groupby-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentGroupBy = (btn as HTMLElement).dataset.groupby as typeof currentGroupBy;
+      const headingEl = document.getElementById('groups-heading');
+      if (headingEl) {
+        const labels: Record<string, string> = { package: 'Packages', community: 'Communities', author: 'Authors' };
+        headingEl.textContent = labels[currentGroupBy] || 'Groups';
+      }
+      renderSigmaView();
+    });
+  });
 
   // Filter the node list by text.
   nodeFilterEl?.addEventListener('input', () => {
@@ -311,6 +295,7 @@ async function main() {
 
     sigmaInst = renderSigma(container, graph!, {
       onSelect,
+      groupBy: currentGroupBy,
       maxNodes: sliderVal('max-nodes', 10000),
       nodeScale: sliderVal('node-size', 10) / 10,
       topLabelCount: sliderVal('label-count', 40),
@@ -319,6 +304,36 @@ async function main() {
       gravity: sliderVal('gravity', 10) / 10,
       spread: sliderVal('spread', 10),
     });
+
+    // Rebuild sidebar with current grouping labels.
+    if (communitiesEl && sigmaInst) {
+      const labels = sigmaInst.getGroupLabels();
+      communitiesEl.innerHTML = '';
+      activeCommunityIds.clear();
+      for (const g of labels) {
+        const item = document.createElement('div');
+        item.className = 'community-item';
+        item.innerHTML = `
+          <span class="community-dot" style="background:${communityColor(g.id)}"></span>
+          <span class="community-label">${g.label}</span>
+          <span class="community-count">${g.size}</span>
+        `;
+        item.addEventListener('click', () => {
+          if (item.classList.contains('active')) {
+            item.classList.remove('active');
+            activeCommunityIds.delete(g.id);
+          } else {
+            item.classList.add('active');
+            activeCommunityIds.add(g.id);
+          }
+          if (sigmaInst) {
+            if (activeCommunityIds.size === 0) sigmaInst.resetHighlight();
+            else sigmaInst.highlightCommunities(activeCommunityIds);
+          }
+        });
+        communitiesEl.appendChild(item);
+      }
+    }
   }
   renderSigmaView();
 
