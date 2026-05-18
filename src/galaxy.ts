@@ -49,7 +49,7 @@ export function renderSigma(
   const {
     crossCommunityOnly = false,
     minConfidence = 0,
-    maxNodes = 600,
+    maxNodes = Infinity,
     nodeScale = 1.0,
     topLabelCount = 40,
     edgeOpacity = 1.0,

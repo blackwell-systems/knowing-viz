@@ -235,7 +235,7 @@ async function main() {
 
     sigmaInst = renderSigma(container, graph!, {
       onSelect,
-      maxNodes: sliderVal('max-nodes', 600),
+      maxNodes: sliderVal('max-nodes', 10000),
       nodeScale: sliderVal('node-size', 10) / 10,
       topLabelCount: sliderVal('label-count', 40),
       edgeOpacity: sliderVal('edge-opacity', 100) / 100,
@@ -269,7 +269,7 @@ async function main() {
     const defaults: Record<string, number> = {
       'node-size': 10, 'label-count': 40, 'edge-opacity': 100,
       'label-size': 11, 'gravity': 10, 'spread': 10,
-      'max-nodes': 600, 'confidence-min': 0,
+      'max-nodes': 10000, 'confidence-min': 0,
     };
     for (const [id, val] of Object.entries(defaults)) {
       const el = document.getElementById(id) as HTMLInputElement;
@@ -287,7 +287,7 @@ async function main() {
     setText('label-size-val', '11px');
     setText('gravity-val', '1');
     setText('spread-val', '10');
-    setText('max-nodes-val', '600');
+    setText('max-nodes-val', 'All');
     setText('confidence-val', '0%');
     rerender();
   });
@@ -436,7 +436,7 @@ async function main() {
       topLabelCount: labelCountSlider?.valueAsNumber || 40,
       edgeOpacity: (edgeOpacitySlider?.valueAsNumber || 100) / 100,
       labelSize: labelSizeSlider?.valueAsNumber || 11,
-      maxNodes: maxNodesSlider?.valueAsNumber || 600,
+      maxNodes: maxNodesSlider?.valueAsNumber || 10000,
     };
   }
 
@@ -474,7 +474,7 @@ async function main() {
   addSliderListener(labelCountSlider, labelCountVal, v => `${v}`);
   addSliderListener(edgeOpacitySlider, edgeOpacityVal, v => `${v}%`);
   addSliderListener(labelSizeSlider, labelSizeVal, v => `${v}px`);
-  addSliderListener(maxNodesSlider, maxNodesVal, v => `${v}`);
+  addSliderListener(maxNodesSlider, maxNodesVal, v => v >= 10000 ? 'All' : `${v}`);
 
   const gravitySlider = document.getElementById('gravity') as HTMLInputElement;
   const gravityValEl = document.getElementById('gravity-val');
