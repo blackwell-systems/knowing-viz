@@ -261,7 +261,7 @@ async function main() {
 
   buildNodeList();
 
-  // Filter the node list.
+  // Filter the node list by text.
   nodeFilterEl?.addEventListener('input', () => {
     const query = nodeFilterEl.value.toLowerCase().trim();
     nodeListEl?.querySelectorAll('.node-list-item').forEach(el => {
@@ -269,6 +269,30 @@ async function main() {
       (el as HTMLElement).style.display = text.includes(query) ? '' : 'none';
     });
   });
+
+  // Filter the node list to a specific author's symbols.
+  function filterNodeListByAuthor(author: string | null) {
+    if (!nodeListEl) return;
+    const authorNodes = new Set<string>();
+    if (author) {
+      for (const n of graph!.nodes) {
+        if (n.lastAuthor === author) authorNodes.add(n.id);
+      }
+    }
+    nodeListEl.querySelectorAll('.node-list-item').forEach(el => {
+      const nodeId = (el as HTMLElement).dataset.nodeId || '';
+      if (!author) {
+        (el as HTMLElement).style.display = '';
+      } else {
+        (el as HTMLElement).style.display = authorNodes.has(nodeId) ? '' : 'none';
+      }
+    });
+    // Update filter placeholder.
+    if (nodeFilterEl) {
+      nodeFilterEl.value = '';
+      nodeFilterEl.placeholder = author ? `${author} (${authorNodes.size} symbols)` : 'Filter nodes...';
+    }
+  }
 
   detailClose?.addEventListener('click', () => {
     if (sigmaInst) sigmaInst.resetHighlight();
@@ -385,17 +409,20 @@ async function main() {
             // Wire click handlers for author filtering.
             document.querySelectorAll('.blame-author-item').forEach(el => {
               el.addEventListener('click', (evt) => {
-                evt.stopPropagation(); // Prevent Sigma clickStage from hiding the panel.
+                evt.stopPropagation();
                 const author = (el as HTMLElement).dataset.author;
                 if (author === '__all__') {
                   sigmaInst!.applyBlame();
+                  // Show all nodes in the list.
+                  filterNodeListByAuthor(null);
                 } else if (author) {
                   sigmaInst!.highlightAuthor(author);
+                  // Filter node list to this author's symbols.
+                  filterNodeListByAuthor(author);
                 }
-                // Visual feedback: highlight selected.
+                // Visual feedback.
                 document.querySelectorAll('.blame-author-item').forEach(e => (e as HTMLElement).style.background = '');
                 (el as HTMLElement).style.background = 'var(--bg-tertiary)';
-                // Re-show the panel in case it was hidden.
                 detailPanel?.classList.remove('hidden');
               });
             });
