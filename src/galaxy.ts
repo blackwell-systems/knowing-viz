@@ -194,6 +194,7 @@ export function renderSigma(
   container.innerHTML = '';
   let hoveredNode: string | null = null;
   let blastActive = false; // true when blast radius view is pinned on a clicked node
+  let activeOverlay: 'none' | 'blast' | 'provenance' | 'blame' | 'coverage' | 'diff' = 'none';
 
   const sigma = new Sigma(graph, container, {
     defaultEdgeType: 'arrow',
@@ -216,9 +217,9 @@ export function renderSigma(
   sigma.on('enterNode', () => { container.style.cursor = 'pointer'; });
   sigma.on('leaveNode', () => { container.style.cursor = 'default'; });
 
-  // Hover: highlight neighbors, show label. Skipped when blast radius is pinned.
+  // Hover: highlight neighbors, show label. Skipped when an overlay is active.
   sigma.on('enterNode', ({ node }) => {
-    if (blastActive) return;
+    if (activeOverlay !== 'none') return;
     hoveredNode = node;
     const neighbors = new Set(graph.neighbors(node));
     neighbors.add(node);
@@ -254,7 +255,7 @@ export function renderSigma(
   });
 
   sigma.on('leaveNode', () => {
-    if (blastActive) return;
+    if (activeOverlay !== 'none') return;
     hoveredNode = null;
     resetHighlight();
   });
@@ -269,7 +270,6 @@ export function renderSigma(
   });
 
   sigma.on('clickStage', () => {
-    blastActive = false;
     resetHighlight();
     if (options.onSelect) {
       options.onSelect(null, []);
@@ -303,6 +303,8 @@ export function renderSigma(
   }
 
   function resetHighlight() {
+    activeOverlay = 'none';
+    blastActive = false;
     graph.forEachNode((id, attrs) => {
       graph.setNodeAttribute(id, 'color', attrs.originalColor);
       graph.setNodeAttribute(id, 'size', attrs.originalSize);
@@ -330,6 +332,7 @@ export function renderSigma(
 
   function applyBlast(affected: Map<string, number>) {
     blastActive = true;
+    activeOverlay = 'blast';
     const maxDepth = Math.max(...affected.values(), 1);
     graph.forEachNode((id, attrs) => {
       if (affected.has(id)) {
@@ -361,6 +364,7 @@ export function renderSigma(
   }
 
   function applyProvenance() {
+    activeOverlay = 'provenance';
     const PROV_COLORS: Record<string, string> = {
       lsp_resolved: 'rgba(88,166,255,0.7)',
       ast_resolved: 'rgba(121,192,255,0.7)',
@@ -379,6 +383,7 @@ export function renderSigma(
   }
 
   function applyDiff(addedNodes: Set<string>, addedEdges: Set<string>) {
+    activeOverlay = 'diff';
     graph.forEachNode((id) => {
       if (addedNodes.has(id)) {
         graph.setNodeAttribute(id, 'color', '#3fb950');
@@ -401,6 +406,7 @@ export function renderSigma(
 
   // Blame overlay: color nodes by author, dim unattributed.
   function applyBlame() {
+    activeOverlay = 'blame';
     const authorColors = new Map<string, string>();
     const palette = [
       '#58a6ff', '#3fb950', '#d29922', '#bc8cff', '#39d2c0',
@@ -435,6 +441,7 @@ export function renderSigma(
 
   // Coverage heatmap: green = covered, red = uncovered, gray = not measured.
   function applyCoverage() {
+    activeOverlay = 'coverage';
     graph.forEachNode((id, attrs) => {
       const pct = (attrs as any).coveragePct ?? -1;
       if (pct < 0) {
