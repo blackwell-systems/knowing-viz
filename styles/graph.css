@@ -400,6 +400,54 @@ body {
   line-height: 1.7;
 }
 
+#node-list-container {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+#node-filter {
+  width: 100%;
+  padding: 4px 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  margin-bottom: 6px;
+}
+#node-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.node-list-item {
+  padding: 3px 6px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.node-list-item:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+.node-list-item.active {
+  background: var(--accent-dim);
+  color: var(--text-primary);
+}
+.node-list-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.node-list-kind {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
 .detail-label {
   color: var(--text-muted);
   font-size: 0.7rem;

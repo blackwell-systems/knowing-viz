@@ -61,6 +61,7 @@ async function main() {
         if (graphNameEl) graphNameEl.textContent = file.name;
         updateStats();
         buildCommunitySidebar();
+        buildNodeList();
         currentView = 'communities';
         document.querySelectorAll('#view-toggles button').forEach(b => b.classList.remove('active'));
         document.querySelector('[data-view="communities"]')?.classList.add('active');
@@ -95,6 +96,8 @@ async function main() {
   function onSelect(node: GraphNode | null, edges: GraphEdge[]) {
     if (!selectedInfo || !detailPanel || !detailName) return;
     if (!node) {
+      // Don't hide the panel when an overlay view (blame, coverage, provenance) is showing its legend.
+      if (currentView !== 'communities' && currentView !== 'blast-radius' && currentView !== 'galaxy3d') return;
       detailPanel.classList.add('hidden');
       return;
     }
@@ -217,8 +220,57 @@ async function main() {
 
   buildCommunitySidebar();
 
+  // Node list panel.
+  const nodeListEl = document.getElementById('node-list');
+  const nodeFilterEl = document.getElementById('node-filter') as HTMLInputElement;
+
+  function buildNodeList() {
+    if (!nodeListEl) return;
+    nodeListEl.innerHTML = '';
+    const sorted = [...graph!.nodes].sort((a, b) => a.shortName.localeCompare(b.shortName));
+    for (const node of sorted) {
+      const item = document.createElement('div');
+      item.className = 'node-list-item';
+      item.dataset.nodeId = node.id;
+      item.innerHTML = `
+        <span class="node-list-dot" style="background:${communityColor(node.community)}"></span>
+        <span>${node.shortName}</span>
+        <span class="node-list-kind">${node.kind}</span>
+      `;
+      item.addEventListener('click', () => {
+        // Highlight in graph and show detail.
+        const edges = graph!.edges.filter(e => e.source === node.id || e.target === node.id);
+        onSelect(node, edges);
+        // Scroll to and center the node in Sigma.
+        if (sigmaInst) {
+          const nodeAttrs = sigmaInst.graph.getNodeAttributes(node.id);
+          if (nodeAttrs) {
+            sigmaInst.sigma.getCamera().animate(
+              { x: nodeAttrs.x as number, y: nodeAttrs.y as number, ratio: 0.3 },
+              { duration: 300 }
+            );
+          }
+        }
+        // Visual feedback.
+        nodeListEl.querySelectorAll('.node-list-item').forEach(e => e.classList.remove('active'));
+        item.classList.add('active');
+      });
+      nodeListEl.appendChild(item);
+    }
+  }
+
+  buildNodeList();
+
+  // Filter the node list.
+  nodeFilterEl?.addEventListener('input', () => {
+    const query = nodeFilterEl.value.toLowerCase().trim();
+    nodeListEl?.querySelectorAll('.node-list-item').forEach(el => {
+      const text = el.textContent?.toLowerCase() || '';
+      (el as HTMLElement).style.display = text.includes(query) ? '' : 'none';
+    });
+  });
+
   detailClose?.addEventListener('click', () => {
-    detailPanel?.classList.add('hidden');
     if (sigmaInst) sigmaInst.resetHighlight();
   });
 
@@ -332,7 +384,8 @@ async function main() {
             showPanel('Blame', blameLegend);
             // Wire click handlers for author filtering.
             document.querySelectorAll('.blame-author-item').forEach(el => {
-              el.addEventListener('click', () => {
+              el.addEventListener('click', (evt) => {
+                evt.stopPropagation(); // Prevent Sigma clickStage from hiding the panel.
                 const author = (el as HTMLElement).dataset.author;
                 if (author === '__all__') {
                   sigmaInst!.applyBlame();
@@ -342,6 +395,8 @@ async function main() {
                 // Visual feedback: highlight selected.
                 document.querySelectorAll('.blame-author-item').forEach(e => (e as HTMLElement).style.background = '');
                 (el as HTMLElement).style.background = 'var(--bg-tertiary)';
+                // Re-show the panel in case it was hidden.
+                detailPanel?.classList.remove('hidden');
               });
             });
           }

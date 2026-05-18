@@ -100,14 +100,18 @@
     </div>
   </main>
 
-  <!-- Right Panel: Symbol Detail -->
-  <aside id="detail-panel" class="hidden">
+  <!-- Right Panel: Symbol Detail + Node List -->
+  <aside id="detail-panel">
     <div id="detail-header">
-      <h3 id="detail-name">Select a symbol</h3>
+      <h3 id="detail-name">Nodes</h3>
       <button id="detail-close">&times;</button>
     </div>
     <div id="detail-body">
-      <div id="selected-info"><em>Click a node to see details</em></div>
+      <div id="selected-info"></div>
+      <div id="node-list-container">
+        <input type="text" id="node-filter" placeholder="Filter nodes..." />
+        <div id="node-list"></div>
+      </div>
     </div>
   </aside>
 
