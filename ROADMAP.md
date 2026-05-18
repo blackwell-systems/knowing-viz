@@ -2,24 +2,46 @@
 
 ## Current State
 
-Sigma.js 2D + Three.js 3D + Vite + TypeScript. Graph data from `knowing export -format json`.
+Sigma.js 2D + Three.js 3D + Vite + vanilla TypeScript. Graph data from `knowing export -format json`.
 
 **Shipped views:**
 - Community overview (Sigma.js, ForceAtlas2 layout, color-coded clusters)
 - Blast radius (click to pin, BFS backward, depth-based coloring)
 - Provenance overlay (edge colors by extraction method)
-- Blame overlay (nodes colored by git author)
+- Blame overlay (nodes colored by git author, clickable author filtering)
 - Coverage heatmap (red = uncovered, green = covered)
 - Timeline diff (compare two snapshots, glow added/removed)
 - Galaxy 3D (Three.js force-directed)
+- Switchable grouping: Package (default), Louvain, Author
 - Cross-community edge toggle
 - Community highlight filtering (select top N)
 - Search (highlight matching nodes)
 - Node detail panel (qualified name, kind, signature, community, edges)
+- Browsable node list with filter and click-to-center
+- File picker to load different graph JSON files
 
 **Data:** `public/graph.json` (2692 nodes, 11984 edges, 231 communities, blame + coverage metadata)
 
 ---
+
+## React Migration (Priority)
+
+Rewrite from vanilla TypeScript to React + Vite + TypeScript. The current main.ts is 500+ lines of imperative DOM manipulation, and every new feature requires manually wiring event handlers, rebuilding HTML, and managing state across closures.
+
+| Task | Description |
+|------|-------------|
+| Scaffold React + Vite + TS | Replace vanilla entry point with React root |
+| GraphViewer component | Wraps Sigma.js instance in useRef + useEffect |
+| Sidebar component | Communities/groups list, search, settings sliders |
+| DetailPanel component | Node detail, blame legend, coverage legend |
+| NodeList component | Browsable/filterable list with click-to-center |
+| ViewToggle component | Communities, blast radius, provenance, blame, coverage, timeline, 3D |
+| GroupByToggle component | Package, Louvain, Author |
+| FileLoader component | File picker for loading graph JSON |
+| State management | React context or Zustand for graph, view mode, group mode, selections |
+| Galaxy3D component | Wraps Three.js force graph |
+
+Sigma.js, Three.js, graphology, and ForceAtlas2 stay as-is. The rendering logic in galaxy.ts and blast-radius.ts is framework-agnostic and wraps cleanly into React hooks.
 
 ## Next Improvements
 
