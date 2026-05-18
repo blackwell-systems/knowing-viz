@@ -69,6 +69,11 @@ export function renderSigma(
 
   // Compute group assignment for each node based on groupBy mode.
   const nodeGroup = new Map<string, string>(); // node id -> group label
+  // Build community ID -> label lookup from export data.
+  const commLabelMap = new Map<number, string>();
+  for (const c of knowingGraph.communities) {
+    commLabelMap.set(c.id, c.label);
+  }
   for (const n of knowingGraph.nodes) {
     switch (groupBy) {
       case 'package':
@@ -79,7 +84,7 @@ export function renderSigma(
         break;
       case 'community':
       default:
-        nodeGroup.set(n.id, String(n.community));
+        nodeGroup.set(n.id, commLabelMap.get(n.community) || `community ${n.community}`);
         break;
     }
   }
