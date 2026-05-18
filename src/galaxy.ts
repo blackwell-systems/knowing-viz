@@ -417,8 +417,15 @@ export function renderSigma(
     let colorIdx = 0;
     let attributed = 0;
 
+    let debugFirst = true;
     graph.forEachNode((id, attrs) => {
       const author = (attrs as any).lastAuthor || '';
+      if (debugFirst) {
+        console.log('[blame] first node attrs:', JSON.stringify(Object.keys(attrs)));
+        console.log('[blame] lastAuthor value:', JSON.stringify(author));
+        console.log('[blame] all attrs:', JSON.stringify(attrs));
+        debugFirst = false;
+      }
       if (!author) {
         graph.setNodeAttribute(id, 'color', 'rgba(48,54,61,0.15)');
         graph.setNodeAttribute(id, 'size', 2);
@@ -430,9 +437,11 @@ export function renderSigma(
         authorColors.set(author, palette[colorIdx % palette.length]);
         colorIdx++;
       }
-      graph.setNodeAttribute(id, 'color', authorColors.get(author)!);
-      graph.setNodeAttribute(id, 'size', (attrs.originalSize as number) || 5);
+      const authorColor = authorColors.get(author)!;
+      graph.setNodeAttribute(id, 'color', authorColor);
+      graph.setNodeAttribute(id, 'size', Math.max((attrs.originalSize as number) || 5, 6));
       graph.setNodeAttribute(id, 'label', attrs.shortName || '');
+      graph.setNodeAttribute(id, 'zIndex', 1);
     });
     graph.forEachEdge((id) => {
       graph.setEdgeAttribute(id, 'color', 'rgba(48,54,61,0.08)');
@@ -440,7 +449,14 @@ export function renderSigma(
     });
 
     console.log(`[blame] ${attributed} attributed nodes, ${authorColors.size} authors`);
-    sigma.refresh();
+    // Force full re-render: Sigma caches WebGL state and refresh() alone
+    // may not update all node colors. Toggle a camera state to force it.
+    sigma.refresh({ skipIndexation: false });
+    const cam = sigma.getCamera();
+    cam.setState({ ...cam.getState(), ratio: cam.getState().ratio * 1.0001 });
+    setTimeout(() => {
+      cam.setState({ ...cam.getState(), ratio: cam.getState().ratio / 1.0001 });
+    }, 50);
     return authorColors;
   }
 
