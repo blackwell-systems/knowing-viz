@@ -13,6 +13,10 @@ export interface GraphNode {
   line: number;
   signature: string;
   community: number; // -1 = ungrouped
+  lastAuthor: string;    // git blame: who last touched this symbol
+  lastCommitAt: number;  // git blame: unix timestamp
+  coveragePct: number;   // test coverage percentage (-1 = not measured)
+  doc: string;           // doc comment
   // Derived fields (populated by loadGraph):
   repo: string;
   package: string;
@@ -53,6 +57,10 @@ interface RawNode {
   line: number;
   signature: string;
   community: number;
+  last_author?: string;
+  last_commit_at?: number;
+  coverage_pct?: number;
+  doc?: string;
 }
 
 interface RawEdge {
@@ -109,6 +117,10 @@ export async function loadGraph(url: string): Promise<KnowingGraph> {
     line: n.line,
     signature: n.signature,
     community: n.community,
+    lastAuthor: n.last_author || '',
+    lastCommitAt: n.last_commit_at || 0,
+    coveragePct: n.coverage_pct ?? -1,
+    doc: n.doc || '',
     repo: extractRepo(n.qualified_name),
     package: extractPackage(n.qualified_name),
     shortName: extractShortName(n.qualified_name),

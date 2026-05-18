@@ -36,6 +36,8 @@ export interface SigmaInstance {
   applyBlast: (affected: Map<string, number>) => void;
   applyProvenance: () => void;
   applyDiff: (added: Set<string>, addedEdges: Set<string>) => void;
+  applyBlame: () => Map<string, string>;
+  applyCoverage: () => void;
 }
 
 export function renderSigma(
@@ -139,6 +141,9 @@ export function renderSigma(
       originalColor: color,
       originalSize: size,
       degree: deg,
+      lastAuthor: node.lastAuthor || '',
+      lastCommitAt: node.lastCommitAt || 0,
+      coveragePct: node.coveragePct ?? -1,
     });
   }
 
@@ -394,6 +399,77 @@ export function renderSigma(
     });
   }
 
+  // Blame overlay: color nodes by author, dim unattributed.
+  function applyBlame() {
+    const authorColors = new Map<string, string>();
+    const palette = [
+      '#58a6ff', '#3fb950', '#d29922', '#bc8cff', '#39d2c0',
+      '#f85149', '#7ee787', '#79c0ff', '#ffd33d', '#56d4dd',
+      '#ff7b72', '#a5d6ff', '#d2a8ff', '#e3b341', '#2ea043',
+    ];
+    let colorIdx = 0;
+
+    graph.forEachNode((id, attrs) => {
+      const author = (attrs as any).lastAuthor || '';
+      if (!author) {
+        graph.setNodeAttribute(id, 'color', 'rgba(48,54,61,0.15)');
+        graph.setNodeAttribute(id, 'size', 2);
+        graph.setNodeAttribute(id, 'label', '');
+        return;
+      }
+      if (!authorColors.has(author)) {
+        authorColors.set(author, palette[colorIdx % palette.length]);
+        colorIdx++;
+      }
+      graph.setNodeAttribute(id, 'color', authorColors.get(author)!);
+      graph.setNodeAttribute(id, 'size', (attrs.originalSize as number) || 5);
+      graph.setNodeAttribute(id, 'label', attrs.shortName || '');
+    });
+    graph.forEachEdge((id) => {
+      graph.setEdgeAttribute(id, 'color', 'rgba(48,54,61,0.08)');
+      graph.setEdgeAttribute(id, 'size', 0.5);
+    });
+
+    return authorColors;
+  }
+
+  // Coverage heatmap: green = covered, red = uncovered, gray = not measured.
+  function applyCoverage() {
+    graph.forEachNode((id, attrs) => {
+      const pct = (attrs as any).coveragePct ?? -1;
+      if (pct < 0) {
+        // Not measured.
+        graph.setNodeAttribute(id, 'color', 'rgba(48,54,61,0.2)');
+        graph.setNodeAttribute(id, 'size', 3);
+        graph.setNodeAttribute(id, 'label', '');
+      } else if (pct === 0) {
+        // Zero coverage: bright red.
+        graph.setNodeAttribute(id, 'color', '#f85149');
+        graph.setNodeAttribute(id, 'size', 8);
+        graph.setNodeAttribute(id, 'label', attrs.shortName || '');
+      } else if (pct < 50) {
+        // Low coverage: orange.
+        graph.setNodeAttribute(id, 'color', '#d29922');
+        graph.setNodeAttribute(id, 'size', 6);
+        graph.setNodeAttribute(id, 'label', attrs.shortName || '');
+      } else if (pct < 80) {
+        // Medium coverage: yellow-green.
+        graph.setNodeAttribute(id, 'color', '#7ee787');
+        graph.setNodeAttribute(id, 'size', 5);
+        graph.setNodeAttribute(id, 'label', '');
+      } else {
+        // High coverage: green.
+        graph.setNodeAttribute(id, 'color', '#3fb950');
+        graph.setNodeAttribute(id, 'size', 5);
+        graph.setNodeAttribute(id, 'label', '');
+      }
+    });
+    graph.forEachEdge((id) => {
+      graph.setEdgeAttribute(id, 'color', 'rgba(48,54,61,0.05)');
+      graph.setEdgeAttribute(id, 'size', 0.3);
+    });
+  }
+
   return {
     sigma,
     graph,
@@ -404,5 +480,7 @@ export function renderSigma(
     applyBlast,
     applyProvenance,
     applyDiff,
+    applyBlame,
+    applyCoverage,
   };
 }

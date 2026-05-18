@@ -20,7 +20,7 @@ function communityColor(id: number): string {
   return COMMUNITY_COLORS[id % COMMUNITY_COLORS.length];
 }
 
-type ViewMode = 'communities' | 'blast-radius' | 'provenance' | 'timeline' | 'galaxy3d';
+type ViewMode = 'communities' | 'blast-radius' | 'provenance' | 'blame' | 'coverage' | 'timeline' | 'galaxy3d';
 
 async function main() {
   const container = document.getElementById('graph-container')!;
@@ -281,6 +281,34 @@ async function main() {
             legend += `<div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>${prov}</div>`;
           }
           showPanel('Provenance', legend);
+          break;
+
+        case 'blame':
+          renderSigmaView();
+          if (sigmaInst) {
+            const authorColors = sigmaInst.applyBlame();
+            let blameLegend = '<div class="detail-label">Authors</div>';
+            for (const [author, color] of authorColors) {
+              blameLegend += `<div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>${author}</div>`;
+            }
+            showPanel('Blame', blameLegend);
+          }
+          break;
+
+        case 'coverage':
+          renderSigmaView();
+          if (sigmaInst) {
+            sigmaInst.applyCoverage();
+            const covLegend = `
+              <div class="detail-label">Coverage Legend</div>
+              <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f85149;margin-right:6px;vertical-align:middle;"></span>0% (uncovered)</div>
+              <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d29922;margin-right:6px;vertical-align:middle;"></span>1-49% (low)</div>
+              <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7ee787;margin-right:6px;vertical-align:middle;"></span>50-79% (medium)</div>
+              <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3fb950;margin-right:6px;vertical-align:middle;"></span>80-100% (high)</div>
+              <div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:rgba(48,54,61,0.3);margin-right:6px;vertical-align:middle;"></span>Not measured</div>
+            `;
+            showPanel('Coverage', covLegend);
+          }
           break;
 
         case 'timeline':
