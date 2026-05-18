@@ -60,6 +60,10 @@ async function main() {
         graph = await loadGraphFromFile(file);
         if (graphNameEl) graphNameEl.textContent = file.name;
         updateStats();
+        buildCommunitySidebar();
+        currentView = 'communities';
+        document.querySelectorAll('#view-toggles button').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-view="communities"]')?.classList.add('active');
         renderSigmaView();
       } catch (err) {
         console.error('Failed to load graph:', err);
@@ -179,10 +183,14 @@ async function main() {
 
   // Community sidebar (multi-select, top 15 only).
   const activeCommunityIds = new Set<number>();
-  const sortedCommunities = [...graph.communities].sort((a, b) => b.size - a.size);
-  const sidebarCommunities = sortedCommunities.slice(0, 15);
-  if (communitiesEl) {
-    for (const comm of sidebarCommunities) {
+
+  function buildCommunitySidebar() {
+    if (!communitiesEl) return;
+    communitiesEl.innerHTML = '';
+    activeCommunityIds.clear();
+    const sorted = [...graph!.communities].sort((a, b) => b.size - a.size);
+    const top = sorted.slice(0, 15);
+    for (const comm of top) {
       const item = document.createElement('div');
       item.className = 'community-item';
       item.innerHTML = `
@@ -206,6 +214,8 @@ async function main() {
       communitiesEl.appendChild(item);
     }
   }
+
+  buildCommunitySidebar();
 
   detailClose?.addEventListener('click', () => {
     detailPanel?.classList.add('hidden');
