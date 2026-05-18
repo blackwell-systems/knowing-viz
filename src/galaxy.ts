@@ -37,6 +37,7 @@ export interface SigmaInstance {
   applyProvenance: () => void;
   applyDiff: (added: Set<string>, addedEdges: Set<string>) => void;
   applyBlame: () => Map<string, string>;
+  highlightAuthor: (author: string) => void;
   applyCoverage: () => void;
 }
 
@@ -439,6 +440,36 @@ export function renderSigma(
     return authorColors;
   }
 
+  // Highlight a single author, dim everyone else.
+  function highlightAuthor(author: string) {
+    activeOverlay = 'blame';
+    graph.forEachNode((id, attrs) => {
+      const nodeAuthor = (attrs as any).lastAuthor || '';
+      if (nodeAuthor === author) {
+        graph.setNodeAttribute(id, 'color', attrs.originalColor || '#58a6ff');
+        graph.setNodeAttribute(id, 'size', (attrs.originalSize as number || 5) * 1.3);
+        graph.setNodeAttribute(id, 'label', attrs.shortName || '');
+      } else {
+        graph.setNodeAttribute(id, 'color', 'rgba(48,54,61,0.1)');
+        graph.setNodeAttribute(id, 'size', 2);
+        graph.setNodeAttribute(id, 'label', '');
+      }
+    });
+    graph.forEachEdge((id) => {
+      const src = graph.source(id);
+      const tgt = graph.target(id);
+      const srcAuthor = (graph.getNodeAttributes(src) as any).lastAuthor || '';
+      const tgtAuthor = (graph.getNodeAttributes(tgt) as any).lastAuthor || '';
+      if (srcAuthor === author && tgtAuthor === author) {
+        graph.setEdgeAttribute(id, 'color', 'rgba(88,166,255,0.5)');
+        graph.setEdgeAttribute(id, 'size', 1.5);
+      } else {
+        graph.setEdgeAttribute(id, 'color', 'rgba(48,54,61,0.03)');
+        graph.setEdgeAttribute(id, 'size', 0.3);
+      }
+    });
+  }
+
   // Coverage heatmap: green = covered, red = uncovered, gray = not measured.
   function applyCoverage() {
     activeOverlay = 'coverage';
@@ -488,6 +519,7 @@ export function renderSigma(
     applyProvenance,
     applyDiff,
     applyBlame,
+    highlightAuthor,
     applyCoverage,
   };
 }

@@ -324,11 +324,26 @@ async function main() {
           renderSigmaView();
           if (sigmaInst) {
             const authorColors = sigmaInst.applyBlame();
-            let blameLegend = '<div class="detail-label">Authors</div>';
+            let blameLegend = '<div class="detail-label">Authors <span style="font-size:0.7rem;color:var(--text-muted)">(click to filter)</span></div>';
+            blameLegend += `<div class="detail-value blame-author-item" data-author="__all__" style="cursor:pointer;padding:2px 4px;border-radius:3px;background:var(--accent-dim);color:var(--text-primary);margin-bottom:2px;"><strong>Show all</strong></div>`;
             for (const [author, color] of authorColors) {
-              blameLegend += `<div class="detail-value"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>${author}</div>`;
+              blameLegend += `<div class="detail-value blame-author-item" data-author="${author}" style="cursor:pointer;padding:2px 4px;border-radius:3px;margin-bottom:1px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>${author}</div>`;
             }
             showPanel('Blame', blameLegend);
+            // Wire click handlers for author filtering.
+            document.querySelectorAll('.blame-author-item').forEach(el => {
+              el.addEventListener('click', () => {
+                const author = (el as HTMLElement).dataset.author;
+                if (author === '__all__') {
+                  sigmaInst!.applyBlame();
+                } else if (author) {
+                  sigmaInst!.highlightAuthor(author);
+                }
+                // Visual feedback: highlight selected.
+                document.querySelectorAll('.blame-author-item').forEach(e => (e as HTMLElement).style.background = '');
+                (el as HTMLElement).style.background = 'var(--bg-tertiary)';
+              });
+            });
           }
           break;
 
