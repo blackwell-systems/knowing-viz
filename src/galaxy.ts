@@ -415,6 +415,7 @@ export function renderSigma(
       '#ff7b72', '#a5d6ff', '#d2a8ff', '#e3b341', '#2ea043',
     ];
     let colorIdx = 0;
+    let attributed = 0;
 
     graph.forEachNode((id, attrs) => {
       const author = (attrs as any).lastAuthor || '';
@@ -424,6 +425,7 @@ export function renderSigma(
         graph.setNodeAttribute(id, 'label', '');
         return;
       }
+      attributed++;
       if (!authorColors.has(author)) {
         authorColors.set(author, palette[colorIdx % palette.length]);
         colorIdx++;
@@ -437,6 +439,8 @@ export function renderSigma(
       graph.setEdgeAttribute(id, 'size', 0.5);
     });
 
+    console.log(`[blame] ${attributed} attributed nodes, ${authorColors.size} authors`);
+    sigma.refresh();
     return authorColors;
   }
 
@@ -468,6 +472,7 @@ export function renderSigma(
         graph.setEdgeAttribute(id, 'size', 0.3);
       }
     });
+    sigma.refresh();
   }
 
   // Coverage heatmap: green = covered, red = uncovered, gray = not measured.
@@ -506,6 +511,7 @@ export function renderSigma(
       graph.setEdgeAttribute(id, 'color', 'rgba(48,54,61,0.05)');
       graph.setEdgeAttribute(id, 'size', 0.3);
     });
+    sigma.refresh();
   }
 
   return {
