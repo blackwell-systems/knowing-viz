@@ -188,6 +188,7 @@ export function renderSigma(
   // Render with Sigma.
   container.innerHTML = '';
   let hoveredNode: string | null = null;
+  let blastActive = false; // true when blast radius view is pinned on a clicked node
 
   const sigma = new Sigma(graph, container, {
     defaultEdgeType: 'arrow',
@@ -210,8 +211,9 @@ export function renderSigma(
   sigma.on('enterNode', () => { container.style.cursor = 'pointer'; });
   sigma.on('leaveNode', () => { container.style.cursor = 'default'; });
 
-  // Hover: highlight neighbors, show label.
+  // Hover: highlight neighbors, show label. Skipped when blast radius is pinned.
   sigma.on('enterNode', ({ node }) => {
+    if (blastActive) return;
     hoveredNode = node;
     const neighbors = new Set(graph.neighbors(node));
     neighbors.add(node);
@@ -247,6 +249,7 @@ export function renderSigma(
   });
 
   sigma.on('leaveNode', () => {
+    if (blastActive) return;
     hoveredNode = null;
     resetHighlight();
   });
@@ -261,6 +264,8 @@ export function renderSigma(
   });
 
   sigma.on('clickStage', () => {
+    blastActive = false;
+    resetHighlight();
     if (options.onSelect) {
       options.onSelect(null, []);
     }
@@ -319,6 +324,7 @@ export function renderSigma(
   }
 
   function applyBlast(affected: Map<string, number>) {
+    blastActive = true;
     const maxDepth = Math.max(...affected.values(), 1);
     graph.forEachNode((id, attrs) => {
       if (affected.has(id)) {
