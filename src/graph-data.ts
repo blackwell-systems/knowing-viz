@@ -145,6 +145,45 @@ export async function loadGraph(url: string): Promise<KnowingGraph> {
   };
 }
 
+// Load graph from a File object (from file picker).
+export async function loadGraphFromFile(file: File): Promise<KnowingGraph> {
+  const text = await file.text();
+  const raw: RawGraph = JSON.parse(text);
+
+  const nodes: GraphNode[] = raw.nodes.map(n => ({
+    id: n.node_hash,
+    label: n.qualified_name,
+    kind: n.kind,
+    line: n.line,
+    signature: n.signature,
+    community: n.community,
+    lastAuthor: n.last_author || '',
+    lastCommitAt: n.last_commit_at || 0,
+    coveragePct: n.coverage_pct ?? -1,
+    doc: n.doc || '',
+    repo: extractRepo(n.qualified_name),
+    package: extractPackage(n.qualified_name),
+    shortName: extractShortName(n.qualified_name),
+  }));
+
+  const edges: GraphEdge[] = raw.edges.map(e => ({
+    id: e.edge_hash,
+    source: e.source_hash,
+    target: e.target_hash,
+    type: e.edge_type,
+    provenance: e.provenance,
+    confidence: e.confidence,
+    crossCommunity: e.cross_community,
+  }));
+
+  return {
+    nodes,
+    edges,
+    communities: raw.communities || [],
+    metadata: raw.metadata,
+  };
+}
+
 // Compute stats for display.
 export function graphStats(graph: KnowingGraph) {
   const crossCommunityEdges = graph.edges.filter(e => e.crossCommunity).length;

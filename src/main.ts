@@ -1,4 +1,4 @@
-import { loadGraph, graphStats, type GraphNode, type GraphEdge, type Community } from './graph-data';
+import { loadGraph, loadGraphFromFile, graphStats, type GraphNode, type GraphEdge, type Community } from './graph-data';
 import { renderSigma, type SigmaInstance } from './galaxy';
 import { computeBlastRadius } from './blast-radius';
 import { PROVENANCE_COLORS } from './provenance';
@@ -48,6 +48,33 @@ async function main() {
   let currentView: ViewMode = 'communities';
   let sigmaInst: SigmaInstance | null = null;
   let cleanup3D: (() => void) | null = null;
+
+  // File picker: load a different graph JSON.
+  const graphFileInput = document.getElementById('graph-file') as HTMLInputElement;
+  const graphNameEl = document.getElementById('current-graph-name');
+  if (graphFileInput) {
+    graphFileInput.addEventListener('change', async () => {
+      const file = graphFileInput.files?.[0];
+      if (!file) return;
+      try {
+        graph = await loadGraphFromFile(file);
+        if (graphNameEl) graphNameEl.textContent = file.name;
+        updateStats();
+        renderSigmaView();
+      } catch (err) {
+        console.error('Failed to load graph:', err);
+        if (graphNameEl) graphNameEl.textContent = 'Error loading file';
+      }
+    });
+  }
+
+  function updateStats() {
+    const s = graphStats(graph!);
+    setText('node-count', `Nodes: ${s.nodes.toLocaleString()}`);
+    setText('edge-count', `Edges: ${s.edges.toLocaleString()}`);
+    setText('community-count', `Communities: ${s.communities}`);
+    setText('cross-count', `Cross-community: ${s.crossCommunityEdges.toLocaleString()}`);
+  }
 
   // Stats bar.
   const stats = graphStats(graph);

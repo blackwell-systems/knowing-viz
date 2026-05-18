@@ -52,6 +52,37 @@ body {
   color: var(--text-muted);
 }
 
+#graph-source {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+#graph-source input[type="file"] {
+  display: none;
+}
+.file-picker-label {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.file-picker-label:hover {
+  background: var(--accent-dim);
+  color: var(--text-primary);
+}
+#current-graph-name {
+  margin-top: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 #search-box {
   padding: 10px 16px;
   border-bottom: 1px solid var(--border);
