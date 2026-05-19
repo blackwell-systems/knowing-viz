@@ -123,6 +123,15 @@ export function SettingsPanel() {
         onChange={(v) => update('spread', v)}
       />
 
+      {/* Max groups: 5-100, maps directly to maxGroups */}
+      <SliderRow
+        label="Groups"
+        min={5}
+        max={100}
+        value={settings.maxGroups}
+        onChange={(v) => update('maxGroups', v)}
+      />
+
       {/* Max nodes: 50-10000 step 50, maps directly to maxNodes */}
       <SliderRow
         label="Max nodes"

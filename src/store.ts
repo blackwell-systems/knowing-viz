@@ -39,6 +39,7 @@ export interface DisplaySettings {
   gravity: number;            // 0.1-5.0, default 1.0
   spread: number;             // 5-100, default 10
   maxNodes: number;           // 50-10000, default 10000
+  maxGroups: number;          // 5-100, default 50
   confidenceMin: number;      // 0-1, default 0
   crossCommunityOnly: boolean; // default false
 }
@@ -104,6 +105,7 @@ const DEFAULT_SETTINGS: DisplaySettings = {
   gravity: 1.0,
   spread: 10,
   maxNodes: 10000,
+  maxGroups: 50,
   confidenceMin: 0,
   crossCommunityOnly: false,
 };

@@ -68,9 +68,10 @@ export function useGraphLoader(): void {
     for (const g of nodeGroup.values()) {
       groupSizes.set(g, (groupSizes.get(g) || 0) + 1);
     }
+    const maxGroups = settings.maxGroups || 50;
     const topGroups = [...groupSizes.entries()]
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 20)
+      .slice(0, maxGroups)
       .map(([g]) => g);
     const topGroupSet = new Set(topGroups);
 
