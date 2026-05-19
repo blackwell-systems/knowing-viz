@@ -272,6 +272,8 @@ export function useOverlayEffects(): void {
 
   // --- Register click/hover events (galaxy.ts hover lines 237-277, click lines 279-293) ---
   useEffect(() => {
+    const overlayActive = viewMode !== 'communities';
+
     registerEvents({
       clickNode: ({ node }: { node: string }) => {
         const gNode = knGraph?.nodes.find(n => n.id === node) || null;
@@ -279,11 +281,15 @@ export function useOverlayEffects(): void {
         selectNode(gNode, edges);
       },
       clickStage: () => {
-        resetHighlight(graph);
+        if (!overlayActive) {
+          resetHighlight(graph);
+        }
         selectNode(null);
       },
       enterNode: ({ node }: { node: string }) => {
-        // Highlight neighbors on hover (galaxy.ts lines 237-271).
+        // Skip hover effects when an overlay view is active
+        if (overlayActive) return;
+
         const neighbors = new Set(graph.neighbors(node));
         neighbors.add(node);
         graph.forEachNode((id, attrs) => {
@@ -315,11 +321,12 @@ export function useOverlayEffects(): void {
         });
       },
       leaveNode: () => {
-        // Reset highlight on leave (galaxy.ts lines 273-277).
+        // Skip reset when an overlay view is active
+        if (overlayActive) return;
         resetHighlight(graph);
       },
     });
-  }, [registerEvents, knGraph, graph, selectNode]);
+  }, [registerEvents, knGraph, graph, selectNode, viewMode]);
 
   // --- Apply overlay based on viewMode (galaxy.ts per-overlay functions) ---
   useEffect(() => {
