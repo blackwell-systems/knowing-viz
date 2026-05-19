@@ -47,6 +47,54 @@
         "from_cache": true,
         "cached_at": "2026-05-18T17:22:39.302356-07:00"
       }
+    },
+    "629984e55fe5ebdc112080d1f8e760b7": {
+      "typecheck": {
+        "gate_type": "typecheck",
+        "command": "cd /Users/dayna.blackwell/code/knowing-viz \u0026\u0026 npx tsc --noEmit",
+        "passed": false,
+        "exit_code": 2,
+        "stdout": "tsconfig.json(18,5): error TS6306: Referenced project '/Users/dayna.blackwell/code/knowing-viz/.claude/worktrees/polywave/react-migration/wave1-agent-A' must have setting \"composite\": true.\ntsconfig.json(21,5): error TS6306: Referenced project '/Users/dayna.blackwell/code/knowing-viz/.claude/worktrees/polywave/react-migration/wave1-agent-B' must have setting \"composite\": true.\n",
+        "stderr": "",
+        "from_cache": true,
+        "cached_at": "2026-05-18T17:33:52.59415-07:00"
+      }
+    },
+    "7c8b36ee52ca609dbfdc0a80fcdfd228": {
+      "build": {
+        "gate_type": "build",
+        "command": "cd /Users/dayna.blackwell/code/knowing-viz \u0026\u0026 command npm run build",
+        "passed": true,
+        "exit_code": 0,
+        "stdout": "\n\u003e knowing-viz@0.1.0 build\n\u003e vite build\n\nvite v6.4.2 building for production...\ntransforming...\n✓ 426 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                     5.27 kB │ gzip:   1.47 kB\ndist/assets/index-Brz1KFzl.css      7.93 kB │ gzip:   1.88 kB\ndist/assets/index-BYZ1Ga6j.js   1,665.75 kB │ gzip: 444.05 kB\n✓ built in 1.59s\n",
+        "stderr": "\n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n",
+        "from_cache": true,
+        "cached_at": "2026-05-18T17:28:54.63085-07:00"
+      }
+    },
+    "88838ddc7db9731f72eadbc9793ef575": {
+      "typecheck": {
+        "gate_type": "typecheck",
+        "command": "cd /Users/dayna.blackwell/code/knowing-viz \u0026\u0026 npx tsc --noEmit",
+        "passed": true,
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "from_cache": true,
+        "cached_at": "2026-05-18T17:28:52.574329-07:00"
+      }
+    },
+    "dd6f998fbf2c133e90efc2e7240ce9ed": {
+      "build": {
+        "gate_type": "build",
+        "command": "cd /Users/dayna.blackwell/code/knowing-viz \u0026\u0026 command npm run build",
+        "passed": true,
+        "exit_code": 0,
+        "stdout": "\n\u003e knowing-viz@0.1.0 build\n\u003e vite build\n\nvite v6.4.2 building for production...\ntransforming...\n✓ 426 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                     5.27 kB │ gzip:   1.47 kB\ndist/assets/index-Brz1KFzl.css      7.93 kB │ gzip:   1.88 kB\ndist/assets/index-BYZ1Ga6j.js   1,665.75 kB │ gzip: 444.05 kB\n✓ built in 1.57s\n",
+        "stderr": "\n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n",
+        "from_cache": true,
+        "cached_at": "2026-05-18T17:33:54.672276-07:00"
+      }
     }
   }
 }

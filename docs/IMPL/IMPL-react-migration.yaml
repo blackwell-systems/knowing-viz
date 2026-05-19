@@ -791,6 +791,7 @@ waves:
             - src/hooks/useGraphLoader.ts
             - src/hooks/useOverlayEffects.ts
             - src/constants.ts
+      base_commit: 87afa0fc5eb2f48598d0e9c8deeb3d66447ba393
     - number: 2
       agents:
         - id: C
@@ -1819,6 +1820,43 @@ scaffolds:
         Sigma lifecycle via its own context/hooks.
       import_path: ./store
       status: committed (64bb786)
+completion_reports:
+    A:
+        status: complete
+        branch: polywave/react-migration/wave1-agent-A
+        commit: e9de065
+        files_changed:
+            - package.json
+            - package-lock.json
+            - vite.config.ts
+            - tsconfig.json
+            - index.html
+            - src/main.tsx
+            - src/App.tsx
+            - src/App.css
+            - src/vite-env.d.ts
+        files_created:
+            - src/main.tsx
+            - src/App.tsx
+            - src/App.css
+            - src/vite-env.d.ts
+        verification: PASS
+        notes: Installed @vitejs/plugin-react@4 (not latest v6) for Vite 6 compatibility. All postconditions verified. Build passes. tsc --noEmit clean. src/main.ts (old entry) preserved per constraints.
+    B:
+        status: complete
+        branch: polywave/react-migration/wave1-agent-B
+        commit: 635af9e
+        files_changed:
+            - src/store.ts
+            - src/constants.ts
+            - src/hooks/useGraphLoader.ts
+            - src/hooks/useOverlayEffects.ts
+        files_created:
+            - src/constants.ts
+            - src/hooks/useGraphLoader.ts
+            - src/hooks/useOverlayEffects.ts
+        verification: PASS
+        notes: 'store.ts was pre-created by scaffold agent and is fully complete. constants.ts, useGraphLoader.ts, and useOverlayEffects.ts created and committed. Only remaining type errors are expected: react and @react-sigma/core not installed (Agent A scope). Build passes. All postconditions pass.'
 pre_mortem:
     overall_risk: medium
     rows:
@@ -1910,4 +1948,10 @@ critic_report:
     summary: 'All six agent briefs verified against the codebase. File existence checks pass: all action:modify files exist (package.json, vite.config.ts, tsconfig.json, index.html) and all action:new files do not yet exist. Symbol accuracy verified for all cross-agent dependencies: KnowingGraph/GraphNode/GraphEdge types in graph-data.ts, graphStats function, loadGraph/loadGraphFromFile exports, PROVENANCE_COLORS export, computeBlastRadius signature, computeDiff export, and COMMUNITY_COLORS array all match brief descriptions. Pattern accuracy confirmed: vite.config.ts, tsconfig.json, and index.html contents match the briefs exactly; CSS ID selectors in styles/graph.css match the ID-to-class conversion list. Interface contracts are syntactically valid TypeScript. Import chains are satisfiable since Agent A installs all required npm packages. No disjoint ownership violations (I1). No agent exceeds 8 files. No caller migration patterns to audit.'
     reviewed_at: "2026-05-19T00:19:47Z"
     issue_count: 0
-state: "REVIEWED"
+state: REVIEWED
+integration_reports:
+    wave1:
+        wave: 1
+        gaps: []
+        valid: true
+        summary: 'Wave 1: all exports are integrated (no gaps detected)'
