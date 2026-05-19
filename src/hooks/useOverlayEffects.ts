@@ -118,22 +118,47 @@ function applyBlast(graph: Graph, affected: Map<string, number>): void {
   });
 }
 
-function applyProvenance(graph: Graph): void {
-  const PROV_COLORS: Record<string, string> = {
-    lsp_resolved: 'rgba(88,166,255,0.7)',
-    ast_resolved: 'rgba(121,192,255,0.7)',
-    ast_inferred: 'rgba(210,153,34,0.6)',
-    runtime_calls: 'rgba(63,185,80,0.7)',
-    runtime_rpc: 'rgba(63,185,80,0.7)',
-    otel_trace: 'rgba(63,185,80,0.7)',
-  };
+const PROV_COLORS: Record<string, string> = {
+  lsp_resolved: 'rgba(88,166,255,0.7)',
+  ast_resolved: 'rgba(121,192,255,0.7)',
+  ast_inferred: 'rgba(210,153,34,0.6)',
+  runtime_calls: 'rgba(63,185,80,0.7)',
+  runtime_rpc: 'rgba(63,185,80,0.7)',
+  otel_trace: 'rgba(63,185,80,0.7)',
+};
+
+function applyProvenance(graph: Graph, filterProv?: string | null): void {
+  // Collect nodes connected by matching edges to highlight them
+  const connectedNodes = new Set<string>();
+
   graph.forEachEdge((id, attrs) => {
     const prov = (attrs as Record<string, unknown>).provenance as string || '';
+    if (filterProv && prov !== filterProv) {
+      graph.setEdgeAttribute(id, 'color', 'rgba(48,54,61,0.02)');
+      graph.setEdgeAttribute(id, 'size', 0.2);
+      return;
+    }
     const color = PROV_COLORS[prov] || 'rgba(72,79,88,0.3)';
     const conf = (attrs as Record<string, unknown>).confidence as number || 0.5;
     graph.setEdgeAttribute(id, 'color', color);
     graph.setEdgeAttribute(id, 'size', conf > 0.8 ? 2 : 1);
+    connectedNodes.add(graph.source(id));
+    connectedNodes.add(graph.target(id));
   });
+
+  if (filterProv) {
+    graph.forEachNode((id, attrs) => {
+      if (connectedNodes.has(id)) {
+        graph.setNodeAttribute(id, 'color', attrs.originalColor);
+        graph.setNodeAttribute(id, 'size', attrs.originalSize);
+        graph.setNodeAttribute(id, 'label', attrs.shortName || '');
+      } else {
+        graph.setNodeAttribute(id, 'color', 'rgba(48,54,61,0.1)');
+        graph.setNodeAttribute(id, 'size', 2);
+        graph.setNodeAttribute(id, 'label', '');
+      }
+    });
+  }
 }
 
 function applyDiff(graph: Graph, addedNodes: Set<string>, addedEdges: Set<string>): void {
@@ -269,6 +294,7 @@ export function useOverlayEffects(): void {
   const setBlameAuthorColors = useGraphStore((s) => s.setBlameAuthorColors);
   const highlightedAuthor = useGraphStore((s) => s.highlightedAuthor);
   const baselineGraph = useGraphStore((s) => s.baselineGraph);
+  const highlightedProvenance = useGraphStore((s) => s.highlightedProvenance);
 
   // --- Register click/hover events (galaxy.ts hover lines 237-277, click lines 279-293) ---
   useEffect(() => {
@@ -334,7 +360,8 @@ export function useOverlayEffects(): void {
 
     switch (viewMode) {
       case 'provenance':
-        applyProvenance(graph);
+        applyProvenance(graph, highlightedProvenance);
+        sigma.refresh();
         break;
       case 'blame': {
         const colors = applyBlame(graph);
@@ -367,7 +394,7 @@ export function useOverlayEffects(): void {
         // Blast radius is triggered by node selection (see selectedNode effect below).
         break;
     }
-  }, [viewMode, graph, sigma, knGraph, setBlameAuthorColors, baselineGraph]);
+  }, [viewMode, graph, sigma, knGraph, setBlameAuthorColors, baselineGraph, highlightedProvenance]);
 
   // --- Apply blast radius when a node is selected in blast-radius mode ---
   useEffect(() => {
