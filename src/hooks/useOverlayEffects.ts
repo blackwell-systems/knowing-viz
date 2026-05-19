@@ -272,7 +272,7 @@ export function useOverlayEffects(): void {
   // --- Register click/hover events (galaxy.ts hover lines 237-277, click lines 279-293) ---
   useEffect(() => {
     registerEvents({
-      clickNode: ({ node }) => {
+      clickNode: ({ node }: { node: string }) => {
         const gNode = knGraph?.nodes.find(n => n.id === node) || null;
         const edges = knGraph?.edges.filter(e => e.source === node || e.target === node) || [];
         selectNode(gNode, edges);
@@ -281,7 +281,7 @@ export function useOverlayEffects(): void {
         resetHighlight(graph);
         selectNode(null);
       },
-      enterNode: ({ node }) => {
+      enterNode: ({ node }: { node: string }) => {
         // Highlight neighbors on hover (galaxy.ts lines 237-271).
         const neighbors = new Set(graph.neighbors(node));
         neighbors.add(node);
@@ -347,7 +347,8 @@ export function useOverlayEffects(): void {
       case 'timeline': {
         (async () => {
           try {
-            const before = await loadGraph(import.meta.env.BASE_URL + 'graph-before.json');
+            const base = ((import.meta as unknown) as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
+            const before = await loadGraph(base + 'graph-before.json');
             if (knGraph) {
               const diff = computeDiff(before, knGraph);
               applyDiff(graph, diff.addedNodes, diff.addedEdges);
