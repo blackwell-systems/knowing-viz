@@ -68,6 +68,7 @@ export interface GraphState {
   baselineGraph: KnowingGraph | null;
   baselineFileName: string;
   highlightedProvenance: string | null;
+  hiddenEdgeTypes: Set<string>;
 
   // Group labels derived from current sigma graph
   groupLabels: { id: number; label: string; size: number }[];
@@ -88,6 +89,7 @@ export interface GraphState {
   setHighlightedAuthor: (author: string | null) => void;
   setBaselineGraph: (graph: KnowingGraph | null, fileName?: string) => void;
   setHighlightedProvenance: (prov: string | null) => void;
+  toggleEdgeType: (edgeType: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -131,6 +133,7 @@ export const useGraphStore = create<GraphState>()((set) => ({
   baselineGraph: null,
   baselineFileName: '',
   highlightedProvenance: null,
+  hiddenEdgeTypes: new Set<string>(),
 
   // Group labels
   groupLabels: [],
@@ -189,4 +192,12 @@ export const useGraphStore = create<GraphState>()((set) => ({
 
   setHighlightedProvenance: (prov) =>
     set({ highlightedProvenance: prov }),
+
+  toggleEdgeType: (edgeType) =>
+    set((state) => {
+      const next = new Set(state.hiddenEdgeTypes);
+      if (next.has(edgeType)) next.delete(edgeType);
+      else next.add(edgeType);
+      return { hiddenEdgeTypes: next };
+    }),
 }));

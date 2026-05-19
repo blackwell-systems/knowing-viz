@@ -23,6 +23,7 @@ export function useGraphLoader(): void {
   const viewMode = useGraphStore((s) => s.viewMode);
   const setSigmaGraph = useGraphStore((s) => s.setSigmaGraph);
   const setGroupLabels = useGraphStore((s) => s.setGroupLabels);
+  const hiddenEdgeTypes = useGraphStore((s) => s.hiddenEdgeTypes);
 
   useEffect(() => {
     if (!knGraph || viewMode === 'galaxy3d') {
@@ -145,6 +146,7 @@ export function useGraphLoader(): void {
       if (crossCommunityOnly && !edge.crossCommunity) continue;
       if (edge.confidence < confidenceMin) continue;
       if (edge.source === edge.target) continue; // skip self-loops
+      if (hiddenEdgeTypes.has(edge.type)) continue;
 
       const key = `${edge.source}-${edge.target}-${edge.type}`;
       if (sigmaGraph.hasEdge(key)) continue;
@@ -193,5 +195,5 @@ export function useGraphLoader(): void {
     setGroupLabels(labels);
 
     // No cleanup needed; sigmaGraph is just data (not a live resource).
-  }, [knGraph, groupBy, settings, viewMode]);
+  }, [knGraph, groupBy, settings, viewMode, hiddenEdgeTypes]);
 }

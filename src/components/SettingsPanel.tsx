@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useGraphStore, type DisplaySettings } from '../store';
 
 // ---------------------------------------------------------------------------
@@ -37,6 +38,19 @@ function SliderRow({ label, min, max, step = 1, value, onChange }: SliderRowProp
 export function SettingsPanel() {
   const settings = useGraphStore((s) => s.settings);
   const updateSettings = useGraphStore((s) => s.updateSettings);
+  const graph = useGraphStore((s) => s.graph);
+  const hiddenEdgeTypes = useGraphStore((s) => s.hiddenEdgeTypes);
+  const toggleEdgeType = useGraphStore((s) => s.toggleEdgeType);
+
+  const edgeTypeCounts = useMemo(() => {
+    if (!graph) return [];
+    const counts = new Map<string, number>();
+    for (const e of graph.edges) {
+      const t = e.type || 'unknown';
+      counts.set(t, (counts.get(t) || 0) + 1);
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  }, [graph]);
 
   function update<K extends keyof DisplaySettings>(key: K, raw: number) {
     updateSettings({ [key]: raw } as Pick<DisplaySettings, K>);
@@ -130,6 +144,26 @@ export function SettingsPanel() {
           {' '}Cross-community only
         </label>
       </div>
+
+      {/* Edge type filters */}
+      {edgeTypeCounts.length > 0 && (
+        <>
+          <h3 style={{ marginTop: 12 }}>Edge Types</h3>
+          {edgeTypeCounts.map(([edgeType, count]) => (
+            <label key={edgeType} className="toggle-row">
+              <input
+                type="checkbox"
+                checked={!hiddenEdgeTypes.has(edgeType)}
+                onChange={() => toggleEdgeType(edgeType)}
+              />
+              <span style={{ flex: 1 }}>{edgeType}</span>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'SF Mono, Fira Code, monospace' }}>
+                {count.toLocaleString()}
+              </span>
+            </label>
+          ))}
+        </>
+      )}
     </div>
   );
 }
