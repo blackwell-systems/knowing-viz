@@ -54,7 +54,7 @@ export function renderGalaxy3D(container: HTMLElement, graph: KnowingGraph): () 
 
   container.innerHTML = '';
 
-  const fg = ForceGraph3D()(container)
+  const fg = (ForceGraph3D as any)()(container)
     .graphData({ nodes, links })
     .backgroundColor('#000000')
     .nodeColor((node: any) => node.color)

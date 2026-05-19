@@ -206,9 +206,9 @@ async function main() {
         <span>${node.shortName}</span>
         <span class="node-list-kind">${node.kind}</span>
       `;
-      item.addEventListener('click', () => {
+      item.addEventListener('click', (_e: Event) => {
         // Highlight in graph and show detail.
-        const edges = graph!.edges.filter(e => e.source === node.id || e.target === node.id);
+        const edges = graph!.edges.filter((e: any) => e.source === node.id || e.target === node.id);
         onSelect(node, edges);
         // Scroll to and center the node in Sigma.
         if (sigmaInst) {
@@ -507,10 +507,10 @@ async function main() {
     const query = searchInput.value.toLowerCase().trim();
     if (!sigmaInst) return;
     if (!query) { sigmaInst.resetHighlight(); return; }
-    const matches = new Set(
+    const matches = new Set<string>(
       graph!.nodes
-        .filter(n => n.shortName.toLowerCase().includes(query) || n.label.toLowerCase().includes(query))
-        .map(n => n.id)
+        .filter((n: any) => n.shortName.toLowerCase().includes(query) || n.label.toLowerCase().includes(query))
+        .map((n: any) => n.id)
     );
     sigmaInst.highlightSearch(matches);
   });
