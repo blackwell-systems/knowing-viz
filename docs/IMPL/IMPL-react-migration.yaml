@@ -1,0 +1,1913 @@
+title: React + Vite + TypeScript Migration
+feature_slug: react-migration
+verdict: SUITABLE
+suitability_assessment: |
+    1. File decomposition: The migration creates 20+ new files (components, store, hooks,
+       config) with clear disjoint ownership. No two agents need the same new file.
+       Existing framework-agnostic modules (blast-radius.ts, provenance.ts, timeline.ts,
+       graph-data.ts) remain unchanged. galaxy.ts and galaxy3d.ts are superseded by
+       @react-sigma/core and react-force-graph-3d respectively but kept for reference.
+
+    2. Investigation-first items: None. The current codebase is well-understood; this
+       is a straightforward rewrite from imperative DOM to React components.
+
+    3. Interface discoverability: Yes. The Zustand store shape can be fully defined
+       upfront from the existing state in main.ts (closures over graph, currentView,
+       currentGroupBy, sigmaInst, activeCommunityIds, slider values). Component props
+       derive directly from store selectors.
+
+    4. Pre-implementation status: All code is vanilla TS. Nothing is partially migrated.
+
+    5. Parallelization value: High. 6 agents across 3 waves, with 3 parallel agents in
+       Wave 2. The coordination value is also high since component interfaces must be
+       consistent. The new React wrapper libraries (@react-sigma/core, react-force-graph-3d)
+       simplify implementation significantly, reducing per-agent time.
+
+    Tech stack:
+    - react, react-dom, @types/react, @types/react-dom
+    - zustand (state management)
+    - @react-sigma/core (React wrapper for Sigma.js)
+    - react-force-graph-3d (React wrapper for 3D force graphs)
+    - @react-three/fiber, @react-three/drei (React Three.js integration)
+    - framer-motion (UI animations)
+    - @vitejs/plugin-react (Vite React plugin)
+    - Existing: sigma, graphology, graphology-layout-forceatlas2, three
+
+    Estimated times:
+    - Scout phase: ~10 min (dependency mapping, interface contracts, IMPL doc)
+    - Agent execution: ~15 min (6 agents x 8 min avg, 2 waves parallel)
+    - Merge and verification: ~5 min
+    Total Polywave time: ~30 min
+
+    Sequential baseline: ~50 min (6 agents x 8 min avg sequential)
+    Time savings: ~20 min (40% faster)
+
+    Recommendation: Clear speedup. Proceed.
+test_command: command npm run build
+lint_command: npx tsc --noEmit
+file_ownership:
+    - file: package.json
+      agent: A
+      wave: 1
+      action: modify
+    - file: vite.config.ts
+      agent: A
+      wave: 1
+      action: modify
+    - file: tsconfig.json
+      agent: A
+      wave: 1
+      action: modify
+    - file: index.html
+      agent: A
+      wave: 1
+      action: modify
+    - file: src/App.tsx
+      agent: A
+      wave: 1
+      action: new
+    - file: src/App.css
+      agent: A
+      wave: 1
+      action: new
+    - file: src/main.tsx
+      agent: A
+      wave: 1
+      action: new
+    - file: src/vite-env.d.ts
+      agent: A
+      wave: 1
+      action: new
+    - file: src/store.ts
+      agent: B
+      wave: 1
+      action: new
+    - file: src/hooks/useGraphLoader.ts
+      agent: B
+      wave: 1
+      action: new
+    - file: src/hooks/useOverlayEffects.ts
+      agent: B
+      wave: 1
+      action: new
+    - file: src/constants.ts
+      agent: B
+      wave: 1
+      action: new
+    - file: src/components/GraphViewer.tsx
+      agent: C
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/GraphEvents.tsx
+      agent: C
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/Galaxy3D.tsx
+      agent: C
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/StatusBar.tsx
+      agent: C
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/Sidebar.tsx
+      agent: D
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/ViewToggle.tsx
+      agent: D
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/GroupByToggle.tsx
+      agent: D
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/SearchBox.tsx
+      agent: D
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/FileLoader.tsx
+      agent: D
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/CommunityList.tsx
+      agent: D
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/SettingsPanel.tsx
+      agent: D
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/Toolbar.tsx
+      agent: D
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/DetailPanel.tsx
+      agent: E
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/NodeList.tsx
+      agent: E
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/NodeDetail.tsx
+      agent: E
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/BlastDetail.tsx
+      agent: E
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/legends/ProvenanceLegend.tsx
+      agent: E
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/legends/BlameLegend.tsx
+      agent: E
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/components/legends/CoverageLegend.tsx
+      agent: E
+      wave: 2
+      action: new
+      depends_on:
+        - A
+        - B
+    - file: src/App.tsx
+      agent: F
+      wave: 3
+      action: modify
+      depends_on:
+        - C
+        - D
+        - E
+    - file: src/App.css
+      agent: F
+      wave: 3
+      action: modify
+      depends_on:
+        - C
+        - D
+        - E
+interface_contracts:
+    - name: GraphStore
+      description: |
+        Zustand store shape. Central state for the entire application. All components
+        read from this store; actions are the only way to mutate state. Note: Sigma
+        instance is NOT stored here; @react-sigma/core provides its own useSigma()
+        hook via SigmaContainer context.
+      definition: |
+        import { create } from 'zustand';
+        import type { KnowingGraph, GraphNode, GraphEdge } from './graph-data';
+        import Graph from 'graphology';
+
+        export type ViewMode = 'communities' | 'blast-radius' | 'provenance' | 'blame' | 'coverage' | 'timeline' | 'galaxy3d';
+        export type GroupBy = 'community' | 'package' | 'author';
+
+        export interface DisplaySettings {
+          nodeScale: number;       // 0.5-3.0, default 1.0
+          topLabelCount: number;   // 0-100, default 40
+          edgeOpacity: number;     // 0-1, default 1.0
+          labelSize: number;       // 6-20, default 11
+          gravity: number;         // 0.1-5.0, default 1.0
+          spread: number;          // 5-100, default 10
+          maxNodes: number;        // 50-10000, default 10000
+          confidenceMin: number;   // 0-1, default 0
+          crossCommunityOnly: boolean; // default false
+        }
+
+        export interface GraphState {
+          // Data
+          graph: KnowingGraph | null;
+          graphFileName: string;
+          sigmaGraph: Graph | null;  // graphology instance for Sigma rendering
+
+          // View state
+          viewMode: ViewMode;
+          groupBy: GroupBy;
+          selectedNode: GraphNode | null;
+          selectedEdges: GraphEdge[];
+          activeCommunityIds: Set<number>;
+          searchQuery: string;
+          settings: DisplaySettings;
+
+          // Overlay state (derived, used by GraphEvents)
+          blameAuthorColors: Map<string, string>;  // populated when blame overlay is applied
+
+          // Group labels derived from current sigma graph
+          groupLabels: { id: number; label: string; size: number }[];
+
+          // Actions
+          setGraph: (graph: KnowingGraph, fileName?: string) => void;
+          setViewMode: (mode: ViewMode) => void;
+          setGroupBy: (groupBy: GroupBy) => void;
+          selectNode: (node: GraphNode | null, edges?: GraphEdge[]) => void;
+          toggleCommunity: (id: number) => void;
+          clearCommunities: () => void;
+          setSearchQuery: (query: string) => void;
+          updateSettings: (partial: Partial<DisplaySettings>) => void;
+          resetSettings: () => void;
+          setSigmaGraph: (g: Graph | null) => void;
+          setGroupLabels: (labels: { id: number; label: string; size: number }[]) => void;
+          setBlameAuthorColors: (colors: Map<string, string>) => void;
+        }
+
+        export const useGraphStore = create<GraphState>()((set) => ({ ... }));
+      location: src/store.ts
+    - name: useGraphLoader
+      description: |
+        Hook that builds a graphology Graph from the KnowingGraph data in the store,
+        applying current settings (groupBy, maxNodes, nodeScale, edgeOpacity, etc.).
+        This replaces the graph-building logic from renderSigma() in galaxy.ts.
+        Returns the graphology Graph and group labels, and stores them in the Zustand store.
+      definition: |
+        export function useGraphLoader(): void;
+      location: src/hooks/useGraphLoader.ts
+    - name: useOverlayEffects
+      description: |
+        Hook that applies view-specific overlays (provenance, blame, coverage, blast,
+        diff, search highlight) to the sigma graph instance. Uses useSigma() from
+        @react-sigma/core to access the live Sigma instance and graph. Subscribes to
+        store viewMode, selectedNode, searchQuery, and activeCommunityIds.
+      definition: |
+        export function useOverlayEffects(): void;
+      location: src/hooks/useOverlayEffects.ts
+    - name: communityColor
+      description: Shared color utility extracted from the duplicated COMMUNITY_COLORS arrays.
+      definition: |
+        export const COMMUNITY_COLORS: string[];
+        export function communityColor(id: number): string;
+      location: src/constants.ts
+waves:
+    - number: 1
+      agents:
+        - id: A
+          task: |
+            ## Vite + React Scaffold
+
+            ### What to implement
+            Convert the project from vanilla TypeScript to React + Vite + TypeScript.
+            Install all required dependencies including the new React wrapper libraries.
+
+            1. **package.json**: Add all React dependencies. Run these commands:
+               ```bash
+               cd /Users/dayna.blackwell/code/knowing-viz && command npm install react react-dom zustand @react-sigma/core react-force-graph-3d @react-three/fiber @react-three/drei framer-motion
+               cd /Users/dayna.blackwell/code/knowing-viz && command npm install -D @types/react @types/react-dom @vitejs/plugin-react
+               ```
+
+            2. **vite.config.ts**: Add the React plugin. Current contents:
+               ```typescript
+               import { defineConfig } from 'vite'
+               export default defineConfig({
+                 base: '/knowing-viz/',
+                 build: { outDir: 'dist' }
+               })
+               ```
+               Replace with:
+               ```typescript
+               import { defineConfig } from 'vite'
+               import react from '@vitejs/plugin-react'
+               export default defineConfig({
+                 base: '/knowing-viz/',
+                 plugins: [react()],
+                 build: { outDir: 'dist' }
+               })
+               ```
+
+            3. **tsconfig.json**: Add JSX support. Current contents:
+               ```json
+               {
+                 "compilerOptions": {
+                   "target": "ES2022",
+                   "module": "ESNext",
+                   "moduleResolution": "bundler",
+                   "strict": true,
+                   "esModuleInterop": true,
+                   "outDir": "dist",
+                   "rootDir": "src",
+                   "declaration": true,
+                   "sourceMap": true
+                 },
+                 "include": ["src"]
+               }
+               ```
+               Add `"jsx": "react-jsx"` and `"skipLibCheck": true` to compilerOptions.
+
+            4. **index.html**: Replace the entire body content with a single React root div.
+               Keep the same `<head>` (charset, viewport, title). Remove the CSS link
+               `<link rel="stylesheet" href="/styles/graph.css" />`.
+               Remove ALL the DOM structure (sidebar, main, detail-panel aside).
+               Replace body with:
+               ```html
+               <body>
+                 <div id="root"></div>
+                 <script type="module" src="/src/main.tsx"></script>
+               </body>
+               ```
+
+            5. **src/main.tsx** (NEW): React entry point:
+               ```typescript
+               import React from 'react';
+               import ReactDOM from 'react-dom/client';
+               import App from './App';
+               import './App.css';
+
+               ReactDOM.createRoot(document.getElementById('root')!).render(
+                 <React.StrictMode>
+                   <App />
+                 </React.StrictMode>
+               );
+               ```
+
+            6. **src/App.tsx** (NEW): Shell component with placeholder layout. The actual
+               components will be wired in Wave 3 (integration wave). Structure:
+               ```tsx
+               export default function App() {
+                 return (
+                   <div className="app-layout">
+                     <aside className="sidebar">
+                       <div className="sidebar-header">
+                         <h1>knowing</h1>
+                         <span className="subtitle">Graph Explorer</span>
+                       </div>
+                     </aside>
+                     <main className="main-area">
+                       <div className="graph-container" />
+                       <div className="status-bar" />
+                     </main>
+                     <aside className="detail-panel">
+                     </aside>
+                   </div>
+                 );
+               }
+               ```
+
+            7. **src/App.css** (NEW): Copy ALL styles from styles/graph.css into this file.
+               Convert ID selectors to class selectors where they correspond to React
+               component classNames. Specifically convert these:
+               - `#sidebar` -> `.sidebar`
+               - `#sidebar-header` -> `.sidebar-header`
+               - `#graph-source` -> `.graph-source`
+               - `#search-box` -> `.search-box`
+               - `#search` -> `.search-input`
+               - `#view-toggles` -> `.view-toggles`
+               - `#groupby-toggles` -> `.groupby-toggles`
+               - `#community-list` -> `.community-list`
+               - `#settings-panel` -> `.settings-panel`
+               - `#toolbar` -> `.toolbar`
+               - `#main` -> `.main-area`
+               - `#graph-container` -> `.graph-container`
+               - `#status-bar` -> `.status-bar`
+               - `#detail-panel` -> `.detail-panel`
+               - `#detail-header` -> `.detail-header`
+               - `#detail-close` -> `.detail-close`
+               - `#detail-body` -> `.detail-body`
+               - `#selected-info` -> `.selected-info`
+               - `#node-list-container` -> `.node-list-container`
+               - `#node-filter` -> `.node-filter`
+               - `#node-list` -> `.node-list`
+               - `#current-graph-name` -> `.current-graph-name`
+               - `#btn-screenshot`, `#btn-fit`, `#btn-reset` -> use `.toolbar button` (already covered)
+               - `#cross-community-only`, `#confidence-min`, etc. -> remove ID-specific selectors (handled by class-based styles)
+
+               Keep the `:root` CSS custom properties block unchanged. Also add:
+               ```css
+               .app-layout {
+                 display: flex;
+                 height: 100vh;
+                 overflow: hidden;
+               }
+               .main-area {
+                 flex: 1;
+                 display: flex;
+                 flex-direction: column;
+                 position: relative;
+               }
+               ```
+
+            8. **src/vite-env.d.ts** (NEW): Vite client types reference:
+               ```typescript
+               /// <reference types="vite/client" />
+               ```
+
+            ### Constraints
+            - Do NOT delete src/main.ts (the old entry point). It will be removed after
+              full migration is verified.
+            - Do NOT modify any of the existing .ts modules (galaxy.ts, graph-data.ts,
+              blast-radius.ts, provenance.ts, timeline.ts, galaxy3d.ts).
+            - Do NOT remove styles/graph.css. Copy its contents to App.css; the old file
+              stays for reference.
+
+            ### Verification
+            After changes, the project must compile:
+            ```
+            cd /Users/dayna.blackwell/code/knowing-viz && npx tsc --noEmit
+            ```
+            And build successfully:
+            ```
+            cd /Users/dayna.blackwell/code/knowing-viz && command npm run build
+            ```
+
+            ### Postconditions
+            - grep -c "react-dom" src/main.tsx  => 1
+            - grep -c "@vitejs/plugin-react" vite.config.ts  => 1
+            - grep -c "react-jsx" tsconfig.json  => 1
+            - grep -c 'id="root"' index.html  => 1
+            - grep -c "@react-sigma/core" package.json  => 1
+            - grep -c "react-force-graph-3d" package.json  => 1
+            - grep -c "framer-motion" package.json  => 1
+          files:
+            - package.json
+            - vite.config.ts
+            - tsconfig.json
+            - index.html
+            - src/App.tsx
+            - src/App.css
+            - src/main.tsx
+            - src/vite-env.d.ts
+        - id: B
+          task: |
+            ## Zustand Store + Hooks + Constants
+
+            ### What to implement
+
+            1. **src/store.ts** (NEW): Create the Zustand store matching the GraphStore
+               interface contract exactly. Import types from existing modules:
+               - `KnowingGraph, GraphNode, GraphEdge` from `./graph-data`
+               - `Graph` from `graphology`
+
+               Define types: `ViewMode`, `GroupBy`, `DisplaySettings`, `GraphState`.
+               Export the `useGraphStore` hook.
+
+               IMPORTANT: Do NOT store a Sigma instance in the Zustand store. The
+               @react-sigma/core library provides its own `useSigma()` hook via React
+               context (SigmaContainer). Components that need the Sigma instance will
+               use `useSigma()` from `@react-sigma/core` instead.
+
+               Store the graphology `Graph` instance and group labels in the store
+               so components outside the SigmaContainer (like CommunityList) can
+               access group metadata.
+
+               Default settings:
+               ```typescript
+               const DEFAULT_SETTINGS: DisplaySettings = {
+                 nodeScale: 1.0,
+                 topLabelCount: 40,
+                 edgeOpacity: 1.0,
+                 labelSize: 11,
+                 gravity: 1.0,
+                 spread: 10,
+                 maxNodes: 10000,
+                 confidenceMin: 0,
+                 crossCommunityOnly: false,
+               };
+               ```
+
+               Implement all actions listed in the interface contract. For `toggleCommunity`,
+               use a Set (note: Zustand needs a new Set() for reactivity):
+               ```typescript
+               toggleCommunity: (id) => set((state) => {
+                 const next = new Set(state.activeCommunityIds);
+                 if (next.has(id)) next.delete(id);
+                 else next.add(id);
+                 return { activeCommunityIds: next };
+               }),
+               ```
+
+               For `resetSettings`:
+               ```typescript
+               resetSettings: () => set({
+                 settings: { ...DEFAULT_SETTINGS },
+                 activeCommunityIds: new Set(),
+                 searchQuery: '',
+               }),
+               ```
+
+            2. **src/hooks/useGraphLoader.ts** (NEW): Hook that builds a graphology Graph
+               from KnowingGraph data, applying current display settings.
+
+               This hook extracts the graph-building logic from renderSigma() in galaxy.ts
+               (lines 68-206). It reads from the Zustand store and produces a graphology
+               Graph instance that the SigmaContainer can render.
+
+               Key logic to port from galaxy.ts:
+               - Group assignment based on groupBy mode (lines 70-90)
+               - Top 20 group filtering (lines 92-101)
+               - Group-to-color mapping (lines 103-105)
+               - Node filtering by maxNodes (lines 107-109)
+               - Degree computation for sizing (lines 112-119)
+               - Top-N label filtering (lines 122-123)
+               - Seed positions on a circle per group (lines 126-135)
+               - Node attribute assignment (lines 138-164)
+               - Edge filtering and attribute assignment (lines 167-193)
+               - ForceAtlas2 layout (lines 196-206)
+               - Group label computation for sidebar (lines 561-567)
+
+               ```typescript
+               import { useEffect, useRef } from 'react';
+               import Graph from 'graphology';
+               import forceAtlas2 from 'graphology-layout-forceatlas2';
+               import { useGraphStore } from '../store';
+               import { COMMUNITY_COLORS } from '../constants';
+
+               export function useGraphLoader(): void {
+                 const graph = useGraphStore((s) => s.graph);
+                 const groupBy = useGraphStore((s) => s.groupBy);
+                 const settings = useGraphStore((s) => s.settings);
+                 const viewMode = useGraphStore((s) => s.viewMode);
+                 const setSigmaGraph = useGraphStore((s) => s.setSigmaGraph);
+                 const setGroupLabels = useGraphStore((s) => s.setGroupLabels);
+
+                 useEffect(() => {
+                   if (!graph || viewMode === 'galaxy3d') {
+                     setSigmaGraph(null);
+                     return;
+                   }
+
+                   // Build graphology graph from KnowingGraph data.
+                   // Port the logic from galaxy.ts renderSigma() lines 68-206.
+                   const sigmaGraph = new Graph();
+
+                   // ... (group assignment, node/edge building, ForceAtlas2 layout)
+                   // See galaxy.ts for the complete implementation to port.
+
+                   setSigmaGraph(sigmaGraph);
+                   setGroupLabels(/* computed group labels */);
+
+                   return () => { /* no cleanup needed; graph is just data */ };
+                 }, [graph, groupBy, settings, viewMode]);
+               }
+               ```
+
+               Port ALL the graph-building logic from galaxy.ts renderSigma(). The
+               existing galaxy.ts renderSigma() function does both graph building AND
+               Sigma rendering; this hook extracts ONLY the graph building part. The
+               Sigma rendering is handled by @react-sigma/core's SigmaContainer.
+
+            3. **src/hooks/useOverlayEffects.ts** (NEW): Hook that applies view overlays
+               to the Sigma graph. This hook runs INSIDE the SigmaContainer context
+               (rendered as a child of SigmaContainer) so it can call useSigma() from
+               @react-sigma/core.
+
+               Port the overlay logic from galaxy.ts:
+               - highlightCommunities (lines 296-319)
+               - resetHighlight (lines 321-334)
+               - highlightSearch (lines 336-347)
+               - applyBlast (lines 349-379)
+               - applyProvenance (lines 382-399)
+               - applyDiff (lines 401-420)
+               - applyBlame (lines 424-476)
+               - highlightAuthor (lines 479-507)
+               - applyCoverage (lines 510-546)
+               - Hover effects (lines 237-277)
+
+               ```typescript
+               import { useEffect } from 'react';
+               import { useSigma, useRegisterEvents } from '@react-sigma/core';
+               import { useGraphStore } from '../store';
+               import { computeBlastRadius } from '../blast-radius';
+               import { computeDiff } from '../timeline';
+               import { loadGraph } from '../graph-data';
+
+               export function useOverlayEffects(): void {
+                 const sigma = useSigma();
+                 const graph = sigma.getGraph();
+                 const registerEvents = useRegisterEvents();
+                 const viewMode = useGraphStore((s) => s.viewMode);
+                 const knGraph = useGraphStore((s) => s.graph);
+                 const selectedNode = useGraphStore((s) => s.selectedNode);
+                 const searchQuery = useGraphStore((s) => s.searchQuery);
+                 const activeCommunityIds = useGraphStore((s) => s.activeCommunityIds);
+                 const selectNode = useGraphStore((s) => s.selectNode);
+                 const setBlameAuthorColors = useGraphStore((s) => s.setBlameAuthorColors);
+
+                 // Register click/hover events
+                 useEffect(() => {
+                   registerEvents({
+                     clickNode: ({ node }) => {
+                       const gNode = knGraph?.nodes.find(n => n.id === node) || null;
+                       const edges = knGraph?.edges.filter(e => e.source === node || e.target === node) || [];
+                       selectNode(gNode, edges);
+                     },
+                     clickStage: () => {
+                       resetHighlight(graph);
+                       selectNode(null);
+                     },
+                     enterNode: ({ node }) => { /* highlight neighbors */ },
+                     leaveNode: () => { /* reset highlight */ },
+                   });
+                 }, [registerEvents, knGraph]);
+
+                 // Apply overlay based on viewMode
+                 useEffect(() => {
+                   if (!graph) return;
+                   switch (viewMode) {
+                     case 'provenance': applyProvenance(graph); break;
+                     case 'blame': {
+                       const colors = applyBlame(graph, sigma);
+                       setBlameAuthorColors(colors);
+                       break;
+                     }
+                     case 'coverage': applyCoverage(graph, sigma); break;
+                     case 'timeline': {
+                       (async () => {
+                         try {
+                           const before = await loadGraph(import.meta.env.BASE_URL + 'graph-before.json');
+                           if (knGraph) {
+                             const diff = computeDiff(before, knGraph);
+                             applyDiff(graph, diff.addedNodes, diff.addedEdges);
+                           }
+                         } catch { /* no baseline */ }
+                       })();
+                       break;
+                     }
+                     case 'communities': resetHighlight(graph); break;
+                   }
+                 }, [viewMode, graph]);
+
+                 // Apply community highlighting
+                 useEffect(() => {
+                   if (activeCommunityIds.size > 0) highlightCommunities(graph, activeCommunityIds);
+                   else if (viewMode === 'communities') resetHighlight(graph);
+                 }, [activeCommunityIds]);
+
+                 // Apply search highlighting
+                 useEffect(() => {
+                   if (!searchQuery.trim()) { resetHighlight(graph); return; }
+                   const matches = new Set(
+                     knGraph?.nodes
+                       .filter(n => n.shortName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    n.label.toLowerCase().includes(searchQuery.toLowerCase()))
+                       .map(n => n.id) || []
+                   );
+                   highlightSearch(graph, matches);
+                 }, [searchQuery]);
+               }
+
+               // Port the helper functions (resetHighlight, highlightCommunities, etc.)
+               // from galaxy.ts. They operate on the graphology Graph instance directly.
+               ```
+
+            4. **src/constants.ts** (NEW): Extract the duplicated COMMUNITY_COLORS array
+               and communityColor function into a shared module:
+               ```typescript
+               export const COMMUNITY_COLORS = [
+                 '#3fb950', '#58a6ff', '#d29922', '#bc8cff',
+                 '#39d2c0', '#f85149', '#7ee787', '#79c0ff',
+                 '#a5d6ff', '#ffd33d', '#56d4dd', '#ff7b72',
+                 '#8b949e', '#d2a8ff', '#2ea043', '#e3b341',
+               ];
+
+               export function communityColor(id: number): string {
+                 return COMMUNITY_COLORS[id % COMMUNITY_COLORS.length];
+               }
+               ```
+
+            ### Constraints
+            - Do NOT store a Sigma instance in the Zustand store. Use @react-sigma/core's
+              useSigma() hook within the SigmaContainer context instead.
+            - Do NOT import from react or react-dom in store.ts (Zustand works without React imports).
+            - Do NOT modify any existing .ts files (galaxy.ts, graph-data.ts, etc.).
+            - Do NOT create any React components (those are Wave 2 work).
+
+            ### Interfaces produced
+            - `useGraphStore` (Zustand hook) with `ViewMode`, `GroupBy`, `DisplaySettings` types
+            - `useGraphLoader` hook
+            - `useOverlayEffects` hook
+            - `communityColor` function, `COMMUNITY_COLORS` array
+
+            ### Verification
+            The store and hooks must type-check. Since Agent A may not have merged yet,
+            verify with:
+            ```
+            cd /Users/dayna.blackwell/code/knowing-viz && npx tsc --noEmit --skipLibCheck 2>&1 | head -20
+            ```
+            If React types are not yet installed (Agent A installs them), verify the .ts
+            files individually compile by checking for syntax errors only.
+
+            ### Postconditions
+            - grep -c "create<GraphState>" src/store.ts  => 1
+            - grep -c "useGraphStore" src/store.ts  => at least 1
+            - grep -c "useGraphLoader" src/hooks/useGraphLoader.ts  => at least 1
+            - grep -c "useOverlayEffects" src/hooks/useOverlayEffects.ts  => at least 1
+            - grep -c "communityColor" src/constants.ts  => 1
+            - grep -c "useSigma" src/hooks/useOverlayEffects.ts  => at least 1
+          files:
+            - src/store.ts
+            - src/hooks/useGraphLoader.ts
+            - src/hooks/useOverlayEffects.ts
+            - src/constants.ts
+    - number: 2
+      agents:
+        - id: C
+          task: |
+            ## GraphViewer + Galaxy3D + StatusBar Components
+
+            ### What to implement
+
+            1. **src/components/GraphViewer.tsx** (NEW): The main 2D graph view component.
+               Uses @react-sigma/core's SigmaContainer as the rendering wrapper.
+
+               Key architecture:
+               - SigmaContainer wraps the Sigma.js WebGL canvas and provides React context
+               - useGraphLoader (from store hooks) builds the graphology Graph
+               - useOverlayEffects (from store hooks) applies view overlays
+               - GraphEvents child component handles click/hover via useRegisterEvents
+
+               ```tsx
+               import { useEffect, useMemo } from 'react';
+               import { SigmaContainer } from '@react-sigma/core';
+               import '@react-sigma/core/lib/style.css';
+               import { useGraphStore } from '../store';
+               import { useGraphLoader } from '../hooks/useGraphLoader';
+               import { GraphEvents } from './GraphEvents';
+
+               export function GraphViewer() {
+                 const viewMode = useGraphStore((s) => s.viewMode);
+                 const sigmaGraph = useGraphStore((s) => s.sigmaGraph);
+                 const settings = useGraphStore((s) => s.settings);
+
+                 useGraphLoader();
+
+                 if (viewMode === 'galaxy3d' || !sigmaGraph) return null;
+
+                 const sigmaSettings = useMemo(() => ({
+                   defaultEdgeType: 'arrow' as const,
+                   renderEdgeLabels: false,
+                   labelRenderedSizeThreshold: 8,
+                   labelColor: { color: '#c9d1d9' },
+                   labelFont: `${settings.labelSize}px -apple-system, BlinkMacSystemFont, sans-serif`,
+                   labelWeight: 'bold',
+                   defaultNodeColor: '#58a6ff',
+                   defaultEdgeColor: '#30363d',
+                   stagePadding: 40,
+                   zIndex: true,
+                   minCameraRatio: 0.08,
+                   maxCameraRatio: 8,
+                 }), [settings.labelSize]);
+
+                 return (
+                   <SigmaContainer
+                     graph={sigmaGraph}
+                     settings={sigmaSettings}
+                     className="graph-container"
+                     style={{ flex: 1 }}
+                   >
+                     <GraphEvents />
+                   </SigmaContainer>
+                 );
+               }
+               ```
+
+            2. **src/components/GraphEvents.tsx** (NEW): Child component inside SigmaContainer
+               that registers event handlers and applies overlays. Must be inside
+               SigmaContainer to access Sigma context.
+
+               ```tsx
+               import { useOverlayEffects } from '../hooks/useOverlayEffects';
+
+               export function GraphEvents() {
+                 useOverlayEffects();
+                 return null;  // Pure effect component, no visual output
+               }
+               ```
+
+            3. **src/components/Galaxy3D.tsx** (NEW): 3D galaxy view using react-force-graph-3d.
+               This replaces the custom Three.js implementation in galaxy3d.ts with a
+               declarative React component.
+
+               ```tsx
+               import { useMemo, useCallback } from 'react';
+               import ForceGraph3D from 'react-force-graph-3d';
+               import { useGraphStore } from '../store';
+               import { COMMUNITY_COLORS } from '../constants';
+
+               export function Galaxy3D() {
+                 const viewMode = useGraphStore((s) => s.viewMode);
+                 const graph = useGraphStore((s) => s.graph);
+
+                 const graphData = useMemo(() => {
+                   if (!graph) return { nodes: [], links: [] };
+
+                   // Port filtering logic from galaxy3d.ts lines 18-53
+                   const topCommunities = [...graph.communities]
+                     .sort((a, b) => b.size - a.size)
+                     .slice(0, 15)
+                     .map(c => c.id);
+                   const topCommSet = new Set(topCommunities);
+
+                   const significantNodes = graph.nodes
+                     .filter(n => topCommSet.has(n.community))
+                     .slice(0, 500);
+                   const nodeIds = new Set(significantNodes.map(n => n.id));
+
+                   const nodes = significantNodes.map(n => ({
+                     id: n.id,
+                     name: n.shortName,
+                     community: n.community,
+                     kind: n.kind,
+                     color: COMMUNITY_COLORS[n.community % COMMUNITY_COLORS.length],
+                     val: n.kind === 'service' ? 6 : n.kind === 'type' ? 3 : 2,
+                   }));
+
+                   const links: { source: string; target: string; color: string }[] = [];
+                   const seenEdges = new Set<string>();
+                   for (const edge of graph.edges) {
+                     if (!nodeIds.has(edge.source) || !nodeIds.has(edge.target)) continue;
+                     if (edge.source === edge.target) continue;
+                     const key = `${edge.source}-${edge.target}`;
+                     if (seenEdges.has(key)) continue;
+                     seenEdges.add(key);
+                     links.push({
+                       source: edge.source,
+                       target: edge.target,
+                       color: edge.crossCommunity ? 'rgba(248,81,73,0.6)' : 'rgba(100,116,139,0.35)',
+                     });
+                   }
+
+                   return { nodes, links };
+                 }, [graph]);
+
+                 const nodeColor = useCallback((node: any) => node.color, []);
+                 const nodeVal = useCallback((node: any) => node.val, []);
+                 const nodeLabel = useCallback((node: any) => `${node.name} (${node.kind})`, []);
+                 const linkColor = useCallback((link: any) => link.color, []);
+
+                 if (viewMode !== 'galaxy3d' || !graph) return null;
+
+                 return (
+                   <div className="graph-container galaxy3d-container">
+                     <ForceGraph3D
+                       graphData={graphData}
+                       backgroundColor="#000000"
+                       nodeColor={nodeColor}
+                       nodeVal={nodeVal}
+                       nodeLabel={nodeLabel}
+                       nodeOpacity={0.9}
+                       linkColor={linkColor}
+                       linkWidth={0.8}
+                       linkOpacity={0.8}
+                       linkDirectionalArrowLength={3}
+                       linkDirectionalArrowRelPos={1}
+                       linkDirectionalParticles={(link: any) => link.color.includes('248,81,73') ? 4 : 1}
+                       linkDirectionalParticleWidth={1.5}
+                       linkDirectionalParticleSpeed={0.004}
+                       linkDirectionalParticleColor={(link: any) => link.color.includes('248,81,73') ? '#f85149' : '#58a6ff'}
+                       enableNodeDrag={true}
+                       enableNavigationControls={true}
+                       showNavInfo={false}
+                     />
+                   </div>
+                 );
+               }
+               ```
+
+               Note: react-force-graph-3d handles its own Three.js setup, resize, and
+               cleanup internally. No manual Three.js management needed. The UnrealBloomPass
+               from the original galaxy3d.ts can be added later as an enhancement; skip it
+               for the initial migration to keep things simple.
+
+            4. **src/components/StatusBar.tsx** (NEW): Bottom status bar showing graph stats.
+               Port the stats display from main.ts lines 76-89 (the updateStats function).
+               ```tsx
+               import { useGraphStore } from '../store';
+               import { graphStats } from '../graph-data';
+
+               export function StatusBar() {
+                 const graph = useGraphStore((s) => s.graph);
+                 if (!graph) return <div className="status-bar" />;
+
+                 const stats = graphStats(graph);
+                 return (
+                   <div className="status-bar">
+                     <span>Nodes: {stats.nodes.toLocaleString()}</span>
+                     <span>Edges: {stats.edges.toLocaleString()}</span>
+                     <span>Communities: {stats.communities}</span>
+                     <span>Cross-community: {stats.crossCommunityEdges.toLocaleString()}</span>
+                     <span className="edge-legend">
+                       <span className="edge-legend-item">
+                         <span className="edge-legend-line" style={{ background: 'rgba(100,116,139,0.5)' }} />
+                         within group
+                       </span>
+                       <span className="edge-legend-item">
+                         <span className="edge-legend-line" style={{ background: '#f85149' }} />
+                         cross-group
+                       </span>
+                     </span>
+                   </div>
+                 );
+               }
+               ```
+
+            ### Interfaces consumed
+            - `useGraphStore` from `../store` (Agent B, Wave 1)
+            - `useGraphLoader` from `../hooks/useGraphLoader` (Agent B, Wave 1)
+            - `useOverlayEffects` from `../hooks/useOverlayEffects` (Agent B, Wave 1)
+            - `COMMUNITY_COLORS` from `../constants` (Agent B, Wave 1)
+            - `SigmaContainer, useSigma, useRegisterEvents` from `@react-sigma/core`
+            - `ForceGraph3D` from `react-force-graph-3d`
+            - `graphStats` from `../graph-data` (existing, unchanged)
+
+            ### Constraints
+            - Do NOT modify any existing .ts modules.
+            - Do NOT create store.ts or any hooks (those are Agent B's files).
+            - Do NOT modify App.tsx (Agent A's file; integration happens in Wave 3).
+
+            ### Verification
+            ```
+            cd /Users/dayna.blackwell/code/knowing-viz && npx tsc --noEmit
+            ```
+
+            ### Postconditions
+            - grep -c "SigmaContainer" src/components/GraphViewer.tsx  => at least 1
+            - grep -c "ForceGraph3D" src/components/Galaxy3D.tsx  => at least 1
+            - grep -c "GraphEvents" src/components/GraphEvents.tsx  => at least 1
+            - grep -c "StatusBar" src/components/StatusBar.tsx  => at least 1
+            - grep -c "useGraphLoader" src/components/GraphViewer.tsx  => 1
+            - grep -c "useOverlayEffects" src/components/GraphEvents.tsx  => 1
+          files:
+            - src/components/GraphViewer.tsx
+            - src/components/GraphEvents.tsx
+            - src/components/Galaxy3D.tsx
+            - src/components/StatusBar.tsx
+          dependencies:
+            - A
+            - B
+        - id: D
+          task: |
+            ## Sidebar Components (Views, Groups, Search, Settings, File Loader)
+
+            ### What to implement
+
+            Create all sidebar sub-components. Each component reads from and dispatches
+            to the Zustand store. Use framer-motion for sidebar panel animations.
+            Port the imperative DOM manipulation from main.ts into declarative React.
+
+            1. **src/components/ViewToggle.tsx** (NEW): View mode buttons.
+               Port from main.ts lines 387-495 (the view switching event listeners).
+               ```tsx
+               import { useGraphStore, type ViewMode } from '../store';
+
+               const VIEWS: { key: ViewMode; label: string }[] = [
+                 { key: 'communities', label: 'Communities' },
+                 { key: 'blast-radius', label: 'Blast Radius' },
+                 { key: 'provenance', label: 'Provenance' },
+                 { key: 'blame', label: 'Blame' },
+                 { key: 'coverage', label: 'Coverage' },
+                 { key: 'timeline', label: 'Timeline' },
+                 { key: 'galaxy3d', label: 'Galaxy 3D' },
+               ];
+
+               export function ViewToggle() {
+                 const viewMode = useGraphStore((s) => s.viewMode);
+                 const setViewMode = useGraphStore((s) => s.setViewMode);
+                 return (
+                   <div className="view-toggles">
+                     <h3>Views</h3>
+                     {VIEWS.map((v) => (
+                       <button
+                         key={v.key}
+                         className={viewMode === v.key ? 'active' : ''}
+                         onClick={() => setViewMode(v.key)}
+                       >
+                         {v.label}
+                       </button>
+                     ))}
+                   </div>
+                 );
+               }
+               ```
+
+            2. **src/components/GroupByToggle.tsx** (NEW): Group-by buttons.
+               Port from main.ts lines 234-246.
+               ```tsx
+               import { useGraphStore, type GroupBy } from '../store';
+
+               const GROUPS: { key: GroupBy; label: string }[] = [
+                 { key: 'package', label: 'Package' },
+                 { key: 'community', label: 'Louvain' },
+                 { key: 'author', label: 'Author' },
+               ];
+
+               export function GroupByToggle() {
+                 const groupBy = useGraphStore((s) => s.groupBy);
+                 const setGroupBy = useGraphStore((s) => s.setGroupBy);
+                 return (
+                   <div className="groupby-toggles">
+                     <h3>Group by</h3>
+                     <div style={{ display: 'flex', gap: '4px', padding: '0 16px 8px' }}>
+                       {GROUPS.map((g) => (
+                         <button
+                           key={g.key}
+                           className={`groupby-btn ${groupBy === g.key ? 'active' : ''}`}
+                           onClick={() => setGroupBy(g.key)}
+                         >
+                           {g.label}
+                         </button>
+                       ))}
+                     </div>
+                   </div>
+                 );
+               }
+               ```
+
+            3. **src/components/SearchBox.tsx** (NEW): Search input.
+               Port from main.ts lines 506-516. The search dispatches to the store;
+               the overlay effect in useOverlayEffects subscribes to searchQuery and
+               applies the highlight.
+               ```tsx
+               import { useGraphStore } from '../store';
+
+               export function SearchBox() {
+                 const searchQuery = useGraphStore((s) => s.searchQuery);
+                 const setSearchQuery = useGraphStore((s) => s.setSearchQuery);
+
+                 return (
+                   <div className="search-box">
+                     <input
+                       type="text"
+                       className="search-input"
+                       placeholder="Search symbols, files, types..."
+                       value={searchQuery}
+                       onChange={(e) => setSearchQuery(e.target.value)}
+                     />
+                   </div>
+                 );
+               }
+               ```
+
+            4. **src/components/FileLoader.tsx** (NEW): File picker for loading graph JSON.
+               Port from main.ts lines 54-73.
+               ```tsx
+               import { useGraphStore } from '../store';
+               import { loadGraphFromFile } from '../graph-data';
+
+               export function FileLoader() {
+                 const setGraph = useGraphStore((s) => s.setGraph);
+                 const graphFileName = useGraphStore((s) => s.graphFileName);
+
+                 const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+                   const file = e.target.files?.[0];
+                   if (!file) return;
+                   try {
+                     const graph = await loadGraphFromFile(file);
+                     setGraph(graph, file.name);
+                   } catch (err) {
+                     console.error('Failed to load graph:', err);
+                   }
+                 };
+
+                 return (
+                   <div className="graph-source">
+                     <label className="file-picker-label" htmlFor="graph-file">Load graph JSON</label>
+                     <input type="file" id="graph-file" accept=".json" onChange={handleFileChange} />
+                     <div className="current-graph-name subtitle">{graphFileName}</div>
+                   </div>
+                 );
+               }
+               ```
+
+            5. **src/components/CommunityList.tsx** (NEW): Clickable community/group list.
+               Port from main.ts lines 309-336 (sidebar community rendering).
+               Reads groupLabels from the Zustand store (populated by useGraphLoader).
+               ```tsx
+               import { useGraphStore } from '../store';
+               import { communityColor } from '../constants';
+
+               export function CommunityList() {
+                 const groupLabels = useGraphStore((s) => s.groupLabels);
+                 const activeCommunityIds = useGraphStore((s) => s.activeCommunityIds);
+                 const toggleCommunity = useGraphStore((s) => s.toggleCommunity);
+                 const groupBy = useGraphStore((s) => s.groupBy);
+
+                 const headings: Record<string, string> = { package: 'Packages', community: 'Communities', author: 'Authors' };
+
+                 return (
+                   <div className="community-list">
+                     <h3>{headings[groupBy] || 'Groups'}</h3>
+                     <div>
+                       {groupLabels.map((g) => (
+                         <div
+                           key={g.id}
+                           className={`community-item ${activeCommunityIds.has(g.id) ? 'active' : ''}`}
+                           onClick={() => toggleCommunity(g.id)}
+                         >
+                           <span className="community-dot" style={{ background: communityColor(g.id) }} />
+                           <span className="community-label">{g.label}</span>
+                           <span className="community-count">{g.size}</span>
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                 );
+               }
+               ```
+
+            6. **src/components/SettingsPanel.tsx** (NEW): All settings sliders and the
+               cross-community toggle. Port from main.ts lines 519-581. Include a
+               SliderRow helper component (can be defined in the same file).
+
+               Sliders to implement (matching current index.html and main.ts):
+               - Confidence: 0-100, maps to confidenceMin (0-1)
+               - Node size: 5-30, maps to nodeScale (0.5-3.0)
+               - Labels: 0-100, maps to topLabelCount
+               - Label size: 6-20, maps to labelSize
+               - Edges: 0-100, maps to edgeOpacity (0-1)
+               - Gravity: 1-50, maps to gravity (0.1-5.0)
+               - Spread: 5-100, maps to spread
+               - Max nodes: 50-10000 step 50, maps to maxNodes
+
+            7. **src/components/Toolbar.tsx** (NEW): Screenshot, Fit, Reset buttons.
+               Port from main.ts lines 341-384. Note: since Sigma is managed by
+               @react-sigma/core, the screenshot and fit buttons need to access the
+               Sigma instance. However, Toolbar is OUTSIDE the SigmaContainer, so it
+               cannot use useSigma(). Instead, store a ref to the SigmaContainer's
+               underlying canvas via a store action, OR use a callback pattern.
+
+               For the initial migration, implement Reset (which just calls resetSettings
+               on the store) and leave Screenshot/Fit as no-ops with a TODO comment.
+               These will be wired in the integration wave when the component tree is
+               finalized.
+
+               ```tsx
+               import { useGraphStore } from '../store';
+
+               export function Toolbar() {
+                 const resetSettings = useGraphStore((s) => s.resetSettings);
+
+                 return (
+                   <div className="toolbar">
+                     <button onClick={() => { /* TODO: screenshot via sigma ref */ }}>Screenshot</button>
+                     <button onClick={() => { /* TODO: fit via sigma camera */ }}>Fit</button>
+                     <button onClick={resetSettings}>Reset</button>
+                   </div>
+                 );
+               }
+               ```
+
+            8. **src/components/Sidebar.tsx** (NEW): Composition component that assembles
+               all sidebar sub-components. Use framer-motion for smooth sidebar
+               collapse/expand animation.
+               ```tsx
+               import { motion } from 'framer-motion';
+               import { FileLoader } from './FileLoader';
+               import { SearchBox } from './SearchBox';
+               import { ViewToggle } from './ViewToggle';
+               import { GroupByToggle } from './GroupByToggle';
+               import { CommunityList } from './CommunityList';
+               import { SettingsPanel } from './SettingsPanel';
+               import { Toolbar } from './Toolbar';
+
+               export function Sidebar() {
+                 return (
+                   <motion.aside
+                     className="sidebar"
+                     initial={{ x: -260 }}
+                     animate={{ x: 0 }}
+                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                   >
+                     <div className="sidebar-header">
+                       <h1>knowing</h1>
+                       <span className="subtitle">Graph Explorer</span>
+                     </div>
+                     <FileLoader />
+                     <SearchBox />
+                     <ViewToggle />
+                     <GroupByToggle />
+                     <CommunityList />
+                     <SettingsPanel />
+                     <Toolbar />
+                   </motion.aside>
+                 );
+               }
+               ```
+
+            ### Interfaces consumed
+            - `useGraphStore` and all types from `../store` (Agent B, Wave 1)
+            - `communityColor` from `../constants` (Agent B, Wave 1)
+            - `loadGraphFromFile` from `../graph-data` (existing, unchanged)
+            - `motion` from `framer-motion`
+
+            ### Constraints
+            - Do NOT modify store.ts, hooks, or constants.ts (Agent B's files).
+            - Do NOT modify App.tsx (Agent A's file).
+            - Do NOT modify any existing .ts modules.
+
+            ### Verification
+            ```
+            cd /Users/dayna.blackwell/code/knowing-viz && npx tsc --noEmit
+            ```
+
+            ### Postconditions
+            - grep -c "Sidebar" src/components/Sidebar.tsx  => at least 1
+            - grep -c "ViewToggle" src/components/ViewToggle.tsx  => at least 1
+            - grep -c "SettingsPanel" src/components/SettingsPanel.tsx  => at least 1
+            - grep -c "useGraphStore" src/components/SearchBox.tsx  => at least 1
+            - grep -c "framer-motion" src/components/Sidebar.tsx  => 1
+            - ls src/components/FileLoader.tsx src/components/CommunityList.tsx src/components/GroupByToggle.tsx src/components/Toolbar.tsx  => all exist
+          files:
+            - src/components/Sidebar.tsx
+            - src/components/ViewToggle.tsx
+            - src/components/GroupByToggle.tsx
+            - src/components/SearchBox.tsx
+            - src/components/FileLoader.tsx
+            - src/components/CommunityList.tsx
+            - src/components/SettingsPanel.tsx
+            - src/components/Toolbar.tsx
+          dependencies:
+            - A
+            - B
+        - id: E
+          task: |
+            ## Detail Panel + Node List + Legend Components
+
+            ### What to implement
+
+            Create the right-panel components: detail panel (node info, blast radius info),
+            node list, and view-specific legend overlays. Use framer-motion for the
+            detail panel slide-in/out animation.
+
+            1. **src/components/DetailPanel.tsx** (NEW): Right panel container that switches
+               between node detail, blast detail, and legend views based on viewMode and
+               selectedNode. Port from main.ts lines 96-185 and 497-503.
+
+               Use framer-motion AnimatePresence for the panel slide transition:
+               ```tsx
+               import { AnimatePresence, motion } from 'framer-motion';
+               import { useGraphStore } from '../store';
+               import { NodeDetail } from './NodeDetail';
+               import { BlastDetail } from './BlastDetail';
+               import { NodeList } from './NodeList';
+               import { ProvenanceLegend } from './legends/ProvenanceLegend';
+               import { BlameLegend } from './legends/BlameLegend';
+               import { CoverageLegend } from './legends/CoverageLegend';
+
+               export function DetailPanel() {
+                 const viewMode = useGraphStore((s) => s.viewMode);
+                 const selectedNode = useGraphStore((s) => s.selectedNode);
+                 const selectNode = useGraphStore((s) => s.selectNode);
+
+                 const handleClose = () => selectNode(null);
+
+                 const showLegend = ['provenance', 'blame', 'coverage'].includes(viewMode);
+                 const showBlast = viewMode === 'blast-radius' && selectedNode;
+                 const showGalaxy3DInfo = viewMode === 'galaxy3d';
+                 const showNodeDetail = selectedNode && !showBlast;
+                 const isVisible = selectedNode || showLegend || showGalaxy3DInfo;
+
+                 const title = showBlast ? `Blast: ${selectedNode?.shortName}` :
+                               showLegend ? viewMode.charAt(0).toUpperCase() + viewMode.slice(1) :
+                               showGalaxy3DInfo ? 'Galaxy 3D' :
+                               selectedNode ? selectedNode.shortName : 'Nodes';
+
+                 return (
+                   <AnimatePresence>
+                     {isVisible && (
+                       <motion.aside
+                         className="detail-panel"
+                         initial={{ width: 0, opacity: 0 }}
+                         animate={{ width: 300, opacity: 1 }}
+                         exit={{ width: 0, opacity: 0 }}
+                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                       >
+                         <div className="detail-header">
+                           <h3>{title}</h3>
+                           <button className="detail-close" onClick={handleClose}>&times;</button>
+                         </div>
+                         <div className="detail-body">
+                           <div className="selected-info">
+                             {showBlast && <BlastDetail />}
+                             {showNodeDetail && <NodeDetail />}
+                             {viewMode === 'provenance' && <ProvenanceLegend />}
+                             {viewMode === 'blame' && <BlameLegend />}
+                             {viewMode === 'coverage' && <CoverageLegend />}
+                             {showGalaxy3DInfo && (
+                               <>
+                                 <div className="detail-value">Drag to orbit, scroll to zoom</div>
+                                 <div className="detail-value">Auto-rotating</div>
+                                 <div className="detail-label" style={{ marginTop: 8 }}>Legend</div>
+                                 <div className="detail-value">Each cluster = one community</div>
+                                 <div className="detail-value"><span style={{ color: '#f85149' }}>Red lines</span> = cross-community</div>
+                               </>
+                             )}
+                           </div>
+                           <NodeList />
+                         </div>
+                       </motion.aside>
+                     )}
+                   </AnimatePresence>
+                 );
+               }
+               ```
+
+            2. **src/components/NodeDetail.tsx** (NEW): Node detail view.
+               Port from main.ts lines 119-160 (showNodeDetail + renderEdgeList).
+               Displays: qualified name, kind, package, community, signature, callers, callees.
+               Uses `communityColor` from `../constants` for the community dot.
+
+               ```tsx
+               import { useMemo } from 'react';
+               import { useGraphStore } from '../store';
+               import { communityColor } from '../constants';
+
+               export function NodeDetail() {
+                 const selectedNode = useGraphStore((s) => s.selectedNode);
+                 const selectedEdges = useGraphStore((s) => s.selectedEdges);
+                 const graph = useGraphStore((s) => s.graph);
+
+                 if (!selectedNode || !graph) return null;
+
+                 const callers = selectedEdges.filter(e => e.target === selectedNode.id);
+                 const callees = selectedEdges.filter(e => e.source === selectedNode.id);
+                 const community = graph.communities.find(c => c.id === selectedNode.community);
+
+                 // Build a node map for edge display
+                 const nodeMap = useMemo(() => {
+                   const m = new Map<string, string>();
+                   graph.nodes.forEach(n => m.set(n.id, n.shortName));
+                   return m;
+                 }, [graph]);
+
+                 return (
+                   <>
+                     <div className="detail-label">Qualified Name</div>
+                     <div className="detail-code">{selectedNode.label}</div>
+                     <div className="detail-label">Kind</div>
+                     <div className="detail-value">{selectedNode.kind}</div>
+                     <div className="detail-label">Package</div>
+                     <div className="detail-value">{selectedNode.package}</div>
+                     <div className="detail-label">Community</div>
+                     <div className="detail-value">
+                       <span className="community-dot" style={{
+                         background: communityColor(selectedNode.community),
+                         display: 'inline-block', width: 8, height: 8,
+                         borderRadius: '50%', marginRight: 4, verticalAlign: 'middle'
+                       }} />
+                       {community ? community.label : 'ungrouped'} ({community?.size || 0} symbols)
+                     </div>
+                     <div className="detail-label">Signature</div>
+                     <div className="detail-code">{selectedNode.signature || 'n/a'}</div>
+                     <div className="detail-section">
+                       <div className="detail-label">Callers <span className="stat-highlight">{callers.length}</span></div>
+                       <EdgeList edges={callers} peerField="source" nodeMap={nodeMap} />
+                     </div>
+                     <div className="detail-section">
+                       <div className="detail-label">Callees <span className="stat-highlight">{callees.length}</span></div>
+                       <EdgeList edges={callees} peerField="target" nodeMap={nodeMap} />
+                     </div>
+                   </>
+                 );
+               }
+
+               function EdgeList({ edges, peerField, nodeMap }: {
+                 edges: import('../graph-data').GraphEdge[];
+                 peerField: 'source' | 'target';
+                 nodeMap: Map<string, string>;
+               }) {
+                 if (edges.length === 0) return <ul className="edge-list"><li>none</li></ul>;
+                 return (
+                   <ul className="edge-list">
+                     {edges.slice(0, 20).map((e, i) => (
+                       <li key={i}>
+                         <span className={e.crossCommunity ? 'edge-cross' : 'edge-type'}>{e.type}</span>
+                         {' '}{nodeMap.get(e[peerField]) || e[peerField].slice(0, 8)}
+                       </li>
+                     ))}
+                     {edges.length > 20 && <li className="more">+{edges.length - 20} more</li>}
+                   </ul>
+                 );
+               }
+               ```
+
+            3. **src/components/BlastDetail.tsx** (NEW): Blast radius detail view.
+               Port from main.ts lines 162-184 (showBlastDetail).
+               ```tsx
+               import { useMemo } from 'react';
+               import { useGraphStore } from '../store';
+               import { computeBlastRadius } from '../blast-radius';
+
+               export function BlastDetail() {
+                 const selectedNode = useGraphStore((s) => s.selectedNode);
+                 const graph = useGraphStore((s) => s.graph);
+
+                 const result = useMemo(() => {
+                   if (!selectedNode || !graph) return null;
+                   return computeBlastRadius(graph, selectedNode.id, 4);
+                 }, [selectedNode, graph]);
+
+                 if (!result || !selectedNode || !graph) return null;
+
+                 // Build node name map
+                 const nodeMap = new Map<string, string>();
+                 graph.nodes.forEach(n => nodeMap.set(n.id, n.shortName));
+
+                 // Group by depth
+                 const byDepth = new Map<number, string[]>();
+                 for (const [id, depth] of result.affected) {
+                   if (depth === 0) continue;
+                   const list = byDepth.get(depth) || [];
+                   list.push(nodeMap.get(id) || id.slice(0, 8));
+                   byDepth.set(depth, list);
+                 }
+
+                 return (
+                   <>
+                     <div className="detail-label">Center</div>
+                     <div className="detail-code">{selectedNode.label}</div>
+                     <div className="detail-label">Total Affected</div>
+                     <div className="detail-value">
+                       <span className="stat-danger">{result.affected.size - 1}</span> symbols
+                     </div>
+                     {[...byDepth.entries()].sort(([a], [b]) => a - b).map(([depth, names]) => (
+                       <div className="detail-section" key={depth}>
+                         <div className="detail-label">
+                           Depth {depth} <span className="stat-highlight">{names.length}</span>
+                         </div>
+                         <ul className="edge-list">
+                           {names.map((n, i) => <li key={i}>{n}</li>)}
+                         </ul>
+                       </div>
+                     ))}
+                   </>
+                 );
+               }
+               ```
+
+            4. **src/components/NodeList.tsx** (NEW): Browsable, filterable node list.
+               Port from main.ts lines 196-278. Each node item is clickable to select.
+               Note: Camera centering on click requires Sigma access; since NodeList is
+               rendered inside the DetailPanel (which may or may not be inside SigmaContainer),
+               store a camera-animate callback in the store or use an event pattern. For the
+               initial migration, implement selection without camera animation (the
+               integration wave will wire camera centering).
+               ```tsx
+               import { useMemo, useState } from 'react';
+               import { useGraphStore } from '../store';
+               import { communityColor } from '../constants';
+
+               export function NodeList() {
+                 const graph = useGraphStore((s) => s.graph);
+                 const selectNode = useGraphStore((s) => s.selectNode);
+                 const selectedNode = useGraphStore((s) => s.selectedNode);
+                 const [filter, setFilter] = useState('');
+
+                 const sortedNodes = useMemo(() => {
+                   if (!graph) return [];
+                   return [...graph.nodes].sort((a, b) => a.shortName.localeCompare(b.shortName));
+                 }, [graph]);
+
+                 const filtered = useMemo(() => {
+                   if (!filter.trim()) return sortedNodes;
+                   const q = filter.toLowerCase().trim();
+                   return sortedNodes.filter(n =>
+                     n.shortName.toLowerCase().includes(q) || n.label.toLowerCase().includes(q)
+                   );
+                 }, [sortedNodes, filter]);
+
+                 const handleClick = (node: typeof sortedNodes[0]) => {
+                   const edges = graph?.edges.filter(e => e.source === node.id || e.target === node.id) ?? [];
+                   selectNode(node, edges);
+                 };
+
+                 return (
+                   <div className="node-list-container">
+                     <input
+                       type="text"
+                       className="node-filter"
+                       placeholder="Filter nodes..."
+                       value={filter}
+                       onChange={(e) => setFilter(e.target.value)}
+                     />
+                     <div className="node-list">
+                       {filtered.map((node) => (
+                         <div
+                           key={node.id}
+                           className={`node-list-item ${selectedNode?.id === node.id ? 'active' : ''}`}
+                           onClick={() => handleClick(node)}
+                         >
+                           <span className="node-list-dot" style={{ background: communityColor(node.community) }} />
+                           <span>{node.shortName}</span>
+                           <span className="node-list-kind">{node.kind}</span>
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                 );
+               }
+               ```
+
+            5. **src/components/legends/ProvenanceLegend.tsx** (NEW): Provenance color legend.
+               Port from main.ts lines 406-411. Import PROVENANCE_COLORS from `../../provenance`.
+               ```tsx
+               import { PROVENANCE_COLORS } from '../../provenance';
+
+               export function ProvenanceLegend() {
+                 return (
+                   <>
+                     <div className="detail-label">Provenance Legend</div>
+                     {Object.entries(PROVENANCE_COLORS)
+                       .filter(([prov]) => prov !== 'default')
+                       .map(([prov, color]) => (
+                         <div className="detail-value" key={prov}>
+                           <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: color, marginRight: 6, verticalAlign: 'middle' }} />
+                           {prov}
+                         </div>
+                       ))}
+                   </>
+                 );
+               }
+               ```
+
+            6. **src/components/legends/BlameLegend.tsx** (NEW): Blame author legend with
+               clickable author filtering. Port from main.ts lines 416-443.
+               Read blameAuthorColors from the store (set by useOverlayEffects when
+               blame view is active). When an author is clicked, dispatch to store
+               and let useOverlayEffects apply the highlight.
+               ```tsx
+               import { useGraphStore } from '../../store';
+
+               export function BlameLegend() {
+                 const blameAuthorColors = useGraphStore((s) => s.blameAuthorColors);
+                 // TODO: add highlightAuthor action to store, called when author clicked
+
+                 return (
+                   <>
+                     <div className="detail-label">
+                       Authors <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(click to filter)</span>
+                     </div>
+                     {[...blameAuthorColors.entries()].map(([author, color]) => (
+                       <div className="detail-value" key={author} style={{ cursor: 'pointer', padding: '2px 4px', borderRadius: 3, marginBottom: 1 }}>
+                         <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: color, marginRight: 6, verticalAlign: 'middle' }} />
+                         {author}
+                       </div>
+                     ))}
+                   </>
+                 );
+               }
+               ```
+
+            7. **src/components/legends/CoverageLegend.tsx** (NEW): Coverage heatmap legend.
+               Port from main.ts lines 451-458.
+               ```tsx
+               export function CoverageLegend() {
+                 const items = [
+                   { color: '#f85149', label: '0% (uncovered)' },
+                   { color: '#d29922', label: '1-49% (low)' },
+                   { color: '#7ee787', label: '50-79% (medium)' },
+                   { color: '#3fb950', label: '80-100% (high)' },
+                   { color: 'rgba(48,54,61,0.3)', label: 'Not measured' },
+                 ];
+                 return (
+                   <>
+                     <div className="detail-label">Coverage Legend</div>
+                     {items.map(({ color, label }) => (
+                       <div className="detail-value" key={label}>
+                         <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: color, marginRight: 6, verticalAlign: 'middle' }} />
+                         {label}
+                       </div>
+                     ))}
+                   </>
+                 );
+               }
+               ```
+
+            ### Interfaces consumed
+            - `useGraphStore` and types from `../store` (Agent B, Wave 1)
+            - `communityColor` from `../constants` (Agent B, Wave 1)
+            - `PROVENANCE_COLORS` from `../provenance` (existing, unchanged)
+            - `computeBlastRadius` from `../blast-radius` (existing, unchanged)
+            - `AnimatePresence, motion` from `framer-motion`
+
+            ### Constraints
+            - Do NOT modify store.ts, hooks, constants.ts, or any existing .ts modules.
+            - Do NOT modify App.tsx or Sidebar.tsx (other agents' files).
+
+            ### Verification
+            ```
+            cd /Users/dayna.blackwell/code/knowing-viz && npx tsc --noEmit
+            ```
+
+            ### Postconditions
+            - grep -c "DetailPanel" src/components/DetailPanel.tsx  => at least 1
+            - grep -c "NodeList" src/components/NodeList.tsx  => at least 1
+            - grep -c "NodeDetail" src/components/NodeDetail.tsx  => at least 1
+            - grep -c "BlastDetail" src/components/BlastDetail.tsx  => at least 1
+            - grep -c "framer-motion" src/components/DetailPanel.tsx  => 1
+            - ls src/components/legends/ProvenanceLegend.tsx src/components/legends/BlameLegend.tsx src/components/legends/CoverageLegend.tsx  => all exist
+          files:
+            - src/components/DetailPanel.tsx
+            - src/components/NodeList.tsx
+            - src/components/NodeDetail.tsx
+            - src/components/BlastDetail.tsx
+            - src/components/legends/ProvenanceLegend.tsx
+            - src/components/legends/BlameLegend.tsx
+            - src/components/legends/CoverageLegend.tsx
+          dependencies:
+            - A
+            - B
+    - number: 3
+      type: integration
+      agents:
+        - id: F
+          task: |
+            ## Wire App.tsx: Integrate All Components
+
+            ### What to implement
+
+            Update `src/App.tsx` to import and render all components, and add the
+            initial graph loading logic (ported from main.ts lines 37-46).
+
+            The current App.tsx (from Wave 1) has a placeholder layout. Replace it with
+            the full component tree:
+
+            ```tsx
+            import { useEffect } from 'react';
+            import { useGraphStore } from './store';
+            import { loadGraph } from './graph-data';
+            import { Sidebar } from './components/Sidebar';
+            import { GraphViewer } from './components/GraphViewer';
+            import { Galaxy3D } from './components/Galaxy3D';
+            import { StatusBar } from './components/StatusBar';
+            import { DetailPanel } from './components/DetailPanel';
+
+            const GRAPH_URL = import.meta.env.BASE_URL + 'graph.json';
+
+            export default function App() {
+              const setGraph = useGraphStore((s) => s.setGraph);
+              const graph = useGraphStore((s) => s.graph);
+
+              useEffect(() => {
+                loadGraph(GRAPH_URL)
+                  .then((g) => setGraph(g, 'graph.json'))
+                  .catch((err) => console.error('Failed to load graph:', err));
+              }, []);
+
+              return (
+                <div className="app-layout">
+                  <Sidebar />
+                  <main className="main-area">
+                    {graph ? (
+                      <>
+                        <GraphViewer />
+                        <Galaxy3D />
+                      </>
+                    ) : (
+                      <div className="graph-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ color: '#f85149', padding: 40, textAlign: 'center' }}>
+                          <h2>No graph data found</h2>
+                          <p>Run <code>knowing export -format json &gt; public/graph.json</code></p>
+                        </div>
+                      </div>
+                    )}
+                    <StatusBar />
+                  </main>
+                  <DetailPanel />
+                </div>
+              );
+            }
+            ```
+
+            Also verify `src/App.css` has the `.app-layout` and `.main-area` classes
+            (should already exist from Wave 1 Agent A). If missing, add them:
+            ```css
+            .app-layout {
+              display: flex;
+              height: 100vh;
+              overflow: hidden;
+            }
+            .main-area {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              position: relative;
+            }
+            ```
+
+            ### Verification
+            After wiring:
+            ```
+            cd /Users/dayna.blackwell/code/knowing-viz && npx tsc --noEmit && command npm run build
+            ```
+
+            ### Postconditions
+            - grep -c "Sidebar" src/App.tsx  => at least 1
+            - grep -c "GraphViewer" src/App.tsx  => at least 1
+            - grep -c "DetailPanel" src/App.tsx  => at least 1
+            - grep -c "Galaxy3D" src/App.tsx  => at least 1
+            - grep -c "loadGraph" src/App.tsx  => at least 1
+          files:
+            - src/App.tsx
+            - src/App.css
+          dependencies:
+            - C
+            - D
+            - E
+quality_gates:
+    level: standard
+    gates:
+        - type: typecheck
+          command: cd /Users/dayna.blackwell/code/knowing-viz && npx tsc --noEmit
+          required: true
+        - type: build
+          command: cd /Users/dayna.blackwell/code/knowing-viz && command npm run build
+          required: true
+post_merge_checklist:
+    groups: []
+scaffolds:
+    - file_path: src/store.ts
+      contents: |
+        Zustand store with full state shape: graph data (KnowingGraph | null),
+        viewMode (ViewMode), groupBy (GroupBy), selectedNode, activeCommunityIds,
+        searchQuery, settings (all slider values), actions (setGraph, setView,
+        setGroupBy, selectNode, toggleCommunity, setSearch, updateSettings).
+        Types ViewMode and GroupBy are defined here since they cross component
+        boundaries. No SigmaInstance ref in store; @react-sigma/core manages
+        Sigma lifecycle via its own context/hooks.
+      import_path: ./store
+      status: pending
+pre_mortem:
+    overall_risk: medium
+    rows:
+        - scenario: |
+            @react-sigma/core's SigmaContainer may not accept a pre-built graphology Graph
+            directly. The library may expect to manage its own graph instance internally,
+            requiring the useLoadGraph hook instead of passing graph as a prop.
+          likelihood: medium
+          impact: medium
+          mitigation: |
+            If SigmaContainer does not accept a graph prop, Agent C should use
+            @react-sigma/core's useLoadGraph hook inside a child component of
+            SigmaContainer. The hook receives the sigma instance and can call
+            sigma.getGraph().import(sigmaGraph.export()) to load the pre-built graph.
+            The useGraphLoader hook should be adapted accordingly.
+        - scenario: |
+            react-force-graph-3d may have TypeScript type issues or SSR incompatibilities
+            with Vite. The library wraps Three.js which has known issues with
+            non-browser environments during build.
+          likelihood: medium
+          impact: low
+          mitigation: |
+            Use dynamic import for react-force-graph-3d (React.lazy) to avoid SSR/build
+            issues. The existing galaxy3d.ts already uses @ts-ignore for ForceGraph3D
+            imports, suggesting this is a known typing issue. skipLibCheck in tsconfig
+            handles most type mismatches.
+        - scenario: |
+            CSS class name mismatches between the migrated App.css and the React components.
+            The old CSS uses ID selectors (#sidebar, #graph-container) but React components
+            use class selectors (.sidebar, .graph-container).
+          likelihood: medium
+          impact: low
+          mitigation: |
+            Agent A's task explicitly lists all ID-to-class selector conversions. Wave 2
+            components use className props matching the converted class names.
+        - scenario: |
+            Store subscriptions cause excessive re-renders. Every slider change triggers
+            a full graph rebuild via useGraphLoader, which is expensive (ForceAtlas2 layout).
+          likelihood: medium
+          impact: medium
+          mitigation: |
+            Zustand's selector-based subscriptions prevent unnecessary re-renders. The
+            useGraphLoader hook depends on the settings object reference, so it only
+            rebuilds when settings actually change. Consider adding useMemo or debouncing
+            to slider changes if performance is poor. This matches the current behavior
+            where every slider change calls rerender().
+        - scenario: |
+            Agent B creates hooks that import from @react-sigma/core but the package is
+            not installed yet (Agent A installs it). Build failure in isolated worktree.
+          likelihood: high
+          impact: medium
+          mitigation: |
+            Both agents run in Wave 1 simultaneously. Agent B's verification step uses
+            --skipLibCheck as a fallback. After Wave 1 merge, all packages from both
+            agents are installed. The critical path is that Agent A's npm install must
+            succeed for the merged result to build.
+        - scenario: |
+            Toolbar Screenshot/Fit buttons require Sigma instance access but Toolbar
+            renders outside SigmaContainer, making useSigma() unavailable.
+          likelihood: high
+          impact: low
+          mitigation: |
+            Agent D implements Toolbar with Reset only; Screenshot and Fit are TODO stubs.
+            The integration wave (Agent F) or a follow-up task can wire these by either
+            (a) moving Toolbar inside SigmaContainer, (b) storing a sigma ref in the
+            Zustand store via a callback, or (c) using a React ref forwarded from
+            GraphViewer.
+critic_report:
+    verdict: PASS
+    agent_reviews:
+        A:
+            agent_id: A
+            verdict: PASS
+        B:
+            agent_id: B
+            verdict: PASS
+        C:
+            agent_id: C
+            verdict: PASS
+        D:
+            agent_id: D
+            verdict: PASS
+        E:
+            agent_id: E
+            verdict: PASS
+        F:
+            agent_id: F
+            verdict: PASS
+    summary: 'All six agent briefs verified against the codebase. File existence checks pass: all action:modify files exist (package.json, vite.config.ts, tsconfig.json, index.html) and all action:new files do not yet exist. Symbol accuracy verified for all cross-agent dependencies: KnowingGraph/GraphNode/GraphEdge types in graph-data.ts, graphStats function, loadGraph/loadGraphFromFile exports, PROVENANCE_COLORS export, computeBlastRadius signature, computeDiff export, and COMMUNITY_COLORS array all match brief descriptions. Pattern accuracy confirmed: vite.config.ts, tsconfig.json, and index.html contents match the briefs exactly; CSS ID selectors in styles/graph.css match the ID-to-class conversion list. Interface contracts are syntactically valid TypeScript. Import chains are satisfiable since Agent A installs all required npm packages. No disjoint ownership violations (I1). No agent exceeds 8 files. No caller migration patterns to audit.'
+    reviewed_at: "2026-05-19T00:19:47Z"
+    issue_count: 0
+state: SCOUT_PENDING
