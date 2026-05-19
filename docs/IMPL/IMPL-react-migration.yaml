@@ -1818,7 +1818,7 @@ scaffolds:
         boundaries. No SigmaInstance ref in store; @react-sigma/core manages
         Sigma lifecycle via its own context/hooks.
       import_path: ./store
-      status: pending
+      status: committed (64bb786)
 pre_mortem:
     overall_risk: medium
     rows:
