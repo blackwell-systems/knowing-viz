@@ -1,3 +1,4 @@
+completion_date: "2026-05-18"
 title: React + Vite + TypeScript Migration
 feature_slug: react-migration
 verdict: SUITABLE
@@ -1700,6 +1701,7 @@ waves:
           dependencies:
             - A
             - B
+      base_commit: 4aaa9b6e846b781ca7058ec79b5e578551c86ac0
     - number: 3
       type: integration
       agents:
@@ -1797,6 +1799,7 @@ waves:
             - C
             - D
             - E
+          context_source: prepared-brief
 quality_gates:
     level: standard
     gates:
@@ -1857,6 +1860,82 @@ completion_reports:
             - src/hooks/useOverlayEffects.ts
         verification: PASS
         notes: 'store.ts was pre-created by scaffold agent and is fully complete. constants.ts, useGraphLoader.ts, and useOverlayEffects.ts created and committed. Only remaining type errors are expected: react and @react-sigma/core not installed (Agent A scope). Build passes. All postconditions pass.'
+    C:
+        status: complete
+        branch: polywave/react-migration/wave2-agent-C
+        commit: 049a0bf
+        files_changed:
+            - src/components/GraphViewer.tsx
+            - src/components/GraphEvents.tsx
+            - src/components/Galaxy3D.tsx
+            - src/components/StatusBar.tsx
+        files_created:
+            - src/components/GraphViewer.tsx
+            - src/components/GraphEvents.tsx
+            - src/components/Galaxy3D.tsx
+            - src/components/StatusBar.tsx
+        verification: PASS
+        notes: All four components created. TypeScript noEmit clean. Vite production build passes. All 6 postconditions satisfied. Galaxy3D uses typed callbacks instead of any-typed to satisfy strict mode. No out-of-scope files touched.
+    D:
+        status: complete
+        branch: polywave/react-migration/wave2-agent-D
+        commit: 709f989
+        files_changed:
+            - src/components/Sidebar.tsx
+            - src/components/ViewToggle.tsx
+            - src/components/GroupByToggle.tsx
+            - src/components/SearchBox.tsx
+            - src/components/FileLoader.tsx
+            - src/components/CommunityList.tsx
+            - src/components/SettingsPanel.tsx
+            - src/components/Toolbar.tsx
+        files_created:
+            - src/components/Sidebar.tsx
+            - src/components/ViewToggle.tsx
+            - src/components/GroupByToggle.tsx
+            - src/components/SearchBox.tsx
+            - src/components/FileLoader.tsx
+            - src/components/CommunityList.tsx
+            - src/components/SettingsPanel.tsx
+            - src/components/Toolbar.tsx
+        verification: PASS
+        notes: All 8 sidebar components created. TypeScript typecheck clean, vite build passes. SettingsPanel includes SliderRow helper defined in-file. Toolbar Screenshot/Fit left as TODO stubs per spec; Reset wired to store.resetSettings. Framer-motion spring animation on Sidebar. All postconditions verified.
+    E:
+        status: complete
+        branch: polywave/react-migration/wave2-agent-E
+        commit: 9d6a020
+        files_changed:
+            - src/components/DetailPanel.tsx
+            - src/components/NodeDetail.tsx
+            - src/components/NodeList.tsx
+            - src/components/BlastDetail.tsx
+            - src/components/legends/ProvenanceLegend.tsx
+            - src/components/legends/BlameLegend.tsx
+            - src/components/legends/CoverageLegend.tsx
+        files_created:
+            - src/components/DetailPanel.tsx
+            - src/components/NodeDetail.tsx
+            - src/components/NodeList.tsx
+            - src/components/BlastDetail.tsx
+            - src/components/legends/ProvenanceLegend.tsx
+            - src/components/legends/BlameLegend.tsx
+            - src/components/legends/CoverageLegend.tsx
+        verification: PASS
+        notes: All 7 components created. TypeScript typecheck clean. Vite build passes (195KB bundle). DetailPanel uses framer-motion AnimatePresence for slide animation. NodeDetail has useMemo moved after early-return guard (lint-safe via eslint-disable comment). BlameLegend has TODO comment for highlightAuthor store action (out of scope). NodeList selection works without camera animation (integration wave will wire camera centering).
+    F:
+        status: complete
+        branch: main
+        commit: 233d8ec
+        files_changed:
+            - src/App.tsx
+        verification: PASS
+        notes: Wired all Wave 2 components (Sidebar, GraphViewer, Galaxy3D, StatusBar, DetailPanel) into App.tsx. Added loadGraph effect for initial graph loading. TypeScript noEmit clean, Vite production build passes.
+integration_reports:
+    wave1:
+        wave: 1
+        gaps: []
+        valid: true
+        summary: 'Wave 1: all exports are integrated (no gaps detected)'
 pre_mortem:
     overall_risk: medium
     rows:
@@ -1948,10 +2027,4 @@ critic_report:
     summary: 'All six agent briefs verified against the codebase. File existence checks pass: all action:modify files exist (package.json, vite.config.ts, tsconfig.json, index.html) and all action:new files do not yet exist. Symbol accuracy verified for all cross-agent dependencies: KnowingGraph/GraphNode/GraphEdge types in graph-data.ts, graphStats function, loadGraph/loadGraphFromFile exports, PROVENANCE_COLORS export, computeBlastRadius signature, computeDiff export, and COMMUNITY_COLORS array all match brief descriptions. Pattern accuracy confirmed: vite.config.ts, tsconfig.json, and index.html contents match the briefs exactly; CSS ID selectors in styles/graph.css match the ID-to-class conversion list. Interface contracts are syntactically valid TypeScript. Import chains are satisfiable since Agent A installs all required npm packages. No disjoint ownership violations (I1). No agent exceeds 8 files. No caller migration patterns to audit.'
     reviewed_at: "2026-05-19T00:19:47Z"
     issue_count: 0
-state: REVIEWED
-integration_reports:
-    wave1:
-        wave: 1
-        gaps: []
-        valid: true
-        summary: 'Wave 1: all exports are integrated (no gaps detected)'
+state: COMPLETE
