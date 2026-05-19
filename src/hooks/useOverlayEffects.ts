@@ -268,6 +268,7 @@ export function useOverlayEffects(): void {
   const activeCommunityIds = useGraphStore((s) => s.activeCommunityIds);
   const selectNode = useGraphStore((s) => s.selectNode);
   const setBlameAuthorColors = useGraphStore((s) => s.setBlameAuthorColors);
+  const highlightedAuthor = useGraphStore((s) => s.highlightedAuthor);
 
   // --- Register click/hover events (galaxy.ts hover lines 237-277, click lines 279-293) ---
   useEffect(() => {
@@ -378,6 +379,20 @@ export function useOverlayEffects(): void {
       applyBlast(graph, result.affected);
     }
   }, [viewMode, selectedNode, knGraph, graph]);
+
+  // --- Apply author highlight in blame mode ---
+  useEffect(() => {
+    if (!graph || graph.order === 0 || viewMode !== 'blame') return;
+    if (highlightedAuthor) {
+      highlightAuthor(graph, highlightedAuthor);
+      sigma.refresh();
+    } else {
+      // Re-apply full blame overlay when deselecting author
+      const colors = applyBlame(graph);
+      setBlameAuthorColors(colors);
+      sigma.refresh();
+    }
+  }, [highlightedAuthor, graph, viewMode, sigma, setBlameAuthorColors]);
 
   // --- Apply community highlighting (galaxy.ts highlightCommunities) ---
   useEffect(() => {

@@ -64,6 +64,7 @@ export interface GraphState {
 
   // Overlay state (derived, used by GraphEvents)
   blameAuthorColors: Map<string, string>;
+  highlightedAuthor: string | null;
 
   // Group labels derived from current sigma graph
   groupLabels: { id: number; label: string; size: number }[];
@@ -81,6 +82,7 @@ export interface GraphState {
   setSigmaGraph: (g: Graph | null) => void;
   setGroupLabels: (labels: { id: number; label: string; size: number }[]) => void;
   setBlameAuthorColors: (colors: Map<string, string>) => void;
+  setHighlightedAuthor: (author: string | null) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -120,6 +122,7 @@ export const useGraphStore = create<GraphState>()((set) => ({
 
   // Overlay state
   blameAuthorColors: new Map<string, string>(),
+  highlightedAuthor: null,
 
   // Group labels
   groupLabels: [],
@@ -169,4 +172,7 @@ export const useGraphStore = create<GraphState>()((set) => ({
 
   setBlameAuthorColors: (colors) =>
     set({ blameAuthorColors: colors }),
+
+  setHighlightedAuthor: (author) =>
+    set({ highlightedAuthor: author }),
 }));
