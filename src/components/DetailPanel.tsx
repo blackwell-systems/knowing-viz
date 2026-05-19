@@ -13,6 +13,7 @@ import { NodeList } from './NodeList';
 import { ProvenanceLegend } from './legends/ProvenanceLegend';
 import { BlameLegend } from './legends/BlameLegend';
 import { CoverageLegend } from './legends/CoverageLegend';
+import { TimelineLegend } from './legends/TimelineLegend';
 
 export function DetailPanel() {
   const viewMode = useGraphStore((s) => s.viewMode);
@@ -21,7 +22,7 @@ export function DetailPanel() {
 
   const handleClose = () => selectNode(null);
 
-  const showLegend = ['provenance', 'blame', 'coverage'].includes(viewMode);
+  const showLegend = ['provenance', 'blame', 'coverage', 'timeline'].includes(viewMode);
   const showBlast = viewMode === 'blast-radius' && selectedNode;
   const showGalaxy3DInfo = viewMode === 'galaxy3d';
   const showNodeDetail = selectedNode && !showBlast;
@@ -53,6 +54,7 @@ export function DetailPanel() {
               {viewMode === 'provenance' && <ProvenanceLegend />}
               {viewMode === 'blame' && <BlameLegend />}
               {viewMode === 'coverage' && <CoverageLegend />}
+              {viewMode === 'timeline' && <TimelineLegend />}
               {showGalaxy3DInfo && (
                 <>
                   <div className="detail-value">Drag to orbit, scroll to zoom</div>

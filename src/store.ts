@@ -65,6 +65,8 @@ export interface GraphState {
   // Overlay state (derived, used by GraphEvents)
   blameAuthorColors: Map<string, string>;
   highlightedAuthor: string | null;
+  baselineGraph: KnowingGraph | null;
+  baselineFileName: string;
 
   // Group labels derived from current sigma graph
   groupLabels: { id: number; label: string; size: number }[];
@@ -83,6 +85,7 @@ export interface GraphState {
   setGroupLabels: (labels: { id: number; label: string; size: number }[]) => void;
   setBlameAuthorColors: (colors: Map<string, string>) => void;
   setHighlightedAuthor: (author: string | null) => void;
+  setBaselineGraph: (graph: KnowingGraph | null, fileName?: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -123,6 +126,8 @@ export const useGraphStore = create<GraphState>()((set) => ({
   // Overlay state
   blameAuthorColors: new Map<string, string>(),
   highlightedAuthor: null,
+  baselineGraph: null,
+  baselineFileName: '',
 
   // Group labels
   groupLabels: [],
@@ -175,4 +180,7 @@ export const useGraphStore = create<GraphState>()((set) => ({
 
   setHighlightedAuthor: (author) =>
     set({ highlightedAuthor: author }),
+
+  setBaselineGraph: (graph, fileName) =>
+    set({ baselineGraph: graph, baselineFileName: fileName ?? '' }),
 }));

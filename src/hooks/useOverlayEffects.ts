@@ -23,7 +23,6 @@ import { useSigma, useRegisterEvents } from '@react-sigma/core';
 import { useGraphStore } from '../store';
 import { computeBlastRadius } from '../blast-radius';
 import { computeDiff } from '../timeline';
-import { loadGraph } from '../graph-data';
 import type Graph from 'graphology';
 
 // ---------------------------------------------------------------------------
@@ -269,6 +268,7 @@ export function useOverlayEffects(): void {
   const selectNode = useGraphStore((s) => s.selectNode);
   const setBlameAuthorColors = useGraphStore((s) => s.setBlameAuthorColors);
   const highlightedAuthor = useGraphStore((s) => s.highlightedAuthor);
+  const baselineGraph = useGraphStore((s) => s.baselineGraph);
 
   // --- Register click/hover events (galaxy.ts hover lines 237-277, click lines 279-293) ---
   useEffect(() => {
@@ -353,18 +353,11 @@ export function useOverlayEffects(): void {
         sigma.refresh();
         break;
       case 'timeline': {
-        (async () => {
-          try {
-            const base = ((import.meta as unknown) as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
-            const before = await loadGraph(base + 'graph-before.json');
-            if (knGraph) {
-              const diff = computeDiff(before, knGraph);
-              applyDiff(graph, diff.addedNodes, diff.addedEdges);
-            }
-          } catch {
-            // No baseline graph available; leave default coloring.
-          }
-        })();
+        if (baselineGraph && knGraph) {
+          const diff = computeDiff(baselineGraph, knGraph);
+          applyDiff(graph, diff.addedNodes, diff.addedEdges);
+          sigma.refresh();
+        }
         break;
       }
       case 'communities':
@@ -374,7 +367,7 @@ export function useOverlayEffects(): void {
         // Blast radius is triggered by node selection (see selectedNode effect below).
         break;
     }
-  }, [viewMode, graph, sigma, knGraph, setBlameAuthorColors]);
+  }, [viewMode, graph, sigma, knGraph, setBlameAuthorColors, baselineGraph]);
 
   // --- Apply blast radius when a node is selected in blast-radius mode ---
   useEffect(() => {
