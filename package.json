@@ -17,7 +17,8 @@
     "graphology-layout-forceatlas2": "^0.10.1",
     "sigma": "^3.0.3",
     "three": "^0.170.0",
-    "three-forcegraph": "^1.43.4"
+    "three-forcegraph": "^1.43.4",
+    "zustand": "^5.0.13"
   },
   "devDependencies": {
     "@types/three": "^0.184.1",
