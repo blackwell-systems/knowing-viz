@@ -15,6 +15,7 @@ import Graph from 'graphology';
 import forceAtlas2 from 'graphology-layout-forceatlas2';
 import { useGraphStore } from '../store';
 import { COMMUNITY_COLORS } from '../constants';
+import { getGroupingFn } from '../grouping';
 
 export function useGraphLoader(): void {
   const knGraph = useGraphStore((s) => s.graph);
@@ -42,26 +43,22 @@ export function useGraphLoader(): void {
       confidenceMin = 0,
     } = settings;
 
-    // --- Group assignment (galaxy.ts lines 70-90) ---
-    const nodeGroup = new Map<string, string>(); // node id -> group label
-    const commLabelMap = new Map<number, string>();
-    for (const c of knGraph.communities) {
-      commLabelMap.set(c.id, c.label);
-    }
+    // --- Group assignment via pluggable registry ---
+    // Build a temporary graph for algorithms that need graph structure (louvain-live, component)
+    const tempGraph = new Graph({ type: 'undirected', allowSelfLoops: false });
     for (const n of knGraph.nodes) {
-      switch (groupBy) {
-        case 'package':
-          nodeGroup.set(n.id, n.package || 'unknown');
-          break;
-        case 'author':
-          nodeGroup.set(n.id, n.lastAuthor || 'unknown');
-          break;
-        case 'community':
-        default:
-          nodeGroup.set(n.id, commLabelMap.get(n.community) || `community ${n.community}`);
-          break;
+      if (!tempGraph.hasNode(n.id)) tempGraph.addNode(n.id);
+    }
+    for (const e of knGraph.edges) {
+      if (e.source === e.target) continue;
+      if (!tempGraph.hasNode(e.source) || !tempGraph.hasNode(e.target)) continue;
+      const key = `${e.source}-${e.target}`;
+      if (!tempGraph.hasEdge(key) && !tempGraph.hasEdge(`${e.target}-${e.source}`)) {
+        try { tempGraph.addEdgeWithKey(key, e.source, e.target); } catch { /* skip duplicates */ }
       }
     }
+    const groupingFn = getGroupingFn(groupBy);
+    const nodeGroup = groupingFn(knGraph, tempGraph);
 
     // --- Top 20 group filtering (galaxy.ts lines 92-101) ---
     const groupSizes = new Map<string, number>();

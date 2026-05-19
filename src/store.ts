@@ -27,8 +27,8 @@ export type ViewMode =
   | 'timeline'
   | 'galaxy3d';
 
-/** Grouping strategies for graph layout. */
-export type GroupBy = 'community' | 'package' | 'author';
+/** Grouping strategy ID (matches keys in GROUPING_REGISTRY). */
+export type GroupBy = string;
 
 /** User-adjustable display settings (slider values). */
 export interface DisplaySettings {

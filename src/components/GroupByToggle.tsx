@@ -1,10 +1,5 @@
-import { useGraphStore, type GroupBy } from '../store';
-
-const GROUPS: { key: GroupBy; label: string }[] = [
-  { key: 'package', label: 'Package' },
-  { key: 'community', label: 'Louvain' },
-  { key: 'author', label: 'Author' },
-];
+import { useGraphStore } from '../store';
+import { GROUPING_REGISTRY } from '../grouping';
 
 export function GroupByToggle() {
   const groupBy = useGraphStore((s) => s.groupBy);
@@ -13,12 +8,12 @@ export function GroupByToggle() {
   return (
     <div className="groupby-toggles">
       <h3>Group by</h3>
-      <div style={{ display: 'flex', gap: '4px', padding: '0 16px 8px' }}>
-        {GROUPS.map((g) => (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', padding: '0 16px 8px' }}>
+        {GROUPING_REGISTRY.map((g) => (
           <button
-            key={g.key}
-            className={`groupby-btn ${groupBy === g.key ? 'active' : ''}`}
-            onClick={() => setGroupBy(g.key)}
+            key={g.id}
+            className={`groupby-btn ${groupBy === g.id ? 'active' : ''}`}
+            onClick={() => setGroupBy(g.id)}
           >
             {g.label}
           </button>
