@@ -14,6 +14,7 @@ export function GroupByToggle() {
             key={g.id}
             className={`groupby-btn ${groupBy === g.id ? 'active' : ''}`}
             onClick={() => setGroupBy(g.id)}
+            title={g.description}
           >
             {g.label}
           </button>

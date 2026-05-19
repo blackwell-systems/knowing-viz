@@ -98,16 +98,17 @@ const groupByKind: GroupingFn = (knGraph) => {
 export interface GroupingStrategy {
   id: string;
   label: string;
+  description: string;
   fn: GroupingFn;
 }
 
 export const GROUPING_REGISTRY: GroupingStrategy[] = [
-  { id: 'package', label: 'Package', fn: groupByPackage },
-  { id: 'community', label: 'Community', fn: groupByCommunity },
-  { id: 'author', label: 'Author', fn: groupByAuthor },
-  { id: 'louvain-live', label: 'Louvain (live)', fn: groupByLouvainLive },
-  { id: 'component', label: 'Components', fn: groupByComponent },
-  { id: 'kind', label: 'Kind', fn: groupByKind },
+  { id: 'package', label: 'Package', description: 'Group by Go/TS/Python package path extracted from the qualified name. Shows how code is organized by module structure.', fn: groupByPackage },
+  { id: 'community', label: 'Community', description: 'Group by Louvain community from the server-side export. Communities are densely connected clusters of symbols detected by modularity optimization.', fn: groupByCommunity },
+  { id: 'author', label: 'Author', description: 'Group by git blame author. Shows who owns which parts of the codebase based on the last commit to each symbol.', fn: groupByAuthor },
+  { id: 'louvain-live', label: 'Louvain (live)', description: 'Client-side Louvain community detection on the visible subgraph. May differ from server-side communities due to filtered nodes and resolution settings.', fn: groupByLouvainLive },
+  { id: 'component', label: 'Components', description: 'Group by connected component. Finds isolated subsystems with no edges between them. Useful for identifying decoupled modules.', fn: groupByComponent },
+  { id: 'kind', label: 'Kind', description: 'Group by symbol kind: function, type, method, interface, const, var, service. Shows the structural composition of the codebase.', fn: groupByKind },
 ];
 
 export function getGroupingFn(id: string): GroupingFn {
