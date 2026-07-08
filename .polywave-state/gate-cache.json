@@ -24,6 +24,30 @@
         "cached_at": "2026-05-18T17:28:00.883658-07:00"
       }
     },
+    "3906c20db8ce72121cf9884387a9fb57": {
+      "typecheck": {
+        "gate_type": "typecheck",
+        "command": "cd /Users/dayna.blackwell/code/knowing-viz \u0026\u0026 npx tsc --noEmit",
+        "passed": true,
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "from_cache": true,
+        "cached_at": "2026-05-18T17:35:45.90607-07:00"
+      }
+    },
+    "4397407e6f3eaa40c331a1e28dac29da": {
+      "build": {
+        "gate_type": "build",
+        "command": "cd /Users/dayna.blackwell/code/knowing-viz \u0026\u0026 command npm run build",
+        "passed": true,
+        "exit_code": 0,
+        "stdout": "\n\u003e knowing-viz@0.1.0 build\n\u003e vite build\n\nvite v6.4.2 building for production...\ntransforming...\n✓ 29 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.41 kB │ gzip:  0.29 kB\ndist/assets/index-StyXCONZ.css    8.21 kB │ gzip:  1.89 kB\ndist/assets/index-wIA1iUpT.js   195.08 kB │ gzip: 60.98 kB\n✓ built in 297ms\n",
+        "stderr": "",
+        "from_cache": true,
+        "cached_at": "2026-05-18T17:35:46.677809-07:00"
+      }
+    },
     "5005fdd19c1a229d35a0725bcf7758e4": {
       "build": {
         "gate_type": "build",
